@@ -1,0 +1,179 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Variables for Liquid Glass Design System - Inspired by macOS */
+:root {
+  /* UFBA-Inspired Colors - Modernized */
+  --ufba-blue: #0066CC;
+  --ufba-blue-light: #0077FF;
+  --ufba-blue-dark: #004499;
+  --ufba-blue-bright: #0099FF;
+  --ufba-gold: #FFB800;
+  --ufba-gold-light: #FFCC33;
+  --ufba-gold-dark: #E6A600;
+  --ufba-gold-bright: #FFD700;
+  
+  /* Neutral Colors */
+  --ufba-gray-50: #F9FAFB;
+  --ufba-gray-100: #F3F4F6;
+  --ufba-gray-200: #E5E7EB;
+  --ufba-gray-300: #D1D5DB;
+  --ufba-gray-500: #6B7280;
+  --ufba-gray-600: #4B5563;
+  --ufba-gray-700: #374151;
+  --ufba-gray-800: #1F2937;
+  --ufba-gray-900: #111827;
+  
+  /* Status Colors */
+  --ufba-success: #10B981;
+  --ufba-success-light: #34D399;
+  --ufba-warning: #F59E0B;
+  --ufba-warning-light: #FBBF24;
+  --ufba-danger: #EF4444;
+  --ufba-danger-light: #F87171;
+  --ufba-info: #3B82F6;
+  --ufba-info-light: #60A5FA;
+  
+  /* Liquid Glass Gradients */
+  --gradient-primary: linear-gradient(135deg, var(--ufba-blue) 0%, var(--ufba-blue-bright) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-bright) 100%);
+  --gradient-warning: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-light) 100%);
+  
+  /* Liquid Glass Depth System */
+  --depth-1: 0 1px 3px rgba(0, 102, 204, 0.08), 0 1px 2px rgba(0, 102, 204, 0.12);
+  --depth-2: 0 4px 8px rgba(0, 102, 204, 0.12), 0 2px 4px rgba(0, 102, 204, 0.16);
+  --depth-3: 0 8px 16px rgba(0, 102, 204, 0.16), 0 4px 8px rgba(0, 102, 204, 0.20);
+  --depth-4: 0 12px 24px rgba(0, 102, 204, 0.20), 0 6px 12px rgba(0, 102, 204, 0.24);
+
+  /* Liquid Glass Backgrounds */
+  --bg-primary: var(--ufba-gray-100);
+  --bg-secondary: var(--ufba-gray-200);
+  --bg-glass: rgba(255, 255, 255, 0.6);
+  --bg-elevated: rgba(255, 255, 255, 0.75);
+
+  /* Liquid Glass Borders */
+  --border-primary: rgba(255, 255, 255, 0.5);
+  --border-secondary: rgba(0, 0, 0, 0.05);
+
+  /* Liquid Glass Text */
+  --text-primary: var(--ufba-gray-900);
+  --text-secondary: var(--ufba-gray-600);
+  --text-tertiary: var(--ufba-gray-500);
+
+  /* Liquid Glass Effects */
+  --glass-blur: blur(16px);
+  --bg-sidebar: linear-gradient(160deg, var(--ufba-blue-light) 0%, var(--ufba-blue-dark) 100%);
+}
+
+/* Dark mode variables - Liquid Glass */
+[data-theme="dark"] {
+  --depth-1: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --depth-2: 0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.4);
+  --depth-3: 0 8px 16px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.5);
+  --depth-4: 0 12px 24px rgba(0, 0, 0, 0.5), 0 6px 12px rgba(0, 0, 0, 0.6);
+
+  --bg-primary: var(--ufba-gray-900);
+  --bg-secondary: var(--ufba-gray-800);
+  --bg-glass: rgba(30, 41, 59, 0.7);
+  --bg-elevated: rgba(51, 65, 85, 0.8);
+
+  --border-primary: rgba(255, 255, 255, 0.1);
+  --border-secondary: rgba(255, 255, 255, 0.05);
+
+  --text-primary: var(--ufba-gray-50);
+  --text-secondary: var(--ufba-gray-300);
+  --text-tertiary: var(--ufba-gray-500);
+  --bg-sidebar: linear-gradient(160deg, var(--ufba-blue-dark) 0%, var(--ufba-gray-900) 100%);
+
+  /* Dark mode specific colors */
+  --ufba-gold: #C79214;
+  --ufba-gold-light: #D1A744;
+  --ufba-gold-dark: #E6A600;
+  --gradient-warning: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-light) 100%);
+  --ring: 240 4.9% 83.9%;
+}
+
+@layer components {
+  .liquid-card {
+    @apply rounded-3xl p-6;
+    background-color: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--border-primary);
+    box-shadow: var(--depth-2);
+    transition: all 0.3s ease-out;
+  }
+  .liquid-card:hover {
+    box-shadow: var(--depth-3);
+    transform: translateY(-4px);
+  }
+
+  .spotlight-effect {
+    position: relative;
+    overflow: hidden;
+  }
+  .spotlight-effect::before {
+    content: '';
+    position: absolute;
+    top: var(--spotlight-y, 50%);
+    left: var(--spotlight-x, 50%);
+    width: 400px;
+    height: 400px;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+    transition: top 0.1s ease-out, left 0.1s ease-out;
+  }
+
+  [data-theme="dark"] .spotlight-effect::before {
+    background: transparent;
+  }
+
+  .moving-glass-highlighter {
+    @apply absolute rounded-xl transition-all duration-300 ease-in-out;
+    backdrop-filter: blur(8px);
+    z-index: 0;
+
+    /* Light Mode Style: Simulates reflected light */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  [data-theme="dark"] .moving-glass-highlighter {
+    /* Dark Mode Style: A brighter, glowing glass */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle background pattern for depth */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: radial-gradient(circle at 10% 20%, rgba(0, 102, 204, 0.05), transparent 30%),
+                    radial-gradient(circle at 80% 70%, rgba(255, 184, 0, 0.05), transparent 30%);
+  z-index: -1;
+}
+
+[data-theme="dark"] body::before {
+  background-image: radial-gradient(circle at 10% 20%, rgba(0, 102, 204, 0.1), transparent 40%),
+                    radial-gradient(circle at 80% 70%, rgba(255, 184, 0, 0.1), transparent 40%);
+}
+
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+} 
