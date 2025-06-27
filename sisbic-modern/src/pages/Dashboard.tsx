@@ -70,7 +70,7 @@ const Dashboard = () => {
           {/* Content Sections */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Recent Activity */}
-            <div className="bg-white dark:bg-neutral-800 shadow-lifted rounded-lg p-6">
+            <div className="bg-white dark:bg-neutral-800 shadow-elite rounded-lg p-6">
               <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
                 Atividade Recente
               </h3>
@@ -101,7 +101,7 @@ const Dashboard = () => {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white dark:bg-neutral-800 shadow-lifted rounded-lg p-6">
+            <div className="bg-white dark:bg-neutral-800 shadow-elite rounded-lg p-6">
               <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
                 Ações Rápidas
               </h3>

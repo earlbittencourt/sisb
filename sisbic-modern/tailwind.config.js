@@ -9,11 +9,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Nosso azul principal e suas variações
+        // Nosso azul principal e suas variações - PALETA SOFISTICADA
         primary: {
-          light: '#60a5fa', // blue-400
-          DEFAULT: '#3b82f6', // blue-500
-          dark: '#2563eb', // blue-600
+          light: '#4a6fa5',    // Azul mais claro para hover/estados ativos
+          DEFAULT: '#2a4377', // Azul principal consolidado
+          dark: '#1e2f54',     // Azul mais escuro para estados pressed
         },
         // Neutros para fundos, textos, bordas, etc.
         neutral: {
@@ -28,18 +28,18 @@ module.exports = {
           800: '#1e293b', // slate-800 (Fundo de cards modo escuro)
           900: '#0f172a', // slate-900 (Fundo principal modo escuro)
         },
-        // Cores semânticas para status
-        success: colors.green[500],
+        // Cores semânticas para status - PALETA SOFISTICADA
+        success: '#5EEAD4', // Teal-300 - moderno e menos agressivo
         warning: colors.amber[500],
         danger: colors.red[600],
         
         // Mantendo compatibilidade com tokens existentes
         brand: {
-          DEFAULT: '#3b82f6',
-          light: '#60a5fa',
-          dark: '#2563eb',
-          faint: '#dbeafe',
-          subtle: '#eff6ff',
+          DEFAULT: '#2a4377',
+          light: '#4a6fa5',
+          dark: '#1e2f54',
+          faint: '#e8f0f8',
+          subtle: '#f5f8fc',
         },
         status: {
           success: {
@@ -61,18 +61,18 @@ module.exports = {
             text: '#991b1b',
           },
           info: {
-            DEFAULT: '#3b82f6',
-            light: '#60a5fa',
-            faint: '#dbeafe',
-            text: '#1e40af',
+            DEFAULT: '#2a4377',
+            light: '#4a6fa5',
+            faint: '#e8f0f8',
+            text: '#1e2f54',
           },
         },
         
         // UFBA Colors - Modernized
         'ufba-blue': {
-          light: '#3B82F6',
-          DEFAULT: '#2563EB',
-          dark: '#1D4ED8',
+          light: '#4a6fa5',
+          DEFAULT: '#2a4377',
+          dark: '#1e2f54',
         },
         'ufba-blue-light': 'var(--ufba-blue-light)',
         'ufba-blue-dark': 'var(--ufba-blue-dark)',
@@ -282,7 +282,7 @@ module.exports = {
         'glow-blue-500': '0 0 20px 5px rgba(59, 130, 246, 0.5)',
         'subtle': '0 4px 12px rgba(0, 0, 0, 0.08)',
         'subtle-lg': '0 8px 25px rgba(0, 0, 0, 0.12)',
-        'lifted': '0 10px 20px rgba(71, 85, 105, 0.1), 0 2px 6px rgba(71, 85, 105, 0.08)',
+        'elite': '0 4px 16px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.06)',
       },
       backdropBlur: {
         'xs': '2px',

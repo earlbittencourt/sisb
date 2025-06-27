@@ -36,10 +36,10 @@ const ProgressCircle: React.FC<{ progress: number; size?: number; strokeWidth?: 
     const strokeDashoffset = circumference - (progress / 100) * circumference;
 
     const getProgressColor = (p: number) => {
-        if (p === 100) return 'stroke-green-500';
-        if (p >= 70) return 'stroke-blue-500';
-        if (p >= 40) return 'stroke-amber-500';
-        return 'stroke-red-500';
+        if (p === 100) return 'stroke-success';
+        if (p >= 70) return 'stroke-primary';
+        if (p >= 40) return 'stroke-warning';
+        return 'stroke-danger';
     };
 
     return (

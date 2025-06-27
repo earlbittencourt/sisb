@@ -22,7 +22,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   className = ''
 }) => {
   return (
-    <div className={cn('bg-neutral-50 dark:bg-neutral-800 shadow-lifted rounded-lg p-6 transition-all duration-200 hover:shadow-subtle-lg', className)}>
+    <div className={cn('bg-neutral-50 dark:bg-neutral-800 shadow-elite rounded-lg p-6 transition-all duration-200 hover:shadow-subtle-lg hover:scale-[1.02]', className)}>
       <div className="flex items-center justify-between">
         <div className="flex-1">
           {/* Header with icon and title */}

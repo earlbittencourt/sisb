@@ -1,6 +1,8 @@
 import React from 'react';
 import { X, FileText, TrendingUp, Filter } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { CustomCheckbox } from './CustomCheckbox';
+import { FilterPill } from './FilterPill';
 
 interface FiltersPanelProps {
   isOpen: boolean;
@@ -64,18 +66,11 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                 <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Filtros Ativos</h3>
                 <div className="flex flex-wrap gap-2">
                   {activeFilters.map((filter, idx) => (
-                    <span
+                    <FilterPill
                       key={filter + idx}
-                      className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300 text-sm font-medium"
-                    >
-                      {filter}
-                      <button
-                        onClick={() => onRemoveFiltro(filter)}
-                        className="hover:text-red-500 transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
+                      label={filter}
+                      onRemove={() => onRemoveFiltro(filter)}
+                    />
                   ))}
                 </div>
               </div>
@@ -91,20 +86,13 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                 </h3>
                 <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                   {programas.map(programa => (
-                    <label
+                    <CustomCheckbox
                       key={programa.PRO_Codigo}
-                      className="flex items-center gap-3 cursor-pointer group"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={filtros.tipos.includes(programa.PRO_Codigo.toString())}
-                        onChange={(e) => onFiltroChange('tipos', programa.PRO_Codigo.toString(), e.target.checked)}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all"
-                      />
-                      <span className="text-sm font-normal text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                        {programa.PRO_Sigla}
-                      </span>
-                    </label>
+                      label={programa.PRO_Sigla}
+                      checked={filtros.tipos.includes(programa.PRO_Codigo.toString())}
+                      onChange={(e) => onFiltroChange('tipos', programa.PRO_Codigo.toString(), e.target.checked)}
+                      className="w-full"
+                    />
                   ))}
                 </div>
               </div>
@@ -117,20 +105,13 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                 </h3>
                 <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
                   {statusList.map(status => (
-                    <label
+                    <CustomCheckbox
                       key={status.PPS_Codigo}
-                      className="flex items-center gap-3 cursor-pointer group"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={filtros.status.includes(status.PPS_Codigo.toString())}
-                        onChange={(e) => onFiltroChange('status', status.PPS_Codigo.toString(), e.target.checked)}
-                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 transition-all"
-                      />
-                      <span className="text-sm font-normal text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
-                        {status.PPS_Descricao}
-                      </span>
-                    </label>
+                      label={status.PPS_Descricao}
+                      checked={filtros.status.includes(status.PPS_Codigo.toString())}
+                      onChange={(e) => onFiltroChange('status', status.PPS_Codigo.toString(), e.target.checked)}
+                      className="w-full"
+                    />
                   ))}
                 </div>
               </div>

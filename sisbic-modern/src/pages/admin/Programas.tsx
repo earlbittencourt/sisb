@@ -152,7 +152,7 @@ const Programas = () => {
           {viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProgramas.map((programa) => (
-                <div key={programa.PRO_Codigo} className="bg-neutral-50 dark:bg-neutral-800 shadow-lifted rounded-lg p-6 transition-all duration-200 hover:shadow-subtle-lg group">
+                <div key={programa.PRO_Codigo} className="bg-neutral-50 dark:bg-neutral-800 shadow-elite rounded-lg p-6 transition-all duration-200 hover:shadow-subtle-lg group">
                   <div className="flex items-start justify-between mb-4">
                     <div className="p-2 bg-primary/10 rounded-lg text-primary">
                       <BookOpen className="w-5 h-5" />
@@ -186,7 +186,7 @@ const Programas = () => {
               ))}
             </div>
           ) : (
-            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lifted overflow-hidden">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-elite overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="border-b border-neutral-200 dark:border-neutral-700">

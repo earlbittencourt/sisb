@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Clock, CheckCircle, Search, Grid, List, Plus, MoreHorizontal, Filter } from 'lucide-react';
+import { FileText, Clock, CheckCircle, Search, Grid, List, Plus, MoreHorizontal, Filter, ChevronUp, ChevronDown } from 'lucide-react';
 import DashboardCard from '../../components/ui/DashboardCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import { usePeriodosProgramas } from '../../hooks/usePeriodosProgramas';
@@ -247,19 +247,22 @@ const Editais = () => {
                     placeholder="Buscar editais..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-neutral-800 border-transparent rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg 
+                            focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200
+                            hover:border-neutral-300 dark:hover:border-neutral-600
+                            placeholder:text-neutral-400 dark:placeholder:text-neutral-500"
                   />
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <button
-                  className="btn-secondary inline-flex items-center gap-2 px-4 py-2.5"
+                  className="btn-secondary inline-flex items-center gap-2 px-4 py-2.5 hover:scale-105 transition-transform duration-200"
                   onClick={() => setIsFiltersOpen(true)}
                 >
                   <Filter className="w-4 h-4" />
                   Filtros
                 </button>
-                <button className="btn-primary inline-flex items-center gap-2 px-4 py-2.5">
+                <button className="btn-primary inline-flex items-center gap-2 px-4 py-2.5 hover:scale-105 transition-transform duration-200">
                   <Plus className="w-4 h-4" />
                   Novo Edital
                 </button>
@@ -287,65 +290,115 @@ const Editais = () => {
           </div>
 
           {/* Table */}
-          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-lifted overflow-hidden">
+          <div className="bg-white dark:bg-neutral-800 rounded-lg shadow-elite overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="border-b border-neutral-200 dark:border-neutral-700">
                   <tr>
                     <th
-                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group"
+                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_Descricao')}
                     >
-                      Edital
-                      {sortBy === 'PEP_Descricao' && (
-                        <span className="ml-1 inline-block align-middle">
-                          {sortDirection === 'asc' ? '▲' : '▼'}
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between">
+                        <span>Edital</span>
+                        <div className="flex items-center gap-1">
+                          {sortBy === 'PEP_Descricao' ? (
+                            sortDirection === 'asc' ? (
+                              <ChevronUp className="w-4 h-4 text-primary" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-primary" />
+                            )
+                          ) : (
+                            <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <ChevronUp className="w-4 h-4 text-neutral-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </th>
                     <th
-                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group"
+                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PRO_Descricao')}
                     >
-                      Programa
-                      {sortBy === 'PRO_Descricao' && (
-                        <span className="ml-1 inline-block align-middle">
-                          {sortDirection === 'asc' ? '▲' : '▼'}
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between">
+                        <span>Programa</span>
+                        <div className="flex items-center gap-1">
+                          {sortBy === 'PRO_Descricao' ? (
+                            sortDirection === 'asc' ? (
+                              <ChevronUp className="w-4 h-4 text-primary" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-primary" />
+                            )
+                          ) : (
+                            <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <ChevronUp className="w-4 h-4 text-neutral-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </th>
                     <th
-                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group"
+                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PPS_Descricao')}
                     >
-                      Status
-                      {sortBy === 'PPS_Descricao' && (
-                        <span className="ml-1 inline-block align-middle">
-                          {sortDirection === 'asc' ? '▲' : '▼'}
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between">
+                        <span>Status</span>
+                        <div className="flex items-center gap-1">
+                          {sortBy === 'PPS_Descricao' ? (
+                            sortDirection === 'asc' ? (
+                              <ChevronUp className="w-4 h-4 text-primary" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-primary" />
+                            )
+                          ) : (
+                            <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <ChevronUp className="w-4 h-4 text-neutral-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </th>
                     <th
-                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group"
+                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_DtInicio')}
                     >
-                      Início
-                      {sortBy === 'PEP_DtInicio' && (
-                        <span className="ml-1 inline-block align-middle">
-                          {sortDirection === 'asc' ? '▲' : '▼'}
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between">
+                        <span>Início</span>
+                        <div className="flex items-center gap-1">
+                          {sortBy === 'PEP_DtInicio' ? (
+                            sortDirection === 'asc' ? (
+                              <ChevronUp className="w-4 h-4 text-primary" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-primary" />
+                            )
+                          ) : (
+                            <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <ChevronUp className="w-4 h-4 text-neutral-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </th>
                     <th
-                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group"
+                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-neutral-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_DtFim')}
                     >
-                      Fim
-                      {sortBy === 'PEP_DtFim' && (
-                        <span className="ml-1 inline-block align-middle">
-                          {sortDirection === 'asc' ? '▲' : '▼'}
-                        </span>
-                      )}
+                      <div className="flex items-center justify-between">
+                        <span>Fim</span>
+                        <div className="flex items-center gap-1">
+                          {sortBy === 'PEP_DtFim' ? (
+                            sortDirection === 'asc' ? (
+                              <ChevronUp className="w-4 h-4 text-primary" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4 text-primary" />
+                            )
+                          ) : (
+                            <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <ChevronUp className="w-4 h-4 text-neutral-400" />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </th>
                     <th className="px-6 py-4 text-right text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                       Ações

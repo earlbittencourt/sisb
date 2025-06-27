@@ -7,10 +7,10 @@
 /* CSS Variables for Liquid Glass Design System - Inspired by macOS */
 :root {
   /* UFBA-Inspired Colors - Modernized */
-  --ufba-blue: #0066CC;
-  --ufba-blue-light: #3B82F6;
-  --ufba-blue-dark: #1D4ED8;
-  --ufba-blue-bright: #2563EB;
+  --ufba-blue: #2a4377;
+  --ufba-blue-light: #4a6fa5;
+  --ufba-blue-dark: #1e2f54;
+  --ufba-blue-bright: #2a4377;
   --ufba-gold: #F59E0B;
   --ufba-gold-light: #FBBF24;
   --ufba-gold-dark: #D97706;
@@ -34,11 +34,11 @@
   --ufba-warning-light: #FBBF24;
   --ufba-danger: #EF4444;
   --ufba-danger-light: #F87171;
-  --ufba-info: #3B82F6;
-  --ufba-info-light: #60A5FA;
+  --ufba-info: #2a4377;
+  --ufba-info-light: #4a6fa5;
   
   /* Liquid Glass Gradients */
-  --gradient-primary: linear-gradient(135deg, var(--ufba-blue) 0%, var(--ufba-blue-bright) 100%);
+  --gradient-primary: linear-gradient(135deg, #2a4377 0%, #4a6fa5 100%);
   --gradient-secondary: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-bright) 100%);
   --gradient-warning: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-light) 100%);
   
@@ -281,9 +281,10 @@
 
   .glass-sidebar {
     @apply fixed left-0 top-0 h-full w-64 z-50;
-    background: var(--bg-sidebar);
-    backdrop-filter: var(--glass-blur);
-    border-right: 1px solid var(--border-primary);
+    background: linear-gradient(135deg, rgba(42, 67, 119, 0.95) 0%, rgba(30, 47, 84, 0.95) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: var(--depth-3);
   }
 
@@ -595,18 +596,18 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(42, 67, 119, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(255, 184, 0, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(0, 102, 204, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 40% 40%, rgba(42, 67, 119, 0.05) 0%, transparent 50%);
   pointer-events: none;
   z-index: -1;
 }
 
 [data-theme="dark"] body::before {
   background: 
-    radial-gradient(circle at 20% 80%, rgba(0, 102, 204, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(42, 67, 119, 0.2) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(255, 184, 0, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 40% 40%, rgba(42, 67, 119, 0.1) 0%, transparent 50%);
 }
 
 * {
@@ -627,7 +628,7 @@ html {
 
 /* Glass effect for sidebar */
 .glass-sidebar {
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.95) 0%, rgba(29, 78, 216, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(42, 67, 119, 0.95) 0%, rgba(30, 47, 84, 0.95) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
