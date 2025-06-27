@@ -3,7 +3,7 @@ import { LucideIcon } from 'lucide-react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'ghost' | 'success' | 'warning' | 'danger' | 'glass';
+  variant?: 'primary' | 'secondary' | 'link' | 'ghost' | 'success' | 'warning' | 'danger' | 'glass';
   size?: 'sm' | 'md' | 'lg';
   icon?: LucideIcon;
   iconPosition?: 'left' | 'right';
@@ -27,14 +27,15 @@ const Button: React.FC<ButtonProps> = ({
   const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm rounded-lg gap-1.5',
-    md: 'px-4 py-2 rounded-xl gap-2',
-    lg: 'px-6 py-3 text-lg rounded-xl gap-2.5',
+    sm: 'px-3 py-1.5 text-sm rounded-md gap-1.5',
+    md: 'px-4 py-2 rounded-md gap-2',
+    lg: 'px-6 py-3 text-lg rounded-md gap-2.5',
   };
 
   const variantStyles = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600',
+    primary: 'bg-primary text-white font-semibold hover:bg-primary-dark transition-colors',
+    secondary: 'bg-slate-200 text-slate-800 font-semibold hover:bg-slate-300 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600 transition-colors',
+    link: 'text-neutral-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light font-semibold transition-colors',
     ghost: 'text-gray-600 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800',
     success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800',
     warning: 'bg-yellow-500 text-white hover:bg-yellow-600 active:bg-yellow-700',
