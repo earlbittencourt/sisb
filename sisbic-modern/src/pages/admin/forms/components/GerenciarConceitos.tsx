@@ -83,36 +83,36 @@ const ModalConceito: React.FC<{
             variant="glass"
             size="md"
         >
-            <form onSubmit={handleSubmit(onSubmitForm)}>
-                <div className="mt-4 space-y-4">
-                    <div>
+                    <form onSubmit={handleSubmit(onSubmitForm)}>
+                        <div className="mt-4 space-y-4">
+                            <div>
                         <label htmlFor="descricao" className="block text-sm font-medium mb-1">Descrição</label>
-                        <input
-                            {...register('descricao')}
-                            id="descricao"
+                                <input
+                                    {...register('descricao')}
+                                    id="descricao"
                             className="w-full px-3 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="Ex: Satisfatório, Insatisfatório..."
-                        />
-                        {errors.descricao && <p className="text-sm text-red-500 mt-1">{errors.descricao.message}</p>}
-                    </div>
-                    <div>
+                                    placeholder="Ex: Satisfatório, Insatisfatório..."
+                                />
+                                {errors.descricao && <p className="text-sm text-red-500 mt-1">{errors.descricao.message}</p>}
+                            </div>
+                            <div>
                         <label htmlFor="nivel" className="block text-sm font-medium mb-1">Nível</label>
-                        <Controller
-                            name="nivel"
-                            control={control}
-                            render={({ field }) => <Select value={field.value} onChange={(value) => field.onChange(Number(value))} options={nivelOptions} />}
-                        />
-                        {errors.nivel && <p className="text-sm text-red-500 mt-1">{errors.nivel.message}</p>}
-                    </div>
-                </div>
+                                <Controller
+                                    name="nivel"
+                                    control={control}
+                                    render={({ field }) => <Select value={field.value} onChange={(value) => field.onChange(Number(value))} options={nivelOptions} />}
+                                />
+                                {errors.nivel && <p className="text-sm text-red-500 mt-1">{errors.nivel.message}</p>}
+                            </div>
+                        </div>
 
-                <div className="mt-6 flex justify-end space-x-2">
-                    <Button type="button" variant="ghost" onClick={handleClose}>Cancelar</Button>
-                    <Button type="submit" variant="warning">
-                        Salvar
-                    </Button>
-                </div>
-            </form>
+                        <div className="mt-6 flex justify-end space-x-2">
+                            <Button type="button" variant="ghost" onClick={handleClose}>Cancelar</Button>
+                            <Button type="submit" variant="warning">
+                                Salvar
+                            </Button>
+                        </div>
+                    </form>
         </Modal>
     );
 };

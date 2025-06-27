@@ -124,20 +124,17 @@ const EventoModal: React.FC<{
                 {eventoSelecionado && (
                     <>
                     <div>
-                            <label className="block text-sm font-medium mb-1">Data Inicial</label>
                         <DatePicker
+                            label="Data Inicial"
                             value={dataInicio}
                             onChange={setDataInicio}
-                                className="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg"
                         />
                     </div>
-
                     <div>
-                            <label className="block text-sm font-medium mb-1">Data Final</label>
                         <DatePicker
+                            label="Data Final"
                             value={dataFim}
                             onChange={setDataFim}
-                                className="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg"
                         />
                     </div>
                     </>

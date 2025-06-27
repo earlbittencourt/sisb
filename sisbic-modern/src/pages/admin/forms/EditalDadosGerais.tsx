@@ -9,6 +9,7 @@ import Button from '../../../components/ui/Button';
 import InputField from '../../../components/ui/InputField';
 import SelectField from '../../../components/ui/SelectField';
 import FileUploadField from '../../../components/ui/FileUploadField';
+import { DatePicker } from '../../../components/ui/DatePicker';
 import { useProgramas } from '../../../hooks/useProgramas';
 import { useStatus } from '../../../hooks/useStatus';
 import { useEdital } from '../../../contexts/EditalContext';
@@ -19,8 +20,8 @@ const formSchema = z.object({
     PEP_Sigla: z.string().min(3, "A sigla deve ter pelo menos 3 caracteres."),
     PEP_Codigo_PRO: z.number().int().positive("Selecione um programa."),
     PEP_Codigo_PPS: z.number().int().positive("Selecione um status."),
-    PEP_DtInicio: z.string().nonempty("A data de início é obrigatória."),
-    PEP_DtFim: z.string().nonempty("A data de fim é obrigatória."),
+    PEP_DtInicio: z.date().min(new Date('2000-01-01'), "Data inválida"),
+    PEP_DtFim: z.date().min(new Date('2000-01-01'), "Data inválida"),
     PEP_ArquivoEdital: z.string().optional(),
     PEP_NomeArquivo: z.string().optional(),
 });
@@ -45,17 +46,17 @@ const EditalDadosGerais: React.FC = () => {
     }, [buscarProgramas, buscarStatus]);
     
     useEffect(() => {
-        // Popula o formulário quando os dados do edital (do contexto) estiverem disponíveis
         if (periodo) {
             reset({
-                PEP_Sigla: periodo.PEP_Sigla,
-                PEP_Descricao: periodo.PEP_Descricao,
-                PEP_DtInicio: periodo.PEP_DtInicio ? periodo.PEP_DtInicio.split('T')[0] : '',
-                PEP_DtFim: periodo.PEP_DtFim ? periodo.PEP_DtFim.split('T')[0] : '',
+                PEP_Descricao: periodo.PEP_Descricao || '',
+                PEP_Sigla: periodo.PEP_Sigla || '',
+                PEP_Codigo_PRO: typeof periodo.PEP_Codigo_PRO === 'number' ? periodo.PEP_Codigo_PRO : undefined,
+                PEP_Codigo_PPS: typeof periodo.PEP_Codigo_PPS === 'number' ? periodo.PEP_Codigo_PPS : undefined,
+                PEP_DtInicio: periodo.PEP_DtInicio ? new Date(periodo.PEP_DtInicio) : undefined,
+                PEP_DtFim: periodo.PEP_DtFim ? new Date(periodo.PEP_DtFim) : undefined,
+                PEP_NomeArquivo: periodo.PEP_NomeArquivo || '',
             });
-            if (periodo.PEP_NomeArquivo) {
-                setFileName(periodo.PEP_NomeArquivo);
-            }
+            setFileName(periodo.PEP_NomeArquivo || '');
         }
     }, [periodo, reset]);
 
@@ -124,24 +125,34 @@ const EditalDadosGerais: React.FC = () => {
                             Informações Básicas
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                            <InputField
-                                label="Título do Edital"
-                                type="text"
-                                {...register("PEP_Descricao")}
-                                placeholder="Digite o título completo do edital"
-                                error={errors.PEP_Descricao?.message}
-                                required
+                            <Controller
+                                name="PEP_Descricao"
+                                control={control}
+                                render={({ field }) => (
+                                    <InputField
+                                        label="Título do Edital"
+                                        type="text"
+                                        {...field}
+                                        placeholder="Digite o título completo do edital"
+                                        error={errors.PEP_Descricao?.message}
+                                        required
+                                    />
+                                )}
                             />
-                            
-                            <InputField
-                                label="Sigla"
-                                type="text"
-                                {...register("PEP_Sigla")}
-                                placeholder="Ex: EDITAL 003/2025"
-                                error={errors.PEP_Sigla?.message}
-                                required
+                            <Controller
+                                name="PEP_Sigla"
+                                control={control}
+                                render={({ field }) => (
+                                    <InputField
+                                        label="Sigla"
+                                        type="text"
+                                        {...field}
+                                        placeholder="Ex: EDITAL 003/2025"
+                                        error={errors.PEP_Sigla?.message}
+                                        required
+                                    />
+                                )}
                             />
-                            
                             <Controller
                                 name="PEP_Codigo_PRO"
                                 control={control}
@@ -157,7 +168,6 @@ const EditalDadosGerais: React.FC = () => {
                                     />
                                 )}
                             />
-                            
                             <Controller
                                 name="PEP_Codigo_PPS"
                                 control={control}
@@ -182,21 +192,44 @@ const EditalDadosGerais: React.FC = () => {
                             Período de Vigência
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                            <InputField
-                                label="Data de Início"
-                                type="date"
-                                {...register("PEP_DtInicio")}
-                                error={errors.PEP_DtInicio?.message}
-                                required
-                            />
-                            
-                            <InputField
-                                label="Data de Fim"
-                                type="date"
-                                {...register("PEP_DtFim")}
-                                error={errors.PEP_DtFim?.message}
-                                required
-                            />
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-600 dark:text-slate-300 mb-1">
+                                    Data de Início
+                                    <span className="text-red-500 ml-1">*</span>
+                                </label>
+                                <Controller
+                                    name="PEP_DtInicio"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <div>
+                                            <DatePicker
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                error={errors.PEP_DtInicio?.message}
+                                            />
+                                        </div>
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-600 dark:text-slate-300 mb-1">
+                                    Data de Fim
+                                    <span className="text-red-500 ml-1">*</span>
+                                </label>
+                                <Controller
+                                    name="PEP_DtFim"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <div>
+                                            <DatePicker
+                                                value={field.value}
+                                                onChange={field.onChange}
+                                                error={errors.PEP_DtFim?.message}
+                                            />
+                                        </div>
+                                    )}
+                                />
+                            </div>
                         </div>
                     </div>
                     

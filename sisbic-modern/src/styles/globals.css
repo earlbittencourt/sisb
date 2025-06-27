@@ -82,6 +82,10 @@
   --glass-border-light: rgba(255, 255, 255, 0.1);
   --glass-border-dark: rgba(255, 255, 255, 0.05);
   --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+
+  --primary-color: #1E40AF;
+  --primary-dark-color: #1E3A8A;
+  --neutral-100: #F3F4F6;
 }
 
 /* Dark mode variables - Liquid Glass */
@@ -116,6 +120,10 @@
   --ufba-gold-dark: #E6A600;
   --gradient-warning: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-light) 100%);
   --ring: 240 4.9% 83.9%;
+
+  --primary-color: #60A5FA;
+  --primary-dark-color: #3B82F6;
+  --neutral-100: #374151;
 }
 
 @layer components {
@@ -864,4 +872,128 @@ html {
   .hover-lift, .hover-lift-sm, .hover-lift-premium {
     @apply hover:scale-100;
   }
-} 
+}
+
+/* --- DatePicker UFBA Override --- */
+.rdp, .rdp *, .rdp *:before, .rdp *:after {
+  transition: none !important;
+}
+.rdp-caption_label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #0051A2 !important;
+}
+.rdp-nav_button svg {
+  stroke: #0051A2 !important;
+  color: #0051A2 !important;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: block;
+}
+.rdp-nav_button {
+  background: none !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  padding: 0.25rem !important;
+  box-shadow: none !important;
+}
+.rdp-nav_button:hover {
+  background-color: #e7f2ff !important;
+}
+.rdp-head_cell {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #0051A2 !important;
+  text-transform: lowercase;
+}
+.rdp-head_cell::first-letter {
+  text-transform: uppercase;
+}
+.rdp-button {
+  color: #1e293b !important;
+  border: 2px solid transparent !important;
+  border-radius: 9999px !important;
+  background: none !important;
+  font-weight: 400 !important;
+}
+.rdp-button:hover:not([disabled]) {
+  background-color: #e7f2ff !important;
+  color: #0051A2 !important;
+}
+.rdp-day_today:not(.rdp-day_selected) {
+  font-weight: bold !important;
+  border: 1.5px solid #0051A2 !important;
+}
+.rdp-day_selected:not([disabled]) {
+  color: #0051A2 !important;
+  background: #fff !important;
+  border: 2.5px solid #0051A2 !important;
+  font-weight: bold !important;
+  box-shadow: 0 0 0 2px #0051A2 !important;
+}
+.rdp-day_selected:hover:not([disabled]) {
+  background: #e7f2ff !important;
+  color: #0051A2 !important;
+}
+.rdp-button:focus-visible:not([disabled]) {
+  outline: 2px solid #0051A2 !important;
+  outline-offset: 2px !important;
+}
+.dark .rdp-button {
+  color: #f8fafc !important;
+  background: none !important;
+}
+.dark .rdp-button:hover:not([disabled]) {
+  background-color: #003366 !important;
+  color: #90cdf4 !important;
+}
+.dark .rdp-day_selected:not([disabled]) {
+  color: #0051A2 !important;
+  background: #fff !important;
+  border: 2.5px solid #0051A2 !important;
+  box-shadow: 0 0 0 2px #0051A2 !important;
+}
+.dark .rdp-caption_label,
+.dark .rdp-head_cell,
+.dark .rdp-nav_button svg {
+  color: #0051A2 !important;
+  stroke: #0051A2 !important;
+}
+/* --- Fim DatePicker UFBA Override --- */
+
+/* --- DatePicker Selected Day UFBA Override --- */
+.rdp .ufba-datepicker-selected,
+.rdp .ufba-datepicker-selected:focus,
+.rdp .ufba-datepicker-selected:active {
+  color: #0051A2 !important;
+  background: #fff !important;
+  border: 2.5px solid #0051A2 !important;
+  font-weight: bold !important;
+  box-shadow: 0 0 0 2px #0051A2 !important;
+  border-radius: 9999px !important;
+  outline: none !important;
+}
+/* --- Fim DatePicker Selected Day UFBA Override --- */
+
+/* --- Forçar cor e remover transição dos dias do calendário --- */
+.rdp .rdp-day,
+.rdp .rdp-button,
+.rdp .rdp-day_selected,
+.rdp .rdp-day_today,
+.rdp .rdp-button:focus,
+.rdp .rdp-button:active {
+  transition: none !important;
+  color: #1e293b !important;
+}
+.dark .rdp .rdp-day,
+.dark .rdp .rdp-button,
+.dark .rdp .rdp-day_selected,
+.dark .rdp .rdp-day_today,
+.dark .rdp .rdp-button:focus,
+.dark .rdp .rdp-button:active {
+  transition: none !important;
+  color: #f8fafc !important;
+}
+/* --- Fim do ajuste de cor e transição dos dias do calendário --- */ 

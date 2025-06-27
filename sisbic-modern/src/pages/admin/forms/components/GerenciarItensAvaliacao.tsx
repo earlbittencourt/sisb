@@ -131,9 +131,9 @@ const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({ titul
         variant="glass"
         size="md"
       >
-        <div className="mb-4">
-          <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Item</label>
-          <select
+            <div className="mb-4">
+              <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Item</label>
+              <select
             className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
             value={novoItemId === null ? '' : novoItemId === 'new' ? 'new' : String(novoItemId)}
             onChange={e => {
@@ -152,14 +152,14 @@ const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({ titul
                 }
               }
             }}
-          >
-            <option value="">Selecione...</option>
+              >
+                <option value="">Selecione...</option>
             <option value="new">✨ Criar novo item</option>
-            {disponiveis.map(item => (
-              <option key={item.id} value={item.id}>{item.descricao}</option>
-            ))}
-          </select>
-        </div>
+                {disponiveis.map(item => (
+                  <option key={item.id} value={item.id}>{item.descricao}</option>
+                ))}
+              </select>
+            </div>
         {/* Se for novo item, mostrar campo de descrição */}
         {novoItemId === 'new' && (
           <div className="mb-4">
@@ -175,25 +175,25 @@ const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({ titul
         )}
         {/* Campo de variação da nota */}
         {typeof novoItemId === 'number' && (
-          <div className="mb-4">
-            <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Variação da Nota</label>
-            <input
+            <div className="mb-4">
+              <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Variação da Nota</label>
+              <input
               className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
-              type="text"
-              value={novaVariacaoAdd}
-              onChange={e => setNovaVariacaoAdd(e.target.value)}
-              placeholder="Ex: 0 a 10"
-            />
-          </div>
+                type="text"
+                value={novaVariacaoAdd}
+                onChange={e => setNovaVariacaoAdd(e.target.value)}
+                placeholder="Ex: 0 a 10"
+              />
+            </div>
         )}
-        <div className="flex justify-end space-x-2">
-          <Button variant="secondary" onClick={() => setShowAddModal(false)}>Cancelar</Button>
+            <div className="flex justify-end space-x-2">
+              <Button variant="secondary" onClick={() => setShowAddModal(false)}>Cancelar</Button>
           <Button variant="primary" onClick={handleAdicionar} disabled={(
             novoItemId === null ||
             (novoItemId === 'new' && !novaVariacaoAdd) ||
             (typeof novoItemId === 'number' && !novaVariacaoAdd)
           )}>Adicionar</Button>
-        </div>
+            </div>
       </Modal>
 
       {/* Botão Voltar para o Hub no rodapé */}
