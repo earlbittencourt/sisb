@@ -6,6 +6,9 @@ import { usePeriodosProgramas } from '../../hooks/usePeriodosProgramas';
 import FiltersPanel from '../../components/ui/FiltersPanel';
 import { useProgramas } from '../../hooks/useProgramas';
 import { useStatus } from '../../hooks/useStatus';
+import { Menu, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -21,6 +24,7 @@ const Editais = () => {
   const { periodos, loading: loadingPeriodos } = usePeriodosProgramas();
   const { programas } = useProgramas();
   const { status: statusList } = useStatus();
+  const navigate = useNavigate();
 
   // Função para verificar se um status indica que o edital está concluído
   const isStatusConcluido = (status: string | undefined): boolean => {
@@ -443,13 +447,55 @@ const Editais = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right align-top">
-                        <button 
-                          className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors duration-150"
-                          aria-label="Ações do edital"
-                          title="Mais opções"
-                        >
-                          <MoreHorizontal className="w-4 h-4 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-slate-300 transition-colors" />
-                        </button>
+                        <Menu as="div" className="relative inline-block text-left">
+                          <Menu.Button className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors duration-150" aria-label="Ações do edital" title="Mais opções">
+                            <MoreHorizontal className="w-4 h-4 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-slate-300 transition-colors" />
+                          </Menu.Button>
+                          <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-100"
+                            enterFrom="transform opacity-0 scale-95"
+                            enterTo="transform opacity-100 scale-100"
+                            leave="transition ease-in duration-75"
+                            leaveFrom="transform opacity-100 scale-100"
+                            leaveTo="transform opacity-0 scale-95"
+                          >
+                            <Menu.Items className="absolute right-0 z-50 mt-2 w-40 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black/5 focus:outline-none border border-neutral-100 dark:border-slate-700">
+                              <div className="py-1">
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <button
+                                      className={`$${active ? 'bg-neutral-100 dark:bg-slate-700' : ''} group flex w-full items-center rounded-lg px-4 py-2 text-sm text-neutral-800 dark:text-slate-100 transition-colors`}
+                                      onClick={() => {/* TODO: Implementar ação Visualizar */}}
+                                    >
+                                      Visualizar
+                                    </button>
+                                  )}
+                                </Menu.Item>
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <button
+                                      className={`$${active ? 'bg-neutral-100 dark:bg-slate-700' : ''} group flex w-full items-center rounded-lg px-4 py-2 text-sm text-neutral-800 dark:text-slate-100 transition-colors`}
+                                      onClick={() => navigate(`/editais/${edital.PEP_Codigo}/configurar`)}
+                                    >
+                                      Editar
+                                    </button>
+                                  )}
+                                </Menu.Item>
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <button
+                                      className={`$${active ? 'bg-neutral-100 dark:bg-slate-700' : ''} group flex w-full items-center rounded-lg px-4 py-2 text-sm text-red-500 transition-colors`}
+                                      onClick={() => {/* TODO: Implementar ação Excluir */}}
+                                    >
+                                      Excluir
+                                    </button>
+                                  )}
+                                </Menu.Item>
+                              </div>
+                            </Menu.Items>
+                          </Transition>
+                        </Menu>
                       </td>
                     </tr>
                   ))}
