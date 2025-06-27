@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { CheckCircle, Clock } from 'lucide-react';
 
 interface ConfigurationStepCardProps {
@@ -19,8 +19,11 @@ const ConfigurationStepCard: React.FC<ConfigurationStepCardProps> = ({
   icon,
   isHighlighted = false
 }) => {
+  const { id } = useParams<{ id: string }>();
+  const fullPath = `/editais/${id}/configurar/${path}`;
+
   return (
-    <Link to={path} className="group block">
+    <Link to={fullPath} className="group block">
       <div className={`
         relative bg-white dark:bg-slate-800 shadow-elite rounded-lg p-6 h-full
         border transition-all duration-300 ease-in-out
