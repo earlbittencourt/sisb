@@ -19,7 +19,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="glass-header">
-      <div className="mx-6 mt-6 p-4 rounded-3xl bg-white/60 dark:bg-ufba-gray-800/60 backdrop-blur-glass border border-white/50 dark:border-white/10 shadow-depth-2">
+      <div className="mx-6 mt-6 p-4 rounded-3xl bg-white/60 dark:bg-ufba-gray-800/60 backdrop-blur-glass border border-white/50 dark:border-white/10 shadow-depth-2 border-b border-transparent dark:border-slate-700">
         <div className="flex items-center justify-between">
           {/* Left: Title */}
           <div className="flex items-center space-x-4">

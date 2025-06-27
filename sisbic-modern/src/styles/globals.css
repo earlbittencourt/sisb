@@ -580,6 +580,14 @@
   .animate-scale-in {
     @apply animate-scale-in;
   }
+
+  /* Botão de filtro discreto */
+  .btn-filter {
+    @apply bg-white text-neutral-700 border border-neutral-200 font-medium rounded-lg shadow-sm transition-all duration-150;
+  }
+  .dark .btn-filter {
+    @apply bg-neutral-800 text-neutral-200 border border-neutral-700 hover:bg-primary-dark/40;
+  }
 }
 
 body {

@@ -11,7 +11,7 @@ interface FilterPillProps {
 export function FilterPill({ label, onRemove, className }: FilterPillProps) {
   return (
     <div className={cn(
-      'inline-flex items-center bg-primary/10 text-primary-dark dark:text-primary-light',
+      'inline-flex items-center bg-blue-100 text-blue-800 dark:bg-primary-light/20 dark:text-primary-light',
       'px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200',
       'border border-primary/20 hover:border-primary/30',
       'group hover:bg-primary/15',
