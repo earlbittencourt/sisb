@@ -36,6 +36,7 @@ export interface EstruturaRelatorioItem {
   id: number;
   descricao: string;
   criterios: EstruturaRelatorioCriterio[];
+  variacaoNota: string;
 }
 
 export interface EstruturaRelatorioCategoria {

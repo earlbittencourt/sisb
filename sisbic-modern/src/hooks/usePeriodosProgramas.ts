@@ -1,5 +1,4 @@
-import { useState, useCallback } from 'react';
-import { getPeriodosProgramas, deletePeriodoPrograma, getPeriodoProgramaById, updatePeriodoPrograma } from '../api/periodosProgramas';
+import { useState, useCallback, useEffect } from 'react';
 import { api } from '../api/config';
 import { PeriodoPrograma } from '../types/programa';
 
@@ -9,15 +8,27 @@ export function usePeriodosProgramas() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const buscarPeriodos = useCallback(async (params?: { tipo?: string, status?: string }) => {
+    const buscarPeriodos = useCallback(async (params?: { tipos?: string[], status?: string[] }) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.get('/periodos-programas', { params });
+            console.log('🔄 Buscando editais...');
+            const queryParams = new URLSearchParams();
+            if (params?.tipos && params.tipos.length > 0) {
+                params.tipos.forEach(tipo => queryParams.append('tipos', tipo));
+            }
+            if (params?.status && params.status.length > 0) {
+                params.status.forEach(status => queryParams.append('status', status));
+            }
+            
+            const response = await api.get('/periodos-programas', { 
+                params: queryParams
+            });
+            console.log('✅ Editais carregados:', response.data);
             setPeriodos(response.data);
         } catch (err) {
+            console.error('❌ Erro ao buscar editais:', err);
             setError('Falha ao buscar períodos dos programas.');
-            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -44,16 +55,16 @@ export function usePeriodosProgramas() {
             if (data.PEP_Codigo) {
                 await api.put(`/periodos-programas/${data.PEP_Codigo}`, data);
             } else {
-                // Lógica para criar novo
+                await api.post('/periodos-programas', data);
             }
-            // Opcional: recarregar dados
+            await buscarPeriodos(); // Recarrega a lista após salvar
         } catch (err) {
             setError('Falha ao salvar o período do programa.');
             console.error(err);
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [buscarPeriodos]);
 
     const deletarPeriodo = useCallback(async (id: number) => {
         setLoading(true);
@@ -68,6 +79,12 @@ export function usePeriodosProgramas() {
             setLoading(false);
         }
     }, []);
+
+    // Carregar editais automaticamente quando o hook é inicializado
+    useEffect(() => {
+        console.log('🚀 Hook usePeriodosProgramas inicializado');
+        buscarPeriodos();
+    }, [buscarPeriodos]);
 
     return { periodos, periodo, loading, error, buscarPeriodos, buscarPeriodoPorId, salvarPeriodo, deletarPeriodo };
 } 

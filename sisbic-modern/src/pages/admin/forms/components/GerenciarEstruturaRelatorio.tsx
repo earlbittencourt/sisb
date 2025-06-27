@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ItemAvaliacao, EstruturaRelatorioCategoria, EstruturaRelatorioItem } from '../../../../types/relatorio';
 import Button from '../../../../components/ui/Button';
-import { Save, Plus, Trash2, X } from 'lucide-react';
+import { Save, Plus, Trash2 } from 'lucide-react';
 import Modal from '/Users/joaobittencourt/IdeaProjects/Sisb2/sisbic-modern/src/components/ui/Modal';
 
 interface GerenciarEstruturaProps {
@@ -37,12 +37,10 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
   const [newItem, setNewItem] = useState({ descricao: '', criterios: [] as ItemAvaliacao[] });
   const [newCriterio, setNewCriterio] = useState({ descricao: '' });
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [showConfirmModal, setShowConfirmModal] = useState<{ type: 'categoria' | 'item' | 'criterio'; categoriaId: number; itemId?: number; criterioId?: number } | null>(null);
-  const [pendingRemove, setPendingRemove] = useState<{ categoriaId: number; itemId?: number } | null>(null);
   const inputItemRef = useRef<HTMLInputElement>(null);
-  const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<{ key: string; type: 'success' | 'error'; message: string } | null>(null);
+  const [novaVariacaoAdd, setNovaVariacaoAdd] = useState('');
 
   useEffect(() => {
     setEstrutura(estruturaInicial);
@@ -59,7 +57,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
     if (selectedCategoria && !estrutura.find(c => c.id === selectedCategoria.id)) {
       const novaEstrutura = [...estrutura, { ...selectedCategoria, itens: [] }];
       setEstrutura(novaEstrutura);
-      setLoadingAction(`add-categoria-${selectedCategoria.id}`);
       try {
         await onSave(novaEstrutura);
         setActionMessage({ key: `add-categoria-${selectedCategoria.id}`, type: 'success', message: 'Categoria adicionada com sucesso!' });
@@ -69,7 +66,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
         setActionMessage({ key: `add-categoria-${selectedCategoria.id}`, type: 'error', message: 'Erro ao adicionar categoria.' });
         setTimeout(() => setActionMessage(null), 4000);
       }
-      setLoadingAction(null);
       setSelectedCategoria(null);
       setShowAddModal(false);
     }
@@ -84,7 +80,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
     if (showConfirmModal.type === 'categoria') {
       const novaEstrutura = estrutura.filter(c => c.id !== showConfirmModal.categoriaId);
       setEstrutura(novaEstrutura);
-      setLoadingAction(`remove-categoria-${showConfirmModal.categoriaId}`);
       try {
         await onSave(novaEstrutura);
         setActionMessage({ key: `remove-categoria-${showConfirmModal.categoriaId}`, type: 'success', message: 'Categoria removida com sucesso!' });
@@ -94,7 +89,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
         setActionMessage({ key: `remove-categoria-${showConfirmModal.categoriaId}`, type: 'error', message: 'Erro ao remover categoria.' });
         setTimeout(() => setActionMessage(null), 4000);
       }
-      setLoadingAction(null);
     } else if (showConfirmModal.type === 'item' && showConfirmModal.itemId !== undefined) {
       const novaEstrutura = estrutura.map(cat =>
         cat.id === showConfirmModal.categoriaId
@@ -102,7 +96,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
           : cat
       );
       setEstrutura(novaEstrutura);
-      setLoadingAction(`remove-item-${showConfirmModal.categoriaId}-${showConfirmModal.itemId}`);
       try {
         await onSave(novaEstrutura);
         setActionMessage({ key: `remove-item-${showConfirmModal.categoriaId}-${showConfirmModal.itemId}`, type: 'success', message: 'Item removido com sucesso!' });
@@ -112,7 +105,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
         setActionMessage({ key: `remove-item-${showConfirmModal.categoriaId}-${showConfirmModal.itemId}`, type: 'error', message: 'Erro ao remover item.' });
         setTimeout(() => setActionMessage(null), 4000);
       }
-      setLoadingAction(null);
     } else if (showConfirmModal.type === 'criterio' && showConfirmModal.itemId !== undefined && showConfirmModal.criterioId !== undefined) {
       const novaEstrutura = estrutura.map(cat => {
         if (cat.id === showConfirmModal.categoriaId) {
@@ -132,7 +124,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
         return cat;
       });
       setEstrutura(novaEstrutura);
-      setLoadingAction(`remove-criterio-${showConfirmModal.categoriaId}-${showConfirmModal.itemId}-${showConfirmModal.criterioId}`);
       try {
         await onSave(novaEstrutura);
         setActionMessage({ key: `remove-criterio-${showConfirmModal.categoriaId}-${showConfirmModal.itemId}-${showConfirmModal.criterioId}`, type: 'success', message: 'Critério removido com sucesso!' });
@@ -142,7 +133,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
         setActionMessage({ key: `remove-criterio-${showConfirmModal.categoriaId}-${showConfirmModal.itemId}-${showConfirmModal.criterioId}`, type: 'error', message: 'Erro ao remover critério.' });
         setTimeout(() => setActionMessage(null), 4000);
       }
-      setLoadingAction(null);
     }
     setShowConfirmModal(null);
   };
@@ -161,16 +151,24 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
       return;
     }
 
+    if (!novaVariacaoAdd) {
+      setError('Digite a variação da nota');
+      setTimeout(() => setError(null), 3000);
+      return;
+    }
+
     const novoItem: EstruturaRelatorioItem = isCreatingNewItem
       ? {
           id: Math.max(0, ...itensMaster.map(i => i.id)) + 1, // ID temporário para novos itens
           descricao: newItem.descricao,
-          criterios: []
+          criterios: [],
+          variacaoNota: novaVariacaoAdd
         }
       : {
           id: selectedItem!.id,
           descricao: selectedItem!.descricao,
-          criterios: []
+          criterios: [],
+          variacaoNota: novaVariacaoAdd
         };
 
     // Verificar se o item já existe na categoria
@@ -191,7 +189,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
       return cat;
     });
     setEstrutura(novaEstrutura);
-    setLoadingAction(`add-item-${categoriaId}-${novoItem.id}`);
     try {
       await onSave(novaEstrutura);
       setActionMessage({ key: `add-item-${categoriaId}-${novoItem.id}`, type: 'success', message: 'Item adicionado com sucesso!' });
@@ -201,7 +198,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
       setActionMessage({ key: `add-item-${categoriaId}-${novoItem.id}`, type: 'error', message: 'Erro ao adicionar item.' });
       setTimeout(() => setActionMessage(null), 4000);
     }
-    setLoadingAction(null);
     setSelectedItem(null);
     setNewItem({ descricao: '', criterios: [] });
     setIsCreatingNewItem(false);
@@ -274,7 +270,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
       return cat;
     });
     setEstrutura(novaEstrutura);
-    setLoadingAction(`add-criterio-${categoriaId}-${itemId}-${novoCriterio.id}`);
     try {
       await onSave(novaEstrutura);
       setActionMessage({ key: `add-criterio-${categoriaId}-${itemId}-${novoCriterio.id}`, type: 'success', message: 'Critério adicionado com sucesso!' });
@@ -284,7 +279,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
       setActionMessage({ key: `add-criterio-${categoriaId}-${itemId}-${novoCriterio.id}`, type: 'error', message: 'Erro ao adicionar critério.' });
       setTimeout(() => setActionMessage(null), 4000);
     }
-    setLoadingAction(null);
     setSelectedCriterio(null);
     setNewCriterio({ descricao: '' });
     setIsCreatingNewCriterio(false);
@@ -300,12 +294,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
       {error && (
         <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center">
           <span className="text-red-700 dark:text-red-300">{error}</span>
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center">
-          <span className="text-green-700 dark:text-green-300">{successMessage}</span>
         </div>
       )}
 
@@ -506,7 +494,6 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
                   if (isCreatingNewItem) {
                     setNewItem(prev => ({ ...prev, descricao: value }));
                   } else {
-                    // Se o usuário digitar, limpa a seleção existente
                     if (value && selectedItem) {
                       setSelectedItem(null);
                     }
@@ -613,6 +600,20 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
             </div>
           </div>
 
+          {/* Campo de Variação da Nota */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Variação da Nota
+            </label>
+            <input
+              type="text"
+              placeholder="Ex: 0 a 10"
+              value={novaVariacaoAdd}
+              onChange={e => setNovaVariacaoAdd(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white border-gray-300"
+            />
+          </div>
+
           {/* Indicador de tipo */}
           {selectedItem ? (
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -683,7 +684,9 @@ const GerenciarEstruturaRelatorio: React.FC<GerenciarEstruturaProps> = ({
               onClick={() => showAddItemModal !== null && handleAddItem(showAddItemModal)}
               disabled={
                 (!selectedItem && !isCreatingNewItem) ||
-                (isCreatingNewItem && !newItem.descricao)
+                (isCreatingNewItem && (!newItem.descricao || !novaVariacaoAdd)) ||
+                (!isCreatingNewItem && !selectedItem) ||
+                !novaVariacaoAdd
               }
               className="bg-yellow-400 hover:bg-yellow-500 text-black"
             >

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { ItemAvaliacao, ItemAvaliacaoRelatorio } from '../../../../types/relatorio';
 import Button from '../../../../components/ui/Button';
-import { Plus, Pencil, X } from 'lucide-react';
+import { Plus, Pencil, X, ChevronLeft } from 'lucide-react';
+import Modal from '../../../../components/ui/Modal';
+import { Link, useParams } from 'react-router-dom';
 
 interface GerenciarItensAvaliacaoProps {
   titulo: string;
@@ -18,9 +20,10 @@ const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({ titul
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditId, setShowEditId] = useState<number | null>(null);
   const [novaVariacao, setNovaVariacao] = useState('');
-  const [novoItemId, setNovoItemId] = useState<number | null>(null);
+  const [novoItemId, setNovoItemId] = useState<number | null | 'new'>(null);
   const [novaVariacaoAdd, setNovaVariacaoAdd] = useState('');
   const [salvando, setSalvando] = useState(false);
+  const { id: editalId, relatorioId } = useParams();
 
   // Atualiza campos de edição/adicionar ao mudar selectedList
   React.useEffect(() => {
@@ -50,7 +53,7 @@ const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({ titul
   };
 
   const handleAdicionar = async () => {
-    if (novoItemId && novaVariacaoAdd) {
+    if (typeof novoItemId === 'number' && novaVariacaoAdd) {
       setSalvando(true);
       await onAdd(novoItemId, novaVariacaoAdd);
       setShowAddModal(false);
@@ -121,38 +124,86 @@ const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({ titul
       </div>
 
       {/* Modal de adicionar item */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-lg">
-            <h3 className="text-lg font-bold mb-4 text-text-primary dark:text-text-primary-dark">Adicionar Item de Avaliação</h3>
-            <div className="mb-4">
-              <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Item</label>
-              <select
-                className="w-full border rounded px-2 py-1 bg-white dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
-                value={novoItemId || ''}
-                onChange={e => setNovoItemId(Number(e.target.value))}
-              >
-                <option value="">Selecione...</option>
-                {disponiveis.map(item => (
-                  <option key={item.id} value={item.id}>{item.descricao}</option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Variação da Nota</label>
-              <input
-                className="w-full border rounded px-2 py-1 bg-white dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
-                type="text"
-                value={novaVariacaoAdd}
-                onChange={e => setNovaVariacaoAdd(e.target.value)}
-                placeholder="Ex: 0 a 10"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="secondary" onClick={() => setShowAddModal(false)}>Cancelar</Button>
-              <Button variant="primary" onClick={handleAdicionar} disabled={!novoItemId || !novaVariacaoAdd}>Adicionar</Button>
-            </div>
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        title="Adicionar Item de Avaliação"
+        variant="glass"
+        size="md"
+      >
+        <div className="mb-4">
+          <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Item</label>
+          <select
+            className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
+            value={novoItemId === null ? '' : novoItemId === 'new' ? 'new' : String(novoItemId)}
+            onChange={e => {
+              const value = e.target.value;
+              if (value === 'new') {
+                setNovoItemId('new');
+                setNovaVariacaoAdd('');
+              } else if (value === '') {
+                setNovoItemId(null);
+                setNovaVariacaoAdd('');
+              } else {
+                const num = Number(value);
+                if (!isNaN(num)) {
+                  setNovoItemId(num);
+                  setNovaVariacaoAdd('');
+                }
+              }
+            }}
+          >
+            <option value="">Selecione...</option>
+            <option value="new">✨ Criar novo item</option>
+            {disponiveis.map(item => (
+              <option key={item.id} value={item.id}>{item.descricao}</option>
+            ))}
+          </select>
+        </div>
+        {/* Se for novo item, mostrar campo de descrição */}
+        {novoItemId === 'new' && (
+          <div className="mb-4">
+            <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Descrição do Novo Item</label>
+            <input
+              className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
+              type="text"
+              value={novaVariacaoAdd}
+              onChange={e => setNovaVariacaoAdd(e.target.value)}
+              placeholder="Digite a descrição do novo item..."
+            />
           </div>
+        )}
+        {/* Campo de variação da nota */}
+        {typeof novoItemId === 'number' && (
+          <div className="mb-4">
+            <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Variação da Nota</label>
+            <input
+              className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
+              type="text"
+              value={novaVariacaoAdd}
+              onChange={e => setNovaVariacaoAdd(e.target.value)}
+              placeholder="Ex: 0 a 10"
+            />
+          </div>
+        )}
+        <div className="flex justify-end space-x-2">
+          <Button variant="secondary" onClick={() => setShowAddModal(false)}>Cancelar</Button>
+          <Button variant="primary" onClick={handleAdicionar} disabled={(
+            novoItemId === null ||
+            (novoItemId === 'new' && !novaVariacaoAdd) ||
+            (typeof novoItemId === 'number' && !novaVariacaoAdd)
+          )}>Adicionar</Button>
+        </div>
+      </Modal>
+
+      {/* Botão Voltar para o Hub no rodapé */}
+      {editalId && relatorioId && (
+        <div className="pt-8 border-t border-gray-200 dark:border-gray-700 flex justify-start">
+          <Link to={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
+            <Button variant="ghost" icon={ChevronLeft}>
+              Voltar para o Hub
+            </Button>
+          </Link>
         </div>
       )}
     </div>

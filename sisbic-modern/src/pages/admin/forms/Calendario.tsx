@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Plus, Edit, Calendar as CalendarIcon, Clock, AlertCircle, CheckCircle, Save, X, Settings, Play, ChevronLeft, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, AlertCircle, CheckCircle, Settings, Play, ChevronLeft, Trash2 } from 'lucide-react';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import Select, { SelectOption } from '../../../components/ui/Select';
 import { DatePicker } from '../../../components/ui/DatePicker';
-import { useCalendario, CalendarioAgrupado, EventoCalendario, Evento, NovoEventoCalendario } from '../../../hooks/useCalendario';
+import Modal from '../../../components/ui/Modal';
+import { useCalendario, CalendarioAgrupado, EventoCalendario, Evento } from '../../../hooks/useCalendario';
 
 // Componente para o Modal de Edição/Adição
 const EventoModal: React.FC<{
@@ -91,29 +92,25 @@ const EventoModal: React.FC<{
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md mx-4 relative z-[51]">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {modoEdicao ? 'Editar Evento' : 'Adicionar Evento'}
-                    </h3>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-white">
-                        <X size={20} />
-                    </button>
-                </div>
-
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={modoEdicao ? 'Editar Evento' : 'Adicionar Evento'}
+            variant="glass"
+            size="md"
+        >
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium mb-1">
                             Atividade
                         </label>
-                        <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded border border-gray-300 dark:border-gray-600 text-sm text-gray-800 dark:text-gray-200">
+                    <div className="p-2 bg-white/50 dark:bg-gray-700/50 rounded border border-gray-300 dark:border-gray-600 text-sm">
                             {atividadeContexto.descricao}
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium mb-1">
                             Evento {modoEdicao && <span className="text-orange-500">(Editando evento existente)</span>}
                         </label>
                         <Select
@@ -124,39 +121,42 @@ const EventoModal: React.FC<{
                         />
                     </div>
 
+                {eventoSelecionado && (
+                    <>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Data de Início *
-                        </label>
+                            <label className="block text-sm font-medium mb-1">Data Inicial</label>
                         <DatePicker
                             value={dataInicio}
                             onChange={setDataInicio}
-                            className="w-full"
+                                className="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Data de Fim *
-                        </label>
+                            <label className="block text-sm font-medium mb-1">Data Final</label>
                         <DatePicker
                             value={dataFim}
                             onChange={setDataFim}
-                            className="w-full"
+                                className="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-lg"
                         />
                     </div>
+                    </>
+                )}
                 </div>
 
-                <div className="flex justify-end space-x-3 mt-6">
-                    <Button variant="secondary" onClick={onClose}>
+            <div className="mt-6 flex justify-end space-x-2">
+                <Button variant="ghost" onClick={onClose}>
                         Cancelar
                     </Button>
-                    <Button onClick={handleSaveClick}>
-                        {modoEdicao ? 'Atualizar' : 'Salvar'}
+                <Button
+                    variant="warning"
+                    onClick={handleSaveClick}
+                    disabled={!eventoSelecionado || !dataInicio || !dataFim}
+                >
+                    Salvar
                     </Button>
-                </div>
             </div>
-        </div>
+        </Modal>
     );
 };
 

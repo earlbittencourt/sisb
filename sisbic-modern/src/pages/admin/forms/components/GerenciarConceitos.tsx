@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { ConceitoRelatorio } from '../../../../types/relatorio';
-import { XCircle, PlusCircle, ThumbsUp, ThumbsDown, Circle, Pencil, ChevronLeft, Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { z } from 'zod';
+import { Trash2 } from 'lucide-react';
 import Button from '../../../../components/ui/Button';
 import Select from '../../../../components/ui/Select';
-import { Dialog } from '@headlessui/react';
+import Modal from '../../../../components/ui/Modal';
+import { ConceitoRelatorio } from '../../../../types/relatorio';
+import { XCircle, PlusCircle, ThumbsUp, ThumbsDown, Circle, Pencil, ChevronLeft, Plus } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
 
 const formSchema = z.object({
   descricao: z.string().min(3, { message: 'Mínimo de 3 caracteres.' }),
@@ -70,59 +71,56 @@ const ModalConceito: React.FC<{
         onClose();
     }
 
-    // Reset form when defaultValues change (i.e., when opening modal for a new or different item)
     useEffect(() => {
         reset(defaultValues);
     }, [defaultValues, reset]);
 
     return (
-        <Dialog open={isOpen} onClose={handleClose} className="relative z-50">
-            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-            <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-                <Dialog.Panel className="w-full max-w-md transform rounded-2xl bg-white dark:bg-gray-700 p-6 text-left align-middle shadow-xl transition-all">
-                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 dark:text-white">
-                        {isEditing ? 'Editar Conceito' : 'Adicionar Novo Conceito'}
-                    </Dialog.Title>
-                    <form onSubmit={handleSubmit(onSubmitForm)}>
-                        <div className="mt-4 space-y-4">
-                            <div>
-                                <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
-                                <input
-                                    {...register('descricao')}
-                                    id="descricao"
-                                    className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-gray-900 dark:text-white"
-                                    placeholder="Ex: Satisfatório, Insatisfatório..."
-                                />
-                                {errors.descricao && <p className="text-sm text-red-500 mt-1">{errors.descricao.message}</p>}
-                            </div>
-                            <div>
-                                <label htmlFor="nivel" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nível</label>
-                                <Controller
-                                    name="nivel"
-                                    control={control}
-                                    render={({ field }) => <Select value={field.value} onChange={(value) => field.onChange(Number(value))} options={nivelOptions} />}
-                                />
-                                {errors.nivel && <p className="text-sm text-red-500 mt-1">{errors.nivel.message}</p>}
-                            </div>
-                        </div>
+        <Modal
+            isOpen={isOpen}
+            onClose={handleClose}
+            title={isEditing ? 'Editar Conceito' : 'Adicionar Novo Conceito'}
+            variant="glass"
+            size="md"
+        >
+            <form onSubmit={handleSubmit(onSubmitForm)}>
+                <div className="mt-4 space-y-4">
+                    <div>
+                        <label htmlFor="descricao" className="block text-sm font-medium mb-1">Descrição</label>
+                        <input
+                            {...register('descricao')}
+                            id="descricao"
+                            className="w-full px-3 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Ex: Satisfatório, Insatisfatório..."
+                        />
+                        {errors.descricao && <p className="text-sm text-red-500 mt-1">{errors.descricao.message}</p>}
+                    </div>
+                    <div>
+                        <label htmlFor="nivel" className="block text-sm font-medium mb-1">Nível</label>
+                        <Controller
+                            name="nivel"
+                            control={control}
+                            render={({ field }) => <Select value={field.value} onChange={(value) => field.onChange(Number(value))} options={nivelOptions} />}
+                        />
+                        {errors.nivel && <p className="text-sm text-red-500 mt-1">{errors.nivel.message}</p>}
+                    </div>
+                </div>
 
-                        <div className="mt-6 flex justify-end space-x-2">
-                            <Button type="button" variant="ghost" onClick={handleClose}>Cancelar</Button>
-                            <Button type="submit" variant="warning">
-                                Salvar
-                            </Button>
-                        </div>
-                    </form>
-                </Dialog.Panel>
-            </div>
-        </Dialog>
+                <div className="mt-6 flex justify-end space-x-2">
+                    <Button type="button" variant="ghost" onClick={handleClose}>Cancelar</Button>
+                    <Button type="submit" variant="warning">
+                        Salvar
+                    </Button>
+                </div>
+            </form>
+        </Modal>
     );
 };
-
 
 const GerenciarConceitos: React.FC<GerenciarConceitosProps> = ({ titulo, descricao, conceitos, onAdd, onUpdate, onDelete }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingConceito, setEditingConceito] = useState<ConceitoRelatorio | null>(null);
+    const { id: editalId, relatorioId } = useParams();
 
     const handleOpenModal = (conceito: ConceitoRelatorio | null = null) => {
         setEditingConceito(conceito);
@@ -205,6 +203,16 @@ const GerenciarConceitos: React.FC<GerenciarConceitosProps> = ({ titulo, descric
         isEditing={!!editingConceito}
         defaultValues={editingConceito ? { descricao: editingConceito.descricao, nivel: editingConceito.nivel } : { descricao: '', nivel: 0 }}
       />
+      {/* Botão Voltar para o Hub no rodapé */}
+      {editalId && relatorioId && (
+        <div className="pt-8 border-t border-gray-200 dark:border-gray-700 flex justify-start">
+          <Link to={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
+            <Button variant="ghost" icon={ChevronLeft}>
+              Voltar para o Hub
+            </Button>
+          </Link>
+        </div>
+      )}
     </div>
   );
 };

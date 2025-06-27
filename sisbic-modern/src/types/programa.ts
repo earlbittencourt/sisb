@@ -1,4 +1,13 @@
 export interface Programa {
+  id: number;
+  titulo: string;
+  tipo: string;
+  status: string;
+  dataInicio: string;
+  dataFim: string;
+  descricao: string;
+  sigla: string;
+  // Campos legados para manter compatibilidade
   PRO_Codigo: number;
   PRO_Descricao: string;
   PRO_Sigla: string;
@@ -11,14 +20,15 @@ export interface Status {
 
 export interface PeriodoPrograma {
   PEP_Codigo: number;
-  PEP_Codigo_PRO: number;
   PEP_Sigla: string;
   PEP_Descricao: string;
   PEP_DtInicio: string;
   PEP_DtFim: string;
+  PRO_Codigo: number;
+  PRO_Descricao: string;
+  PEP_Codigo_PRO: number;
   PEP_Codigo_PPS: number;
-  PRO_Descricao?: string; // Campo opcional do JOIN
-  PPS_Descricao?: string; // Campo opcional do JOIN
+  PPS_Descricao?: string;
   PEP_NomeArquivo?: string;
 }
 

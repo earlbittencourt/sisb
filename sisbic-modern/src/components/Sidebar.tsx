@@ -1,161 +1,108 @@
-import { Link, useLocation } from "react-router-dom";
-import { FileText, Settings, GraduationCap, type LucideIcon, Home, ClipboardList, ChevronDown, Building2, AlertTriangle, Database } from "lucide-react";
-import React, { useLayoutEffect, useRef, useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-
-// Define the type for a navigation link
-interface NavLink {
-  name: string;
-  href: string;
-  icon: LucideIcon;
-  roles: string[];
-}
-
-// All possible navigation links
-const navLinks: NavLink[] = [
-  { name: "Dashboard", href: "/", icon: Home, roles: ["admin", "coordinator", "advisor", "student"] },
-  { name: "Meus Projetos", href: "/meus-projetos", icon: FileText, roles: ["advisor", "student"] },
-  { name: "Editais", href: "/editais", icon: Building2, roles: ["admin"] },
-  { name: "Inadimplência", href: "/admin/inadimplencia", icon: AlertTriangle, roles: ["admin"] }
-];
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Settings, FileText, Users, BookOpen, User } from 'lucide-react';
+import { Menu, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import Logo from './ui/Logo';
+import NavItem from './ui/NavItem';
 
 const Sidebar = () => {
   const location = useLocation();
-  const { user } = useAuth();
-  const [isReportsOpen, setReportsOpen] = useState(false);
-  const [isAdminOpen, setAdminOpen] = useState(false);
-  const navRef = useRef<HTMLDivElement>(null);
-  const [highlighterStyle, setHighlighterStyle] = useState({ top: 0, height: 0, left: 0, width: 0, opacity: 0 });
 
-  useLayoutEffect(() => {
-    if (navRef.current) {
-      const activeLink = navRef.current.querySelector<HTMLAnchorElement>('a[data-active="true"]');
-      
-      if (activeLink) {
-        const top = activeLink.offsetTop;
-        const height = activeLink.clientHeight;
-        const left = activeLink.offsetLeft;
-        const width = activeLink.clientWidth;
-        setHighlighterStyle({ top, height, left, width, opacity: 1 });
-      } else {
-        setHighlighterStyle(prev => ({ ...prev, opacity: 0 }));
-      }
-    }
-  }, [location.pathname]);
-
-  // Filter links based on the current user's profile
-  const userLinks = navLinks.filter(link => link.roles.includes(user?.profile || ""));
+  const menuItems = [
+    { icon: Home, label: 'Dashboard', path: '/' },
+    { icon: FileText, label: 'Editais', path: '/editais' },
+    { icon: BookOpen, label: 'Programas', path: '/programas' },
+    { icon: Settings, label: 'Configurações', path: '/configuracoes' },
+    { icon: Users, label: 'Usuários', path: '/usuarios' },
+  ];
 
   return (
-    <div className="w-72 flex flex-col bg-sidebar-gradient rounded-3xl shadow-2xl mt-2 mb-8 p-0 backdrop-blur-md border border-white/20 dark:border-black/30" style={{minHeight: 'calc(100vh - 3rem)', maxHeight: 'calc(100vh - 3rem)'}}>
-      <div className="flex items-center px-7 pt-6 pb-8">
-        <GraduationCap size={24} className="text-white mr-3"/>
-        <h1 className="text-xl font-bold text-white">SISBIC</h1>
+    <aside className="w-64 bg-neutral-900 border-r border-neutral-800 flex flex-col">
+      <div className="p-6">
+        <div className="mb-8 flex items-center justify-center">
+          <Logo size="xl" showText={false} />
+        </div>
+
+        <nav className="space-y-1">
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            
+            return (
+              <Link key={item.path} to={item.path}>
+                <NavItem
+                  icon={item.icon}
+                  label={item.label}
+                  isActive={isActive}
+                />
+              </Link>
+            );
+          })}
+        </nav>
       </div>
-
-      <nav ref={navRef} className="relative flex-1 space-y-1.5 px-2">
-        <div
-          className="moving-glass-highlighter"
-          style={{
-            transform: `translate(${highlighterStyle.left}px, ${highlighterStyle.top}px)`,
-            height: `${highlighterStyle.height}px`,
-            width: `${highlighterStyle.width-15}px`,
-            opacity: highlighterStyle.opacity,
-            pointerEvents: 'none'
-          }}
-        />
-
-        {userLinks.map((link) => {
-          const isActive = link.href === "/" ? location.pathname === "/" : location.pathname.startsWith(link.href);
-          return (
-            <Link
-              key={link.name}
-              to={link.href}
-              data-active={isActive}
-              className={`relative z-10 flex items-center rounded-lg text-sm font-medium transition-all duration-200 w-full
-                ${isActive
-                  ? "font-semibold text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)] dark:drop-shadow-[0_0_5px_rgba(255,255,255,0.8)]"
-                  : "text-gray-200 hover:text-white"
-                }`}
-            >
-              <div className="flex items-center w-full px-5 py-2.5">
-                <link.icon className={`mr-3 h-5 w-5 transition-colors duration-200 ${isActive ? 'text-white' : ''}`} />
-                <span className="leading-none">{link.name}</span>
+      
+      <div className="mt-auto p-6">
+        <Menu as="div" className="relative">
+          <Menu.Button className="flex items-center justify-center w-8 h-8 bg-neutral-800 rounded-full hover:bg-neutral-700 transition-all duration-150 group border border-neutral-700">
+            <User className="w-4 h-4 text-neutral-300" />
+          </Menu.Button>
+          <Transition
+            as={Fragment}
+            enter="transition duration-100 ease-out"
+            enterFrom="transform scale-95 opacity-0"
+            enterTo="transform scale-100 opacity-100"
+            leave="transition duration-75 ease-out"
+            leaveFrom="transform scale-100 opacity-100"
+            leaveTo="transform scale-95 opacity-0"
+          >
+            <Menu.Items className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-neutral-800 shadow-subtle-lg rounded-lg overflow-hidden z-50 border border-neutral-200 dark:border-neutral-700">
+              <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
+                <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">João Bittencourt</p>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">Administrador</p>
               </div>
-            </Link>
-          );
-        })}
-
-        <div className="relative z-10">
-          <button
-            onClick={() => setReportsOpen(!isReportsOpen)}
-            className="flex items-center justify-between rounded-lg text-sm font-medium text-gray-200 hover:text-white w-full"
-          >
-            <div className="flex items-center w-full px-5 py-2.5">
-              <ClipboardList className="mr-3 h-5 w-5"/>
-              <span>Relatórios</span>
-              <ChevronDown
-                className={`ml-auto h-5 w-5 transform transition-transform duration-200 ${
-                  isReportsOpen ? "rotate-180" : ""
-                }`}
-              />
-            </div>
-          </button>
-          {isReportsOpen && (
-            <div className="mt-1.5 space-y-1.5">
-              <Link to="/reports/students" className="block text-sm text-gray-300 hover:text-white px-8 py-2">
-                Alunos
-              </Link>
-              <Link to="/reports/projects" className="block text-sm text-gray-300 hover:text-white px-8 py-2">
-                Projetos
-              </Link>
-            </div>
-          )}
-        </div>
-
-        {/* Menu Administração do Sistema */}
-        <div className="relative z-10">
-          <button
-            onClick={() => setAdminOpen(!isAdminOpen)}
-            className="flex items-center justify-between rounded-lg text-sm font-medium text-gray-200 hover:text-white w-full"
-          >
-            <div className="flex items-center w-full px-5 py-2.5">
-              <Database className="mr-3 h-5 w-5"/>
-              <span>Administração do Sistema</span>
-              <ChevronDown
-                className={`ml-auto h-5 w-5 transform transition-transform duration-200 ${
-                  isAdminOpen ? "rotate-180" : ""
-                }`}
-              />
-            </div>
-          </button>
-          {isAdminOpen && (
-            <div className="mt-1.5 space-y-1.5">
-              <Link to="/admin/tipos-programa" className="block text-sm text-gray-300 hover:text-white px-8 py-2">
-                Tipos de Programa
-              </Link>
-              <Link to="/admin/noticias" className="block text-sm text-gray-300 hover:text-white px-8 py-2">
-                Manutenção de Notícias
-              </Link>
-              <Link to="/admin/agencias" className="block text-sm text-gray-300 hover:text-white px-8 py-2">
-                Agências de Fomento
-              </Link>
-              <Link to="/admin/anexos" className="block text-sm text-gray-300 hover:text-white px-8 py-2">
-                Anexar Arquivos
-              </Link>
-            </div>
-          )}
-        </div>
-      </nav>
-
-      <div className="px-5 pb-6">
-        <button
-          className="w-full rounded-lg bg-white/20 py-2.5 text-center text-sm font-semibold text-white backdrop-blur-sm hover:bg-white/30">
-          <Settings className="mr-2 inline h-4 w-4"/>
-          Configurações
-        </button>
+              <div className="p-2">
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      className={`${
+                        active ? 'bg-neutral-100 dark:bg-neutral-700' : ''
+                      } group flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors duration-150`}
+                    >
+                      <User className="w-4 h-4 mr-3 text-neutral-500" />
+                      Perfil
+                    </button>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      className={`${
+                        active ? 'bg-neutral-100 dark:bg-neutral-700' : ''
+                      } group flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors duration-150`}
+                    >
+                      <Settings className="w-4 h-4 mr-3 text-neutral-500" />
+                      Configurações
+                    </button>
+                  )}
+                </Menu.Item>
+                <div className="border-t border-neutral-200 dark:border-neutral-700 my-2" />
+                <Menu.Item>
+                  {({ active }) => (
+                    <button
+                      className={`${
+                        active ? 'bg-red-50 dark:bg-red-500/10' : ''
+                      } group flex w-full items-center rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400 transition-colors duration-150`}
+                    >
+                      Sair
+                    </button>
+                  )}
+                </Menu.Item>
+              </div>
+            </Menu.Items>
+          </Transition>
+        </Menu>
       </div>
-    </div>
+    </aside>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { api } from '../api/config';
 import { Programa } from '../types/programa';
 
@@ -20,6 +20,10 @@ export const useProgramas = () => {
             setLoading(false);
         }
     }, []);
+
+    useEffect(() => {
+        buscarProgramas();
+    }, [buscarProgramas]);
 
     return { programas, loading, error, buscarProgramas };
 }; 

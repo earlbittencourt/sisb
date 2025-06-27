@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { api } from '../api/config';
 import { Status } from '../types/status';
 
@@ -20,6 +20,11 @@ export const useStatus = () => {
             setLoading(false);
         }
     }, []);
+
+    // Carregar status automaticamente quando o hook é inicializado
+    useEffect(() => {
+        buscarStatus();
+    }, [buscarStatus]);
 
     return { status, loading, error, buscarStatus };
 }; 

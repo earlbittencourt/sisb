@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { Check, ChevronDown } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 export interface SelectOption {
     value: string | number;
@@ -19,18 +20,19 @@ interface SelectProps {
 const Select: React.FC<SelectProps> = ({ options, value, onChange, placeholder = "Selecione...", className = '', disabled = false }) => {
     const selectedOption = options.find(option => option.value === value);
 
-    const inputClasses = `w-full p-3 pr-10 text-left rounded-2xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow shadow-sm hover:shadow-md ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`;
-
     return (
         <Listbox value={value} onChange={onChange} disabled={disabled}>
             <div className={`relative ${className}`}>
-                <Listbox.Button className={inputClasses}>
-                    <span className="block truncate">{selectedOption?.label || placeholder}</span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                        <ChevronDown
-                            className="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                        />
+                <Listbox.Button
+                    className={cn(
+                        'relative w-full cursor-default rounded-lg py-2 pl-4 pr-10 text-left shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 dark:focus:ring-blue-400/50 sm:text-sm border border-gray-300 dark:border-gray-600',
+                        'bg-white/50 dark:bg-gray-800/50',
+                        className
+                    )}
+                >
+                    <span className="block truncate">{selectedOption ? selectedOption.label : placeholder}</span>
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                        <ChevronDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
                 </Listbox.Button>
                 <Transition

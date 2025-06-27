@@ -50,7 +50,8 @@ const EditalDadosGerais: React.FC = () => {
         // Popula o formulário quando os dados do edital (do contexto) estiverem disponíveis
         if (periodo) {
             reset({
-                ...periodo,
+                PEP_Sigla: periodo.PEP_Sigla,
+                PEP_Descricao: periodo.PEP_Descricao,
                 PEP_DtInicio: periodo.PEP_DtInicio ? periodo.PEP_DtInicio.split('T')[0] : '',
                 PEP_DtFim: periodo.PEP_DtFim ? periodo.PEP_DtFim.split('T')[0] : '',
             });
@@ -141,7 +142,10 @@ const EditalDadosGerais: React.FC = () => {
                                     render={({ field }) => (
                                         <Select
                                             placeholder="Selecione um programa..."
-                                            options={programas.map(p => ({ value: p.PRO_Codigo, label: p.PRO_Descricao }))}
+                                            options={programas.map(p => ({
+                                                value: p.id,
+                                                label: p.descricao
+                                            }))}
                                             value={field.value}
                                             onChange={field.onChange}
                                         />

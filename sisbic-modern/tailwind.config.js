@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,8 +9,71 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Nosso azul principal e suas variações
+        primary: {
+          light: '#60a5fa', // blue-400
+          DEFAULT: '#3b82f6', // blue-500
+          dark: '#2563eb', // blue-600
+        },
+        // Neutros para fundos, textos, bordas, etc.
+        neutral: {
+          50: '#f8fafc',  // slate-50
+          100: '#f1f5f9', // slate-100 (Fundo principal modo claro)
+          200: '#e2e8f0', // slate-200 (Bordas)
+          300: '#cbd5e1', // slate-300
+          400: '#94a3b8', // slate-400
+          500: '#64748b', // slate-500 (Texto secundário)
+          600: '#475569', // slate-600
+          700: '#334155', // slate-700 (Texto principal)
+          800: '#1e293b', // slate-800 (Fundo de cards modo escuro)
+          900: '#0f172a', // slate-900 (Fundo principal modo escuro)
+        },
+        // Cores semânticas para status
+        success: colors.green[500],
+        warning: colors.amber[500],
+        danger: colors.red[600],
+        
+        // Mantendo compatibilidade com tokens existentes
+        brand: {
+          DEFAULT: '#3b82f6',
+          light: '#60a5fa',
+          dark: '#2563eb',
+          faint: '#dbeafe',
+          subtle: '#eff6ff',
+        },
+        status: {
+          success: {
+            DEFAULT: '#10b981',
+            light: '#34d399',
+            faint: '#d1fae5',
+            text: '#065f46',
+          },
+          warning: {
+            DEFAULT: '#f59e0b',
+            light: '#fbbf24',
+            faint: '#fef3c7',
+            text: '#92400e',
+          },
+          danger: {
+            DEFAULT: '#ef4444',
+            light: '#f87171',
+            faint: '#fee2e2',
+            text: '#991b1b',
+          },
+          info: {
+            DEFAULT: '#3b82f6',
+            light: '#60a5fa',
+            faint: '#dbeafe',
+            text: '#1e40af',
+          },
+        },
+        
         // UFBA Colors - Modernized
-        'ufba-blue': 'var(--ufba-blue)',
+        'ufba-blue': {
+          light: '#3B82F6',
+          DEFAULT: '#2563EB',
+          dark: '#1D4ED8',
+        },
         'ufba-blue-light': 'var(--ufba-blue-light)',
         'ufba-blue-dark': 'var(--ufba-blue-dark)',
         'ufba-blue-bright': 'var(--ufba-blue-bright)',
@@ -46,7 +111,7 @@ module.exports = {
         border: "hsl(var(--border))",
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
         'liquid-fade-in': 'liquidFadeIn 0.6s ease-out',
@@ -74,6 +139,10 @@ module.exports = {
         'sway': 'sway-kf 1s ease-in-out',
         'redraw-8': 'redraw-8-kf 0.8s ease-out',
         'redraw-2': 'redraw-2-kf 0.8s ease-out',
+        'fade-in': 'fadeIn 0.3s ease-in-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+        'slide-down': 'slideDown 0.3s ease-out',
+        'scale-in': 'scaleIn 0.2s ease-out',
       },
       keyframes: {
         liquidFadeIn: {
@@ -184,6 +253,22 @@ module.exports = {
             '0%, 100%': { 'stroke-dashoffset': 0 },
             '50%': { 'stroke-dashoffset': 2 },
         },
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          '0%': { transform: 'translateY(-10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        scaleIn: {
+          '0%': { transform: 'scale(0.95)', opacity: '0' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
       },
       boxShadow: {
         'liquid-rest': '0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.12)',
@@ -195,6 +280,9 @@ module.exports = {
         'depth-3': 'var(--depth-3)',
         'depth-4': 'var(--depth-4)',
         'glow-blue-500': '0 0 20px 5px rgba(59, 130, 246, 0.5)',
+        'subtle': '0 4px 12px rgba(0, 0, 0, 0.08)',
+        'subtle-lg': '0 8px 25px rgba(0, 0, 0, 0.12)',
+        'lifted': '0 10px 20px rgba(71, 85, 105, 0.1), 0 2px 6px rgba(71, 85, 105, 0.08)',
       },
       backdropBlur: {
         'xs': '2px',
@@ -202,6 +290,12 @@ module.exports = {
       },
       backgroundImage: {
         'sidebar-gradient': 'var(--bg-sidebar)',
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
+      borderRadius: {
+        'lg': '0.75rem', // 12px
+        'xl': '1rem',   // 16px
+        '2xl': '1.5rem',
       },
     },
   },
