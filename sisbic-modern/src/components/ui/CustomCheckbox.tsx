@@ -19,7 +19,7 @@ export function CustomCheckbox({ label, className, ...props }: CustomCheckboxPro
         className="w-5 h-5 bg-neutral-200 dark:bg-neutral-700 rounded-md
                    flex items-center justify-center
                    peer-checked:bg-primary peer-checked:text-white
-                   peer-focus:ring-2 peer-focus:ring-primary/20
+                   peer-focus:ring-2 peer-focus:ring-primary peer-focus:ring-offset-2
                    transition-all duration-200 ease-out
                    group-hover:bg-neutral-300 dark:group-hover:bg-neutral-600
                    peer-checked:group-hover:bg-primary-dark"

@@ -8,9 +8,12 @@
 :root {
   /* UFBA-Inspired Colors - Modernized */
   --ufba-blue: #2a4377;
-  --ufba-blue-light: #4a6fa5;
-  --ufba-blue-dark: #1e2f54;
-  --ufba-blue-bright: #2a4377;
+  --ufba-blue-light: #60a5fa;
+  --ufba-blue-dark: #22365f;
+  --ufba-blue-bright: #60a5fa;
+  --ufba-blue-lightest: #f0f3f9;
+  --ufba-blue-lighter: #dbeafe;
+  --ufba-blue-darker: #172545;
   --ufba-gold: #F59E0B;
   --ufba-gold-light: #FBBF24;
   --ufba-gold-dark: #D97706;
@@ -28,17 +31,17 @@
   --ufba-gray-900: #111827;
   
   /* Status Colors */
-  --ufba-success: #10B981;
-  --ufba-success-light: #34D399;
-  --ufba-warning: #F59E0B;
-  --ufba-warning-light: #FBBF24;
+  --ufba-success: #5EEAD4;
+  --ufba-success-light: #67e8de;
+  --ufba-warning: #fbbf24;
+  --ufba-warning-light: #fcd34d;
   --ufba-danger: #EF4444;
   --ufba-danger-light: #F87171;
   --ufba-info: #2a4377;
-  --ufba-info-light: #4a6fa5;
+  --ufba-info-light: #60a5fa;
   
   /* Liquid Glass Gradients */
-  --gradient-primary: linear-gradient(135deg, #2a4377 0%, #4a6fa5 100%);
+  --gradient-primary: linear-gradient(135deg, #2a4377 0%, #60a5fa 100%);
   --gradient-secondary: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-bright) 100%);
   --gradient-warning: linear-gradient(135deg, var(--ufba-gold) 0%, var(--ufba-gold-light) 100%);
   
@@ -281,7 +284,7 @@
 
   .glass-sidebar {
     @apply fixed left-0 top-0 h-full w-64 z-50;
-    background: linear-gradient(135deg, rgba(42, 67, 119, 0.95) 0%, rgba(30, 47, 84, 0.95) 100%);
+    background: linear-gradient(135deg, rgba(23, 37, 69, 0.95) 0%, rgba(34, 54, 95, 0.95) 100%);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -519,11 +522,11 @@
 
   /* Button Components */
   .btn-primary {
-    @apply bg-primary hover:bg-primary-dark text-white font-medium rounded-lg px-4 py-2 transition-colors duration-200;
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-150 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
   
   .btn-secondary {
-    @apply bg-neutral-200 hover:bg-neutral-300 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-300 font-medium rounded-lg px-4 py-2 transition-colors duration-200;
+    @apply bg-white hover:bg-primary-lightest text-neutral-700 border border-neutral-200 font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1;
   }
 
   /* Navigation Components */
@@ -532,11 +535,11 @@
   }
   
   .nav-item-default {
-    @apply text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100;
+    @apply text-neutral-400 hover:bg-primary-dark hover:text-neutral-100;
   }
   
   .nav-item-active {
-    @apply bg-primary-dark text-white border-l-4 border-primary;
+    @apply bg-primary text-white border-l-4 border-primary;
   }
 
   /* Form Components */
@@ -628,7 +631,7 @@ html {
 
 /* Glass effect for sidebar */
 .glass-sidebar {
-  background: linear-gradient(135deg, rgba(42, 67, 119, 0.95) 0%, rgba(30, 47, 84, 0.95) 100%);
+  background: linear-gradient(135deg, rgba(23, 37, 69, 0.95) 0%, rgba(34, 54, 95, 0.95) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -663,15 +666,15 @@ html {
 
 /* Button states */
 .btn-primary {
-  @apply bg-brand hover:bg-brand-dark text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-150 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2;
+  @apply bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-150 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
 }
 
 .btn-secondary {
-  @apply bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-1;
+  @apply bg-white hover:bg-primary-lightest text-neutral-700 border border-neutral-200 font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1;
 }
 
 .btn-icon {
-  @apply p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 hover:ring-1 hover:ring-gray-200 dark:hover:ring-gray-600 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-1;
+  @apply p-2 rounded-lg hover:bg-primary-lightest dark:hover:bg-neutral-800 hover:ring-1 hover:ring-neutral-200 dark:hover:ring-neutral-600 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1;
 }
 
 /* Card styles */

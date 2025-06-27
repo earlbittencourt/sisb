@@ -9,70 +9,91 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Nosso azul principal e suas variações - PALETA SOFISTICADA
+        // 👇 A NOVA PALETA MONOCROMÁTICA COMPLETA
         primary: {
-          light: '#4a6fa5',    // Azul mais claro para hover/estados ativos
-          DEFAULT: '#2a4377', // Azul principal consolidado
-          dark: '#1e2f54',     // Azul mais escuro para estados pressed
+          lightest: '#f0f3f9', // Um fundo de card/página quase branco, com um toque de azul
+          lighter: '#dbeafe',  // Um fundo de hover sutil para listas
+          light: '#60a5fa',   // Um azul mais claro para texto de links secundários ou ícones
+          DEFAULT: '#2a4377',  // A COR BASE OFICIAL DA UFBA
+          dark: '#22365f',    // Um tom mais escuro para hovers e estados ativos sutis
+          darker: '#172545',   // O tom mais escuro para fundos de alto contraste, como a sidebar
         },
         // Neutros para fundos, textos, bordas, etc.
         neutral: {
-          50: '#f8fafc',  // slate-50
-          100: '#f1f5f9', // slate-100 (Fundo principal modo claro)
-          200: '#e2e8f0', // slate-200 (Bordas)
-          300: '#cbd5e1', // slate-300
-          400: '#94a3b8', // slate-400
-          500: '#64748b', // slate-500 (Texto secundário)
-          600: '#475569', // slate-600
-          700: '#334155', // slate-700 (Texto principal)
-          800: '#1e293b', // slate-800 (Fundo de cards modo escuro)
-          900: '#0f172a', // slate-900 (Fundo principal modo escuro)
+          50: '#fafafa',
+          100: '#f5f5f5',
+          200: '#e5e5e5',
+          300: '#d4d4d4',
+          400: '#a3a3a3',
+          500: '#737373',
+          600: '#525252',
+          700: '#404040',
+          800: '#262626',
+          900: '#171717',
         },
-        // Cores semânticas para status - PALETA SOFISTICADA
-        success: '#5EEAD4', // Teal-300 - moderno e menos agressivo
-        warning: colors.amber[500],
-        danger: colors.red[600],
+        // Status Colors - Mantendo clareza de UX
+        success: {
+          DEFAULT: '#5EEAD4',
+          light: '#67e8de',
+          dark: '#14b8a6',
+          faint: '#ecfdf5',
+          text: '#065f46',
+        },
+        warning: {
+          DEFAULT: '#fbbf24',
+          light: '#fcd34d',
+          dark: '#f59e0b',
+          faint: '#fffbeb',
+          text: '#92400e',
+        },
+        danger: {
+          DEFAULT: '#ef4444',
+          light: '#f87171',
+          dark: '#dc2626',
+          faint: '#fef2f2',
+          text: '#991b1b',
+        },
         
         // Mantendo compatibilidade com tokens existentes
         brand: {
           DEFAULT: '#2a4377',
-          light: '#4a6fa5',
-          dark: '#1e2f54',
-          faint: '#e8f0f8',
-          subtle: '#f5f8fc',
+          light: '#60a5fa',
+          dark: '#22365f',
+          faint: '#f0f3f9',
+          subtle: '#dbeafe',
         },
         status: {
           success: {
-            DEFAULT: '#10b981',
-            light: '#34d399',
-            faint: '#d1fae5',
+            DEFAULT: '#5EEAD4',
+            light: '#67e8de',
+            faint: '#ecfdf5',
             text: '#065f46',
           },
           warning: {
-            DEFAULT: '#f59e0b',
-            light: '#fbbf24',
-            faint: '#fef3c7',
+            DEFAULT: '#fbbf24',
+            light: '#fcd34d',
+            faint: '#fffbeb',
             text: '#92400e',
           },
           danger: {
             DEFAULT: '#ef4444',
             light: '#f87171',
-            faint: '#fee2e2',
+            faint: '#fef2f2',
             text: '#991b1b',
           },
           info: {
             DEFAULT: '#2a4377',
-            light: '#4a6fa5',
-            faint: '#e8f0f8',
-            text: '#1e2f54',
+            light: '#60a5fa',
+            faint: '#f0f3f9',
+            text: '#172545',
           },
         },
         
         // UFBA Colors - Modernized
         'ufba-blue': {
-          light: '#4a6fa5',
+          light: '#60a5fa',
           DEFAULT: '#2a4377',
-          dark: '#1e2f54',
+          dark: '#22365f',
         },
         'ufba-blue-light': 'var(--ufba-blue-light)',
         'ufba-blue-dark': 'var(--ufba-blue-dark)',

@@ -22,7 +22,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
   className = ''
 }) => {
   return (
-    <div className={cn('bg-neutral-50 dark:bg-neutral-800 shadow-elite rounded-lg p-6 transition-all duration-200 hover:shadow-subtle-lg hover:scale-[1.02]', className)}>
+    <div className={cn('bg-primary-lightest dark:bg-neutral-800 shadow-elite rounded-lg p-6 transition-all duration-200 hover:shadow-subtle-lg hover:scale-[1.02]', className)}>
       <div className="flex items-center justify-between">
         <div className="flex-1">
           {/* Header with icon and title */}
@@ -45,7 +45,7 @@ const DashboardCard: React.FC<DashboardCardProps> = ({
             {trend && (
               <div className={cn(
                 'flex items-center gap-1 text-sm font-medium',
-                trend.direction === 'up' ? 'text-success' : 'text-danger'
+                trend.direction === 'up' ? 'text-primary-dark' : 'text-danger'
               )}>
               {trend.direction === 'up' ? (
                 <ArrowUpRight className="w-4 h-4" />

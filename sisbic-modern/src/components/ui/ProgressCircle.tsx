@@ -38,8 +38,8 @@ const ProgressCircle: React.FC<{ progress: number; size?: number; strokeWidth?: 
     const getProgressColor = (p: number) => {
         if (p === 100) return 'stroke-success';
         if (p >= 70) return 'stroke-primary';
-        if (p >= 40) return 'stroke-warning';
-        return 'stroke-danger';
+        if (p >= 40) return 'stroke-primary-light';
+        return 'stroke-primary-dark';
     };
 
     return (

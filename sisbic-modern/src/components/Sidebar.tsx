@@ -18,7 +18,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="w-64 bg-neutral-900 border-r border-neutral-800 flex flex-col">
+    <aside className="w-64 bg-primary-darker border-r border-neutral-800 flex flex-col">
       <div className="p-6">
         <div className="mb-8 flex items-center justify-center">
           <Logo size="xl" showText={false} />
