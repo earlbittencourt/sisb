@@ -5,8 +5,9 @@ import { Plus, ChevronLeft, Trash2, Edit, Save, XCircle } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import ModalAdicionarAgencia from '../../../components/ui/ModalAdicionarAgencia';
 import { api } from '../../../api/config';
-import { EditalAgencia, Agencia } from '../../../types/agencia';
+import { EditalAgencia } from '../../../types/agencia';
 import { useAgencias } from '../../../hooks/useAgencias';
+import DataTable from '../../../components/ui/DataTable';
 
 const AgenciasFomento: React.FC = () => {
     const { id: editalId } = useParams<{ id: string }>();
@@ -121,66 +122,60 @@ const AgenciasFomento: React.FC = () => {
             </div>
             
             <div className="mt-6 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full">
-                        <thead className="bg-gray-50 dark:bg-gray-800">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Agência</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cotas Oferecidas</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bolsas Utilizadas</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ações</th>
-                        </tr>
-                    </thead>
-                        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                        {agenciasDoEdital.map((agencia) => (
-                            <tr key={agencia.AGB_Codigo_AGE}>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900 dark:text-white">{agencia.AGE_Sigla}</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">{agencia.AGE_Descricao}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    {editingId === agencia.AGB_Codigo_AGE ? (
-                                        <input
-                                            type="number"
-                                            value={editingCota}
-                                            onChange={(e) => setEditingCota(Number(e.target.value))}
-                                            className="w-20 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm"
-                                        />
-                                    ) : (
-                                        <div className="text-sm text-gray-900 dark:text-white">{agencia.AGB_Cota}</div>
-                                    )}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {agencia.BolsasUtilizadas || 0}
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    {editingId === agencia.AGB_Codigo_AGE ? (
-                                        <div className="flex items-center space-x-3">
-                                            <button onClick={() => handleSave(agencia)} className="text-green-600 hover:text-green-800">
-                                                <Save size={20} />
-                                            </button>
-                                            <button onClick={handleCancel} className="text-red-600 hover:text-red-800">
-                                                <XCircle size={20} />
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center space-x-3">
-                                            <button onClick={() => handleEdit(agencia)} className="text-indigo-600 hover:text-indigo-900" title="Editar Cotas">
-                                                <Edit className="h-5 w-5" />
-                                            </button>
-                                            {(agencia.BolsasUtilizadas === null || agencia.BolsasUtilizadas === 0) && (
-                                                <button onClick={() => handleDelete(agencia.AGB_Codigo_AGE)} className="text-red-600 hover:text-red-900" title="Excluir Agência">
-                                                    <Trash2 className="h-5 w-5" />
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                </div>
+                <DataTable
+                  columns={[
+                    { key: 'agencia', label: 'Agência' },
+                    { key: 'cotas', label: 'Cotas Oferecidas', className: 'text-right' },
+                    { key: 'bolsas', label: 'Bolsas Utilizadas', className: 'text-right' },
+                  ]}
+                  data={agenciasDoEdital.map((agencia) => ({
+                    agencia: (
+                      <>
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">{agencia.AGE_Sigla}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{agencia.AGE_Descricao}</div>
+                      </>
+                    ),
+                    cotas: editingId === agencia.AGB_Codigo_AGE ? (
+                      <input
+                        type="number"
+                        value={editingCota}
+                        onChange={(e) => setEditingCota(Number(e.target.value))}
+                        className="w-20 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 text-sm text-right"
+                      />
+                    ) : (
+                      <div className="text-sm text-gray-900 dark:text-white text-right">{agencia.AGB_Cota}</div>
+                    ),
+                    bolsas: <div className="text-sm text-gray-900 dark:text-white text-right">{agencia.BolsasUtilizadas || 0}</div>,
+                    _raw: agencia
+                  }))}
+                  actions={(row) => {
+                    const agencia = row._raw;
+                    if (editingId === agencia.AGB_Codigo_AGE) {
+                      return (
+                        <div className="flex items-center space-x-3">
+                          <button onClick={() => handleSave(agencia)} className="text-green-600 hover:text-green-800">
+                            <Save size={20} />
+                          </button>
+                          <button onClick={handleCancel} className="text-red-600 hover:text-red-800">
+                            <XCircle size={20} />
+                          </button>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="flex items-center justify-center space-x-3">
+                        <button onClick={() => handleEdit(agencia)} className="text-primary dark:text-primary-light hover:opacity-80" title="Editar Cotas">
+                          <Edit className="h-5 w-5" />
+                        </button>
+                        {(agencia.BolsasUtilizadas === null || agencia.BolsasUtilizadas === 0) && (
+                          <button onClick={() => handleDelete(agencia.AGB_Codigo_AGE)} className="text-red-600 hover:text-red-900" title="Excluir Agência">
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  }}
+                />
             </div>
 
             <div className="mt-6 flex justify-start pt-6 border-t border-gray-200 dark:border-gray-700">

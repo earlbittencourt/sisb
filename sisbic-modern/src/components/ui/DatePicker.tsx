@@ -32,7 +32,7 @@ const CustomChevron = (props: { className?: string; size?: number; disabled?: bo
 };
 
 const CustomNav = (props: any) => {
-  const { nextMonth, previousMonth, goToMonth, className, nextLabel, previousLabel, ...rest } = props;
+  const { nextMonth, previousMonth, goToMonth, className, nextLabel, previousLabel } = props;
   return (
     <div className={className} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       <button

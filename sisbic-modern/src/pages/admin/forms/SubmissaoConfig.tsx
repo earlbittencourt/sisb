@@ -3,10 +3,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Link, useParams } from 'react-router-dom';
-import { Users, FileText, ChevronLeft, Save, Hash } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import { api } from '../../../api/config';
 import { ProjetoConfiguracao } from '../../../types/projetoConfiguracao';
+import StepperInput from '../../../components/ui/StepperInput';
+import { Save, ChevronLeft } from 'lucide-react';
 
 // Zod Schema for validation
 const formSchema = z.object({
@@ -17,17 +18,6 @@ const formSchema = z.object({
 });
 
 type FormData = z.infer<typeof formSchema>;
-
-const InputField = ({ icon, label, children, error }: any) => (
-    <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
-            {icon}
-            <span className="ml-2">{label}</span>
-        </label>
-        {children}
-        {error && <p className="text-red-500 text-xs mt-1">{error.message}</p>}
-    </div>
-);
 
 const SubmissaoConfig: React.FC = () => {
     const { id: editalId } = useParams<{ id: string }>();
@@ -86,18 +76,58 @@ const SubmissaoConfig: React.FC = () => {
 
                 <div className="mt-6 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                        <InputField label="Nº Projetos por Orientador" icon={<Users size={16} />} error={errors.PCF_nmProjetos}>
-                            <input type="number" {...register("PCF_nmProjetos", { valueAsNumber: true })} className="w-full p-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
-                        </InputField>
-                        <InputField label="Nº Avaliadores por Projeto" icon={<Users size={16} />} error={errors.PCF_nmAvaliadores}>
-                            <input type="number" {...register("PCF_nmAvaliadores", { valueAsNumber: true })} className="w-full p-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
-                        </InputField>
-                        <InputField label="Nº Planos por Projeto (mínimo)" icon={<FileText size={16} />} error={errors.PCF_nmMinPlanos}>
-                            <input type="number" {...register("PCF_nmMinPlanos", { valueAsNumber: true })} className="w-full p-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
-                        </InputField>
-                        <InputField label="Nº Planos por Projeto (máximo)" icon={<FileText size={16} />} error={errors.PCF_nmPlanos}>
-                            <input type="number" {...register("PCF_nmPlanos", { valueAsNumber: true })} className="w-full p-3 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500" />
-                        </InputField>
+                        <Controller
+                          name="PCF_nmProjetos"
+                          control={control}
+                          render={({ field }) => (
+                            <StepperInput
+                              label="Nº Projetos por Orientador"
+                              value={field.value || 0}
+                              onChange={field.onChange}
+                              min={0}
+                              error={errors.PCF_nmProjetos?.message}
+                            />
+                          )}
+                        />
+                        <Controller
+                          name="PCF_nmAvaliadores"
+                          control={control}
+                          render={({ field }) => (
+                            <StepperInput
+                              label="Nº Avaliadores por Projeto"
+                              value={field.value || 0}
+                              onChange={field.onChange}
+                              min={0}
+                              error={errors.PCF_nmAvaliadores?.message}
+                            />
+                          )}
+                        />
+                        <Controller
+                          name="PCF_nmMinPlanos"
+                          control={control}
+                          render={({ field }) => (
+                            <StepperInput
+                              label="Nº Planos por Projeto (mínimo)"
+                              value={field.value || 0}
+                              onChange={field.onChange}
+                              min={0}
+                              error={errors.PCF_nmMinPlanos?.message}
+                            />
+                          )}
+                        />
+                        <Controller
+                          name="PCF_nmPlanos"
+                          control={control}
+                          render={({ field }) => (
+                            <StepperInput
+                              label="Nº Planos por Projeto (máximo)"
+                              value={field.value || 0}
+                              onChange={field.onChange}
+                              min={0}
+                              error={errors.PCF_nmPlanos?.message}
+                            />
+                          )}
+                        />
                     </div>
                 </div>
 

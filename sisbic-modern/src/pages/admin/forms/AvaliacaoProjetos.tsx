@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, Trash2, Edit, Save, X, CheckCircle, AlertCircle } from 'lucide-react';
-import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import Modal from '../../../components/ui/Modal';
 import { useAvaliacao } from '../../../hooks/useAvaliacao';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import Select from '../../../components/ui/Select';
-import { cn } from '../../../lib/utils';
+import DataTable from '../../../components/ui/DataTable';
 
 interface CriterioProjeto {
     id: number;
@@ -22,11 +18,7 @@ const AvaliacaoProjetos: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const { 
         criteriosProjeto,
-        subAreas,
-        itensAvaliacao,
         fetchCriteriosProjeto,
-        fetchSubAreas,
-        fetchItensAvaliacao,
         loading: apiLoading,
         error: apiError,
         salvarPesoCriterio,
@@ -53,17 +45,14 @@ const AvaliacaoProjetos: React.FC = () => {
     });
     const [selectedCriterio, setSelectedCriterio] = useState<CriterioProjeto | null>(null);
     const [isCreatingNew, setIsCreatingNew] = useState(false);
-    const [showSelectModal, setShowSelectModal] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [criterioToDelete, setCriterioToDelete] = useState<CriterioProjeto | null>(null);
 
     useEffect(() => {
         if (id) {
             fetchCriteriosProjeto(parseInt(id));
-            fetchSubAreas();
-            fetchItensAvaliacao(parseInt(id));
         }
-    }, [id, fetchCriteriosProjeto, fetchSubAreas, fetchItensAvaliacao]);
+    }, [id, fetchCriteriosProjeto]);
 
     // Sincronizar dados da API com estado local
     useEffect(() => {
@@ -235,48 +224,6 @@ const AvaliacaoProjetos: React.FC = () => {
         }
     };
 
-    // Função para selecionar um critério existente
-    const handleSelectCriterio = (criterio: CriterioProjeto) => {
-        setSelectedCriterio(criterio);
-        setNewCriterio({
-            item: criterio.item,
-            descricao: criterio.descricao,
-            peso: criterio.peso
-        });
-        setIsCreatingNew(false);
-    };
-
-    // Função para salvar o critério (novo ou existente)
-    const handleSaveCriterio = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            if (selectedCriterio) {
-                // Adiciona critério existente
-                await salvarPesoCriterio(parseInt(id!), selectedCriterio.id, newCriterio.peso);
-            } else {
-                // Cria novo critério
-                const novoCriterio = await createCriterioProjeto({
-                    item: newCriterio.item,
-                    descricao: newCriterio.descricao
-                });
-                
-                if (novoCriterio) {
-                    await salvarPesoCriterio(parseInt(id!), novoCriterio.id, newCriterio.peso);
-                }
-            }
-
-            // Atualiza a lista
-            await fetchCriteriosProjeto(parseInt(id!));
-            handleCloseAddModal();
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erro ao salvar critério');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     if (apiLoading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
@@ -305,141 +252,116 @@ const AvaliacaoProjetos: React.FC = () => {
                     </div>
                 )}
 
-                <Card className="liquid-card p-6">
-                    <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Avaliação de Projetos</h1>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                Configure o formulário com os critérios e pesos para a avaliação do projeto.
-                            </p>
-                        </div>
-                        <Button
-                            onClick={handleOpenAddModal}
-                            variant="primary"
-                            className="flex items-center"
-                            disabled={loading}
-                        >
-                            <Plus size={16} className="mr-2" />
-                            Adicionar Critério
-                        </Button>
+                <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Avaliação de Projetos</h1>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            Configure o formulário com os critérios e pesos para a avaliação do projeto.
+                        </p>
                     </div>
+                    <Button
+                        onClick={handleOpenAddModal}
+                        variant="primary"
+                        className="flex items-center"
+                        disabled={loading}
+                    >
+                        <Plus size={16} className="mr-2" />
+                        Adicionar Critério
+                    </Button>
+                </div>
 
-                    <div className="mt-6 p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                        {/* Tabela de critérios */}
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full text-sm text-left">
-                                <thead className="text-xs uppercase bg-gray-50 dark:bg-gray-800">
-                                    <tr>
-                                        <th className="px-6 py-3 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Item</th>
-                                        <th className="px-6 py-3 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Descrição</th>
-                                        <th className="px-6 py-3 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Peso</th>
-                                        <th className="px-6 py-3 font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider text-right">Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-                                    {criteriosProjetoLocal.map((criterio) => (
-                                        <tr key={criterio.id} className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
-                                            <td className="px-6 py-4">
-                                                {editingId === criterio.id ? (
-                                                    <input
-                                                        type="text"
-                                                        value={editForm.item}
-                                                        onChange={(e) => setEditForm(prev => ({ ...prev, item: e.target.value }))}
-                                                        className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                ) : (
-                                                    <span className="font-medium text-gray-900 dark:text-white">{criterio.item}</span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {editingId === criterio.id ? (
-                                                    <input
-                                                        type="text"
-                                                        value={editForm.descricao}
-                                                        onChange={(e) => setEditForm(prev => ({ ...prev, descricao: e.target.value }))}
-                                                        className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                ) : (
-                                                    <span className="text-gray-900 dark:text-white">{criterio.descricao}</span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                {editingId === criterio.id ? (
-                                                    <input
-                                                        type="number"
-                                                        min="0"
-                                                        step="0.1"
-                                                        value={editForm.peso}
-                                                        onChange={(e) => setEditForm(prev => ({ ...prev, peso: parseFloat(e.target.value) || 0 }))}
-                                                        className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                    />
-                                                ) : (
-                                                    <span className="text-gray-900 dark:text-white">{criterio.peso}</span>
-                                                )}
-                                            </td>
-                                            <td className="px-6 py-4 text-right">
-                                                {editingId === criterio.id ? (
-                                                    <div className="flex justify-end space-x-2">
-                                                        <button
-                                                            onClick={handleCancelEdit}
-                                                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                                                            disabled={loading}
-                                                        >
-                                                            <X size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={handleSaveEdit}
-                                                            className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
-                                                            disabled={loading}
-                                                        >
-                                                            <Save size={16} />
-                                                        </button>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex justify-end space-x-2">
-                                                        <button
-                                                            onClick={() => handleEdit(criterio)}
-                                                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                                                            disabled={loading}
-                                                        >
-                                                            <Edit size={16} />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                setShowConfirmModal(true);
-                                                                setEditingId(criterio.id);
-                                                            }}
-                                                            className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
-                                                            disabled={loading}
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {criteriosProjetoLocal.length === 0 && (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                                <p>Nenhum critério configurado ainda.</p>
-                                <p className="text-sm mt-1">Clique em "Adicionar Critério" para começar.</p>
+                <div className="mt-6">
+                    <DataTable
+                      columns={[
+                        { key: 'criterio', label: 'Critério' },
+                        { key: 'peso', label: 'Peso', className: 'text-right' },
+                        { key: 'acoes', label: 'Ações', className: 'text-center' },
+                      ]}
+                      data={criteriosProjetoLocal.map((criterio) => ({
+                        criterio: (
+                          editingId === criterio.id ? (
+                            <input
+                              type="text"
+                              value={editForm.item}
+                              onChange={(e) => setEditForm(prev => ({ ...prev, item: e.target.value }))}
+                              className="px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          ) : (
+                            <div>
+                              <p className="font-semibold text-neutral-800 dark:text-slate-100">{criterio.item}</p>
+                              <p className="mt-1 text-xs text-neutral-500 dark:text-slate-400">ID: {criterio.id.toString().padStart(3, '0')}</p>
                             </div>
-                        )}
-                    </div>
-                    
-                    <div className="mt-8 flex justify-start pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <Link to={`/editais/${id}/configurar`}>
-                            <Button variant="secondary" type="button">
-                                <ArrowLeft className="mr-2 h-4 w-4" />
-                                Voltar para o Hub
-                            </Button>
-                        </Link>
-                    </div>
-                </Card>
+                          )
+                        ),
+                        peso: editingId === criterio.id ? (
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.1"
+                            value={editForm.peso}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, peso: parseFloat(e.target.value) || 0 }))}
+                            className="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
+                          />
+                        ) : (
+                          <span className="text-gray-900 dark:text-white text-right">{criterio.peso}</span>
+                        ),
+                        acoes: editingId === criterio.id ? (
+                          <div className="flex justify-center space-x-2">
+                            <button
+                              onClick={handleCancelEdit}
+                              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                              disabled={loading}
+                            >
+                              <X size={16} />
+                            </button>
+                            <button
+                              onClick={handleSaveEdit}
+                              className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300"
+                              disabled={loading}
+                            >
+                              <Save size={16} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex justify-center space-x-2">
+                            <button
+                              onClick={() => handleEdit(criterio)}
+                              className="text-primary dark:text-primary-light hover:opacity-80"
+                              disabled={loading}
+                            >
+                              <Edit size={16} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setShowConfirmModal(true);
+                                setEditingId(criterio.id);
+                              }}
+                              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                              disabled={loading}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ),
+                        _raw: criterio
+                      }))}
+                    />
+                    {criteriosProjetoLocal.length === 0 && (
+                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <p>Nenhum critério configurado ainda.</p>
+                            <p className="text-sm mt-1">Clique em "Adicionar Critério" para começar.</p>
+                        </div>
+                    )}
+                </div>
+                
+                <div className="mt-8 flex justify-start pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <Link to={`/editais/${id}/configurar`}>
+                        <Button variant="secondary" type="button">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Voltar para o Hub
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {/* Modal para adicionar critério */}

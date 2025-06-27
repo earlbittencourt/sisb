@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Clock, CheckCircle, Search, Grid, List, Plus, MoreHorizontal, Filter, ChevronUp, ChevronDown } from 'lucide-react';
+import { FileText, Clock, CheckCircle, Search, Plus, MoreHorizontal, Filter, ChevronUp, ChevronDown } from 'lucide-react';
 import DashboardCard from '../../components/ui/DashboardCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import { usePeriodosProgramas } from '../../hooks/usePeriodosProgramas';
@@ -14,7 +14,6 @@ const ITEMS_PER_PAGE = 10;
 
 const Editais = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [currentPage, setCurrentPage] = useState(1);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filtros, setFiltros] = useState<{ tipos: string[]; status: string[] }>({ tipos: [], status: [] });
@@ -200,32 +199,32 @@ const Editais = () => {
     <div className="layout-container bg-primary-lightest dark:bg-slate-900">
       <div className="main-content">
         <div className="content-area">
-          {/* Header Section */}
-          <div className="mb-8">
+      {/* Header Section */}
+      <div className="mb-8">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h1 className="text-3xl font-bold text-neutral-darker dark:text-slate-100 mb-2">
-                  Editais
-                </h1>
+          Editais
+        </h1>
                 <p className="text-neutral-600 dark:text-slate-400">
                   Gerencie os editais de bolsas da UFBA
-                </p>
+        </p>
               </div>
-            </div>
+      </div>
 
-            {/* Metrics Cards */}
+      {/* Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <DashboardCard
-                title="Total de Editais"
+        <DashboardCard
+          title="Total de Editais"
                 value={totalEditais.toString()}
-                icon={FileText}
+          icon={FileText}
                 trend={{ value: "+5.2%", direction: 'up' }}
                 className="bg-white dark:bg-slate-800"
-              />
-              <DashboardCard
-                title="Em Andamento"
+        />
+        <DashboardCard
+          title="Em Andamento"
                 value={emAndamento.toString()}
-                icon={Clock}
+          icon={Clock}
                 trend={{ value: "+12.5%", direction: 'up' }}
                 className="bg-white dark:bg-slate-800"
               />
@@ -235,17 +234,17 @@ const Editais = () => {
                 icon={Search}
                 trend={{ value: "+8.1%", direction: 'up' }}
                 className="bg-white dark:bg-slate-800"
-              />
-              <DashboardCard
-                title="Concluídos"
+        />
+        <DashboardCard
+          title="Concluídos"
                 value={concluidos.toString()}
-                icon={CheckCircle}
+          icon={CheckCircle}
                 trend={{ value: "+3.7%", direction: 'up' }}
                 className="bg-white dark:bg-slate-800"
-              />
-            </div>
+        />
+      </div>
 
-            {/* Search and Actions */}
+      {/* Search and Actions */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
               <div className="flex-1 max-w-md">
                 <div className="relative">
@@ -253,26 +252,26 @@ const Editais = () => {
                   <input
                     type="text"
                     placeholder="Buscar editais..."
-                    value={searchTerm}
+              value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-neutral-300 dark:hover:border-slate-600 placeholder:text-neutral-400 dark:placeholder:text-slate-500 text-neutral-700 dark:text-slate-100"
-                  />
-                </div>
+            />
+          </div>
               </div>
-              <div className="flex items-center gap-3">
-                <button
+          <div className="flex items-center gap-3">
+              <button
                   className="btn-filter inline-flex items-center gap-2 px-4 py-2.5 hover:scale-105 transition-transform duration-200"
                   onClick={() => setIsFiltersOpen(true)}
-                >
+              >
                   <Filter className="w-4 h-4" />
                   Filtros
-                </button>
+              </button>
                 <button className="btn-primary inline-flex items-center gap-2 px-4 py-2.5 hover:scale-105 transition-transform duration-200 bg-primary dark:bg-primary-light text-white dark:text-primary-darker">
-                  <Plus className="w-4 h-4" />
-                  Novo Edital
-                </button>
-              </div>
-            </div>
+              <Plus className="w-4 h-4" />
+              Novo Edital
+            </button>
+          </div>
+        </div>
             <FiltersPanel
               isOpen={isFiltersOpen}
               onClose={() => setIsFiltersOpen(false)}
@@ -291,8 +290,8 @@ const Editais = () => {
               <p className="text-sm text-neutral-600 dark:text-slate-400">
                 {filteredEditais.length} editais encontrados
               </p>
-            </div>
-          </div>
+                </div>
+              </div>
 
           {/* Table */}
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-elite overflow-hidden">
@@ -316,10 +315,10 @@ const Editais = () => {
                           ) : (
                             <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               <ChevronUp className="w-4 h-4 text-neutral-400" />
-                            </div>
+                </div>
                           )}
-                        </div>
-                      </div>
+              </div>
+            </div>
                     </th>
                     <th
                       className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
@@ -337,8 +336,8 @@ const Editais = () => {
                           ) : (
                             <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               <ChevronUp className="w-4 h-4 text-neutral-400" />
-                            </div>
-                          )}
+              </div>
+            )}
                         </div>
                       </div>
                     </th>
@@ -358,11 +357,11 @@ const Editais = () => {
                           ) : (
                             <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               <ChevronUp className="w-4 h-4 text-neutral-400" />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </th>
+          </div>
+        )}
+      </div>
+      </div>
+                </th>
                     <th
                       className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_DtInicio')}
@@ -383,7 +382,7 @@ const Editais = () => {
                           )}
                         </div>
                       </div>
-                    </th>
+                </th>
                     <th
                       className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_DtFim')}
@@ -404,48 +403,48 @@ const Editais = () => {
                           )}
                         </div>
                       </div>
-                    </th>
+                </th>
                     <th className="px-6 py-4 text-right text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider">
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
+                  Ações
+                </th>
+              </tr>
+            </thead>
                 <tbody className="divide-y divide-neutral-200 dark:divide-slate-700">
                   {paginatedEditais.map((edital, index) => (
-                    <tr 
-                      key={edital.PEP_Codigo} 
+                <tr 
+                  key={edital.PEP_Codigo} 
                       className="hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-150"
-                    >
+                >
                       <td className="px-6 py-4 align-top">
-                        <div>
+                    <div>
                           <p className="font-medium text-neutral-800 dark:text-slate-100 hover:text-primary dark:hover:text-primary-light transition-colors cursor-pointer">
-                            {edital.PEP_Descricao}
-                          </p>
+                        {edital.PEP_Descricao}
+                      </p>
                           <p className="text-sm text-neutral-500 dark:text-slate-400 mt-1">
-                            {edital.PEP_Sigla}
-                          </p>
-                        </div>
-                      </td>
+                        {edital.PEP_Sigla}
+                      </p>
+                    </div>
+                  </td>
                       <td className="px-6 py-4 align-top">
                         <div>
                           <p className="font-medium text-neutral-800 dark:text-slate-100">
-                            {edital.PRO_Descricao}
+                      {edital.PRO_Descricao}
                           </p>
                         </div>
-                      </td>
+                  </td>
                       <td className="px-6 py-4 align-top">
                         <StatusBadge status={edital.PPS_Descricao || 'Indisponível'} size="sm" />
-                      </td>
+                  </td>
                       <td className="px-6 py-4 align-top">
                         <span className="text-sm text-neutral-900 dark:text-slate-100">
-                          {edital.PEP_DtInicio ? new Date(edital.PEP_DtInicio).toLocaleDateString() : 'N/A'}
-                        </span>
-                      </td>
+                      {edital.PEP_DtInicio ? new Date(edital.PEP_DtInicio).toLocaleDateString() : 'N/A'}
+                    </span>
+                  </td>
                       <td className="px-6 py-4 align-top">
                         <span className="text-sm text-neutral-900 dark:text-slate-100">
-                          {edital.PEP_DtFim ? new Date(edital.PEP_DtFim).toLocaleDateString() : 'N/A'}
-                        </span>
-                      </td>
+                      {edital.PEP_DtFim ? new Date(edital.PEP_DtFim).toLocaleDateString() : 'N/A'}
+                    </span>
+                  </td>
                       <td className="px-6 py-4 text-right align-top">
                         <Menu as="div" className="relative inline-block text-left">
                           <Menu.Button className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors duration-150" aria-label="Ações do edital" title="Mais opções">
@@ -489,19 +488,19 @@ const Editais = () => {
                                       onClick={() => {/* TODO: Implementar ação Excluir */}}
                                     >
                                       Excluir
-                                    </button>
+                    </button>
                                   )}
                                 </Menu.Item>
                               </div>
                             </Menu.Items>
                           </Transition>
                         </Menu>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
             {/* Paginação */}
             {totalPages > 1 && (
               <div className="flex justify-end items-center gap-2 px-6 py-4">
