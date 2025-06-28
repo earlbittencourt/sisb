@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { ItemAvaliacao, ItemAvaliacaoRelatorio } from '../../../../types/relatorio';
 import Button from '../../../../components/ui/Button';
-import { Plus, Pencil, X, ChevronLeft } from 'lucide-react';
+import { Plus, Trash2, AlertCircle, CheckCircle, MoreVertical, Edit3 } from 'lucide-react';
+import { Menu, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
 import Modal from '../../../../components/ui/Modal';
-import { Link, useParams } from 'react-router-dom';
+import DataTable from '../../../../components/ui/DataTable';
+import Select from '../../../../components/ui/Select';
 
 interface GerenciarItensAvaliacaoProps {
   titulo: string;
@@ -16,194 +19,207 @@ interface GerenciarItensAvaliacaoProps {
   loading: boolean;
 }
 
-const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({ titulo, descricao, masterList, selectedList, onAdd, onUpdate, onRemove, loading }) => {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditId, setShowEditId] = useState<number | null>(null);
-  const [novaVariacao, setNovaVariacao] = useState('');
-  const [novoItemId, setNovoItemId] = useState<number | null | 'new'>(null);
-  const [novaVariacaoAdd, setNovaVariacaoAdd] = useState('');
-  const [salvando, setSalvando] = useState(false);
-  const { id: editalId, relatorioId } = useParams();
+const GerenciarItensAvaliacao: React.FC<GerenciarItensAvaliacaoProps> = ({
+  titulo,
+  descricao,
+  masterList,
+  selectedList,
+  onAdd,
+  onUpdate,
+  onRemove,
+  loading
+}) => {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [variacaoNota, setVariacaoNota] = useState('');
+  const [feedback, setFeedback] = useState<{ show: boolean; type: 'success' | 'error'; message: string }>({
+    show: false,
+    type: 'success',
+    message: ''
+  });
 
   // Atualiza campos de edição/adicionar ao mudar selectedList
   React.useEffect(() => {
-    setShowEditId(null);
-    setNovaVariacao('');
-    setNovoItemId(null);
-    setNovaVariacaoAdd('');
+    // Reset quando selectedList mudar
   }, [selectedList]);
 
   const handleExcluir = async (itemId: number) => {
-    setSalvando(true);
-    await onRemove(itemId);
-    setSalvando(false);
+    try {
+      await onRemove(itemId);
+      showFeedback('success', 'Item removido com sucesso!');
+    } catch (error) {
+      showFeedback('error', 'Erro ao remover item');
+    }
   };
 
   const handleEditar = (item: ItemAvaliacaoRelatorio) => {
-    setShowEditId(item.itemId);
-    setNovaVariacao(item.variacaoNota);
+    setVariacaoNota(item.variacaoNota);
   };
 
-  const handleSalvarEdicao = async (itemId: number) => {
-    setSalvando(true);
-    await onUpdate(itemId, novaVariacao);
-    setShowEditId(null);
-    setNovaVariacao('');
-    setSalvando(false);
-  };
-
-  const handleAdicionar = async () => {
-    if (typeof novoItemId === 'number' && novaVariacaoAdd) {
-      setSalvando(true);
-      await onAdd(novoItemId, novaVariacaoAdd);
-      setShowAddModal(false);
-      setNovoItemId(null);
-      setNovaVariacaoAdd('');
-      setSalvando(false);
+  const handleAdd = async () => {
+    if (!selectedItemId || !variacaoNota) return;
+    
+    try {
+      await onAdd(selectedItemId, variacaoNota);
+      showFeedback('success', 'Item adicionado com sucesso!');
+      setShowModal(false);
+      setSelectedItemId(null);
+      setVariacaoNota('');
+    } catch (error) {
+      showFeedback('error', 'Erro ao adicionar item');
     }
   };
 
   // Itens disponíveis para adicionar
   const disponiveis = masterList.filter(m => !selectedList.some(i => i.itemId === m.id));
 
+  const showFeedback = (type: 'success' | 'error', message: string) => {
+    setFeedback({ show: true, type, message });
+    setTimeout(() => setFeedback(prev => ({ ...prev, show: false })), 3000);
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-start">
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary dark:text-text-primary-dark">{titulo}</h2>
-          <p className="mt-1 text-text-secondary dark:text-text-secondary-dark">{descricao}</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{titulo}</h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{descricao}</p>
         </div>
-        <Button onClick={() => setShowAddModal(true)} icon={Plus} variant="primary">Adicionar Item</Button>
+        <Button
+          onClick={() => setShowModal(true)}
+          variant="primary"
+          icon={Plus}
+        >
+          Adicionar Item
+        </Button>
       </div>
 
-      {/* Lista de itens adicionados */}
-      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-        <table className="w-full text-left">
-          <thead>
-            <tr>
-              <th className="py-2 text-text-primary dark:text-text-primary-dark">Item</th>
-              <th className="py-2 text-text-primary dark:text-text-primary-dark">Variação da Nota</th>
-              <th className="py-2 text-right text-text-primary dark:text-text-primary-dark">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {selectedList.length === 0 && (
-              <tr><td colSpan={3} className="text-center text-text-secondary dark:text-text-secondary-dark py-4">Nenhum item adicionado.</td></tr>
-            )}
-            {selectedList.map(item => {
-              const master = masterList.find(m => m.id === item.itemId);
-              return (
-                <tr key={item.itemId} className="border-b border-gray-200 dark:border-gray-600">
-                  <td className="py-2 font-medium text-text-primary dark:text-text-primary-dark">{master?.descricao || '-'}</td>
-                  <td className="py-2">
-                    {showEditId === item.itemId ? (
-                      <input
-                        type="text"
-                        value={novaVariacao}
-                        onChange={e => setNovaVariacao(e.target.value)}
-                        className="px-2 py-1 border rounded w-32 bg-white dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
-                        autoFocus
-                      />
-                    ) : (
-                      <span className="text-text-primary dark:text-text-primary-dark">{item.variacaoNota}</span>
-                    )}
-                  </td>
-                  <td className="py-2 text-right space-x-2">
-                    {showEditId === item.itemId ? (
-                      <Button size="sm" variant="primary" onClick={() => handleSalvarEdicao(item.itemId)} disabled={salvando}>Salvar</Button>
-                    ) : (
-                      <Button size="sm" variant="ghost" onClick={() => handleEditar(item)}><Pencil size={16} /></Button>
-                    )}
-                    <Button size="sm" variant="ghost" onClick={() => handleExcluir(item.itemId)} disabled={salvando}><X size={16} /></Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      <div className="bg-white dark:bg-gray-800 shadow rounded-lg">
+        <DataTable
+          columns={[
+            { key: 'criterio', label: 'CRITÉRIO DE AVALIAÇÃO' },
+            { key: 'nota', label: 'VARIAÇÃO DA NOTA', className: 'text-right' },
+            { key: 'acoes', label: 'AÇÕES' }
+          ]}
+          data={selectedList.map(item => ({
+            criterio: (
+              <div>
+                <p className="font-semibold text-neutral-800 dark:text-slate-100">
+                  {item.itemDescricao || (masterList.find(m => m.id === item.itemId)?.descricao ?? '—')}
+                </p>
+              </div>
+            ),
+            nota: (
+              <span className="block text-right">{item.variacaoNota}</span>
+            ),
+            acoes: (
+              <Menu as="div" className="relative">
+                <Menu.Button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                  <MoreVertical className="w-4 h-4 text-gray-500" />
+                </Menu.Button>
+                <Transition
+                  as={Fragment}
+                  enter="transition duration-100 ease-out"
+                  enterFrom="transform scale-95 opacity-0"
+                  enterTo="transform scale-100 opacity-100"
+                  leave="transition duration-75 ease-out"
+                  leaveFrom="transform scale-100 opacity-100"
+                  leaveTo="transform scale-95 opacity-0"
+                >
+                  <Menu.Items className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-xl overflow-hidden z-50 border border-gray-200 dark:border-gray-700">
+                    <div className="p-2">
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={() => handleEditar(item)}
+                            className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''} group flex w-full items-center rounded-lg px-4 py-3 text-sm font-medium transition-colors duration-150`}
+                          >
+                            <Edit3 className="w-4 h-4 mr-3" />
+                            Editar
+                          </button>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <button
+                            onClick={() => handleExcluir(item.id)}
+                            className={`${active ? 'bg-gray-100 dark:bg-gray-700' : ''} group flex w-full items-center rounded-lg px-4 py-3 text-sm font-medium text-red-500 transition-colors duration-150`}
+                          >
+                            <Trash2 className="w-4 h-4 mr-3" />
+                            Excluir
+                          </button>
+                        )}
+                      </Menu.Item>
+                    </div>
+                  </Menu.Items>
+                </Transition>
+              </Menu>
+            )
+          }))}
+        />
       </div>
 
-      {/* Modal de adicionar item */}
       <Modal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        title="Adicionar Item de Avaliação"
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Adicionar Item"
         variant="glass"
-        size="md"
       >
-            <div className="mb-4">
-              <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Item</label>
-              <select
-            className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
-            value={novoItemId === null ? '' : novoItemId === 'new' ? 'new' : String(novoItemId)}
-            onChange={e => {
-              const value = e.target.value;
-              if (value === 'new') {
-                setNovoItemId('new');
-                setNovaVariacaoAdd('');
-              } else if (value === '') {
-                setNovoItemId(null);
-                setNovaVariacaoAdd('');
-              } else {
-                const num = Number(value);
-                if (!isNaN(num)) {
-                  setNovoItemId(num);
-                  setNovaVariacaoAdd('');
-                }
-              }
-            }}
-              >
-                <option value="">Selecione...</option>
-            <option value="new">✨ Criar novo item</option>
-                {disponiveis.map(item => (
-                  <option key={item.id} value={item.id}>{item.descricao}</option>
-                ))}
-              </select>
-            </div>
-        {/* Se for novo item, mostrar campo de descrição */}
-        {novoItemId === 'new' && (
-          <div className="mb-4">
-            <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Descrição do Novo Item</label>
-            <input
-              className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
-              type="text"
-              value={novaVariacaoAdd}
-              onChange={e => setNovaVariacaoAdd(e.target.value)}
-              placeholder="Digite a descrição do novo item..."
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Item
+            </label>
+            <Select
+              options={disponiveis.map(item => ({
+                value: item.id.toString(),
+                label: item.descricao
+              }))}
+              value={selectedItemId?.toString() || ''}
+              onChange={(value) => setSelectedItemId(value ? Number(value) : null)}
+              placeholder="Selecione um item..."
             />
           </div>
-        )}
-        {/* Campo de variação da nota */}
-        {typeof novoItemId === 'number' && (
-            <div className="mb-4">
-              <label className="block mb-1 text-text-primary dark:text-text-primary-dark">Variação da Nota</label>
+
+          {selectedItemId && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Variação da Nota
+              </label>
               <input
-              className="w-full border rounded px-2 py-1 bg-white/50 dark:bg-gray-700 text-text-primary dark:text-text-primary-dark border-gray-300 dark:border-gray-600"
                 type="text"
-                value={novaVariacaoAdd}
-                onChange={e => setNovaVariacaoAdd(e.target.value)}
-                placeholder="Ex: 0 a 10"
+                value={variacaoNota}
+                onChange={(e) => setVariacaoNota(e.target.value)}
+                className="w-full px-3 py-2 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-md"
+                placeholder="Ex: 0-5"
               />
             </div>
-        )}
-            <div className="flex justify-end space-x-2">
-              <Button variant="secondary" onClick={() => setShowAddModal(false)}>Cancelar</Button>
-          <Button variant="primary" onClick={handleAdicionar} disabled={(
-            novoItemId === null ||
-            (novoItemId === 'new' && !novaVariacaoAdd) ||
-            (typeof novoItemId === 'number' && !novaVariacaoAdd)
-          )}>Adicionar</Button>
-            </div>
+          )}
+
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="secondary"
+              onClick={() => setShowModal(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleAdd}
+              disabled={!selectedItemId || !variacaoNota}
+            >
+              Adicionar
+            </Button>
+          </div>
+        </div>
       </Modal>
 
-      {/* Botão Voltar para o Hub no rodapé */}
-      {editalId && relatorioId && (
-        <div className="pt-8 border-t border-gray-200 dark:border-gray-700 flex justify-start">
-          <Link to={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
-            <Button variant="ghost" icon={ChevronLeft}>
-              Voltar para o Hub
-            </Button>
-          </Link>
+      {feedback.show && (
+        <div className={`fixed bottom-4 right-4 p-4 rounded-lg shadow-lg ${
+          feedback.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        } text-white flex items-center space-x-2`}>
+          {feedback.type === 'success' ? <CheckCircle className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+          <span>{feedback.message}</span>
         </div>
       )}
     </div>

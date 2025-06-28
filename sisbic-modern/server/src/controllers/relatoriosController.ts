@@ -387,18 +387,24 @@ export const getEstruturaRelatorio = async (req: Request, res: Response) => {
     try {
         const sql = `
             SELECT 
-                cic.CIC_codigo as id,
                 ccar.CTR_codigo as categoriaId,
                 ccar.CTR_descricao as categoriaDescricao,
                 iiar.IAR_codigo as itemId,
                 iiar.IAR_descricao as itemDescricao,
                 crr.CRR_codigo as criterioId,
                 crr.CRR_descricao as criterioDescricao
-            FROM CIC_CategoriaItemCriterioPeriodoAvaliacaoRelatorio cic
-            JOIN CTR_CategoriaAvaliacaoRelatorio ccar ON ccar.CTR_codigo = cic.CIC_codigo_CTR
-            JOIN IAR_ItemAvaliacaoRelatorio iiar ON iiar.IAR_codigo = cic.CIC_codigo_IAR
-            LEFT JOIN CRR_CriterioAvaliacaoRelatorio crr ON crr.CRR_codigo = cic.CIC_codigo_CRR
-            WHERE cic.CIC_codigo_RES = @relatorioId
+            FROM (
+                SELECT DISTINCT CIC_codigo_CTR
+                FROM CIC_CategoriaItemCriterioPeriodoAvaliacaoRelatorio
+                WHERE CIC_codigo_RES = @relatorioId
+            ) relCats
+            JOIN CTR_CategoriaAvaliacaoRelatorio ccar ON ccar.CTR_codigo = relCats.CIC_codigo_CTR
+            LEFT JOIN CIC_CategoriaItemCriterioPeriodoAvaliacaoRelatorio cic
+                ON ccar.CTR_codigo = cic.CIC_codigo_CTR AND cic.CIC_codigo_RES = @relatorioId
+            LEFT JOIN IAR_ItemAvaliacaoRelatorio iiar
+                ON iiar.IAR_codigo = cic.CIC_codigo_IAR
+            LEFT JOIN CRR_CriterioAvaliacaoRelatorio crr
+                ON crr.CRR_codigo = cic.CIC_codigo_CRR
             ORDER BY ccar.CTR_descricao, iiar.IAR_descricao, crr.CRR_descricao;
         `;
         const flatStructure = await query<FlatEstruturaRow>(sql, [{ name: 'relatorioId', value: parseInt(relatorioId) }]);
@@ -415,25 +421,27 @@ export const getEstruturaRelatorio = async (req: Request, res: Response) => {
                 };
             }
 
-            // Verifica se o item já existe na categoria
-            let item = acc[categoriaId].itens.find(i => i.id === itemId);
-            if (!item) {
-                item = {
-                    id: itemId,
-                    descricao: itemDescricao,
-                    criterios: []
-                };
-                acc[categoriaId].itens.push(item);
-            }
+            // Só adiciona item se existir
+            if (itemId) {
+                let item = acc[categoriaId].itens.find(i => i.id === itemId);
+                if (!item) {
+                    item = {
+                        id: itemId,
+                        descricao: itemDescricao,
+                        criterios: []
+                    };
+                    acc[categoriaId].itens.push(item);
+                }
 
-            // Adiciona o critério ao item se ele existir
-            if (criterioId && criterioDescricao) {
-                const criterioExists = item.criterios.some(c => c.id === criterioId);
-                if (!criterioExists) {
-                    item.criterios.push({
-                        id: criterioId,
-                        descricao: criterioDescricao
-                    });
+                // Adiciona o critério ao item se ele existir
+                if (criterioId && criterioDescricao) {
+                    const criterioExists = item.criterios.some(c => c.id === criterioId);
+                    if (!criterioExists) {
+                        item.criterios.push({
+                            id: criterioId,
+                            descricao: criterioDescricao
+                        });
+                    }
                 }
             }
 
@@ -449,8 +457,20 @@ export const getEstruturaRelatorio = async (req: Request, res: Response) => {
 
 // Salva a estrutura de um relatório
 export const salvarEstruturaRelatorio = async (req: Request, res: Response) => {
+    console.log('salvarEstruturaRelatorio - Request recebida:', {
+        method: req.method,
+        url: req.url,
+        baseUrl: req.baseUrl,
+        originalUrl: req.originalUrl,
+        path: req.path,
+        params: req.params,
+        body: req.body
+    });
+    
     const { relatorioId } = req.params;
     const estrutura: EstruturaToSave[] = req.body;
+
+    console.log('salvarEstruturaRelatorio - Parâmetros:', { relatorioId, estrutura });
 
     try {
         // 1. Deletar estrutura existente
@@ -467,36 +487,46 @@ export const salvarEstruturaRelatorio = async (req: Request, res: Response) => {
             let paramIndex = 0;
 
             estrutura.forEach(categoria => {
-                categoria.itens.forEach(item => {
-                    if (item.criterios.length > 0) {
-                        item.criterios.forEach(criterio => {
+                if (!categoria.itens || categoria.itens.length === 0) {
+                    // Categoria vazia: inserir registro com item e critério nulos
+                    const relatorioIdParam = `relatorioId${paramIndex}`;
+                    const categoriaIdParam = `categoriaId${paramIndex}`;
+                    insertSql += `(@${relatorioIdParam}, @${categoriaIdParam}, NULL, NULL),`;
+                    params.push({ name: relatorioIdParam, value: parseInt(relatorioId) });
+                    params.push({ name: categoriaIdParam, value: categoria.id });
+                    paramIndex++;
+                } else {
+                    categoria.itens.forEach(item => {
+                        if (item.criterios.length > 0) {
+                            item.criterios.forEach(criterio => {
+                                const relatorioIdParam = `relatorioId${paramIndex}`;
+                                const categoriaIdParam = `categoriaId${paramIndex}`;
+                                const itemIdParam = `itemId${paramIndex}`;
+                                const criterioIdParam = `criterioId${paramIndex}`;
+
+                                insertSql += `(@${relatorioIdParam}, @${categoriaIdParam}, @${itemIdParam}, @${criterioIdParam}),`;
+
+                                params.push({ name: relatorioIdParam, value: parseInt(relatorioId) });
+                                params.push({ name: categoriaIdParam, value: categoria.id });
+                                params.push({ name: itemIdParam, value: item.id });
+                                params.push({ name: criterioIdParam, value: criterio.id });
+                                paramIndex++;
+                            });
+                        } else {
+                            // Se não houver critérios, insere com critério NULL
                             const relatorioIdParam = `relatorioId${paramIndex}`;
                             const categoriaIdParam = `categoriaId${paramIndex}`;
                             const itemIdParam = `itemId${paramIndex}`;
-                            const criterioIdParam = `criterioId${paramIndex}`;
 
-                            insertSql += `(@${relatorioIdParam}, @${categoriaIdParam}, @${itemIdParam}, @${criterioIdParam}),`;
+                            insertSql += `(@${relatorioIdParam}, @${categoriaIdParam}, @${itemIdParam}, NULL),`;
 
                             params.push({ name: relatorioIdParam, value: parseInt(relatorioId) });
                             params.push({ name: categoriaIdParam, value: categoria.id });
                             params.push({ name: itemIdParam, value: item.id });
-                            params.push({ name: criterioIdParam, value: criterio.id });
                             paramIndex++;
-                        });
-                    } else {
-                        // Se não houver critérios, insere com critério NULL
-                        const relatorioIdParam = `relatorioId${paramIndex}`;
-                        const categoriaIdParam = `categoriaId${paramIndex}`;
-                        const itemIdParam = `itemId${paramIndex}`;
-
-                        insertSql += `(@${relatorioIdParam}, @${categoriaIdParam}, @${itemIdParam}, NULL),`;
-
-                        params.push({ name: relatorioIdParam, value: parseInt(relatorioId) });
-                        params.push({ name: categoriaIdParam, value: categoria.id });
-                        params.push({ name: itemIdParam, value: item.id });
-                        paramIndex++;
-                    }
-                });
+                        }
+                    });
+                }
             });
 
             if (params.length > 0) {

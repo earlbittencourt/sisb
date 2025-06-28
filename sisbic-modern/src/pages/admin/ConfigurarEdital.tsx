@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { 
     BookOpen, 
     Building2, 
@@ -7,11 +7,13 @@ import {
     FileText, 
     Users, 
     BarChart3,
-    Calendar
+    Calendar,
+    ChevronLeft
 } from 'lucide-react';
 import { useEdital } from '../../contexts/EditalContext';
 import { useAvaliacao } from '../../hooks/useAvaliacao';
 import ConfigurationStepCard from '../../components/ui/ConfigurationStepCard';
+import Button from '../../components/ui/Button';
 
 const initialSections = [
   {
@@ -65,7 +67,7 @@ const initialSections = [
   },
 ];
 
-const ConfigurarEdital: React.FC = () => {
+const ConfigurarEdital: React.FC<{ isNovo?: boolean }> = ({ isNovo = false }) => {
     const { id } = useParams<{ id: string }>();
     const { periodo, agenciasDoEdital, submissaoConfig, loading: editalLoading } = useEdital();
     const { 
@@ -77,34 +79,36 @@ const ConfigurarEdital: React.FC = () => {
     } = useAvaliacao();
 
     useEffect(() => {
-        if (id) {
+        if (id && !isNovo) {
             fetchCriteriosProjeto(id);
             fetchItensAvaliacao(id);
         }
-    }, [id, fetchCriteriosProjeto, fetchItensAvaliacao]);
+    }, [id, fetchCriteriosProjeto, fetchItensAvaliacao, isNovo]);
 
     const sections = initialSections.map(section => {
         let status: 'Concluído' | 'Pendente' = 'Pendente';
-        if (section.key === 'dados-gerais') {
-            const isCompleted = periodo && periodo.PEP_Descricao && periodo.PEP_Sigla && periodo.PEP_DtInicio && periodo.PEP_DtFim;
-            status = isCompleted ? 'Concluído' : 'Pendente';
-        }
-        if (section.key === 'agencias-fomento') {
-            status = agenciasDoEdital.length > 0 ? 'Concluído' : 'Pendente';
-        }
-        if (section.key === 'configurar-submissao') {
-            const isCompleted = submissaoConfig &&
-                submissaoConfig.PCF_nmProjetos != null &&
-                submissaoConfig.PCF_nmMinPlanos != null &&
-                submissaoConfig.PCF_nmPlanos != null &&
-                submissaoConfig.PCF_nmAvaliadores != null;
-            status = isCompleted ? 'Concluído' : 'Pendente';
-        }
-        if (section.key === 'avaliacao-projetos') {
-            status = criteriosProjeto.length > 0 ? 'Concluído' : 'Pendente';
-        }
-        if (section.key === 'avaliacao-curriculo') {
-            status = itensAvaliacao.length > 0 ? 'Concluído' : 'Pendente';
+        if (!isNovo) {
+          if (section.key === 'dados-gerais') {
+              const isCompleted = periodo && periodo.PEP_Descricao && periodo.PEP_Sigla && periodo.PEP_DtInicio && periodo.PEP_DtFim;
+              status = isCompleted ? 'Concluído' : 'Pendente';
+          }
+          if (section.key === 'agencias-fomento') {
+              status = agenciasDoEdital.length > 0 ? 'Concluído' : 'Pendente';
+          }
+          if (section.key === 'configurar-submissao') {
+              const isCompleted = submissaoConfig &&
+                  submissaoConfig.PCF_nmProjetos != null &&
+                  submissaoConfig.PCF_nmMinPlanos != null &&
+                  submissaoConfig.PCF_nmPlanos != null &&
+                  submissaoConfig.PCF_nmAvaliadores != null;
+              status = isCompleted ? 'Concluído' : 'Pendente';
+          }
+          if (section.key === 'avaliacao-projetos') {
+              status = criteriosProjeto.length > 0 ? 'Concluído' : 'Pendente';
+          }
+          if (section.key === 'avaliacao-curriculo') {
+              status = itensAvaliacao.length > 0 ? 'Concluído' : 'Pendente';
+          }
         }
         return { ...section, status };
     });
@@ -127,15 +131,16 @@ const ConfigurarEdital: React.FC = () => {
     const progressPercentage = (completedSections / totalSections) * 100;
 
     return (
-        <div className="p-6 lg:p-8 bg-gradient-to-br from-ufba-gray-50 to-ufba-gray-100 dark:from-ufba-gray-950 dark:to-ufba-gray-800 min-h-screen">
-            <header className="mb-10">
-                <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-400 py-2">
-                    Configuração do Edital: {periodo?.PEP_Sigla}
+        <div className="p-6 bg-gradient-to-br from-ufba-gray-50 to-ufba-gray-100 dark:from-ufba-gray-950 dark:to-ufba-gray-800 min-h-screen">
+            {/* Header */}
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
+                    {isNovo ? 'Novo Edital' : `Configuração do Edital: ${periodo?.PEP_Sigla}`}
                 </h1>
-                <p className="text-lg text-text-secondary mt-2">
+                <p className="text-neutral-600 dark:text-neutral-400">
                     Siga os passos abaixo para configurar completamente o seu edital.
                 </p>
-            </header>
+            </div>
 
             {/* Barra de Progresso */}
             <div className="mb-8">
@@ -171,6 +176,15 @@ const ConfigurarEdital: React.FC = () => {
                         isHighlighted={index === firstPendingIndex}
                     />
                 ))}
+            </div>
+
+            {/* Botão de Voltar */}
+            <div className="mt-12 flex justify-start">
+                <Link to="/editais">
+                    <Button variant="secondary" icon={ChevronLeft} iconPosition="left">
+                        Voltar para Editais
+                    </Button>
+                </Link>
             </div>
         </div>
     );

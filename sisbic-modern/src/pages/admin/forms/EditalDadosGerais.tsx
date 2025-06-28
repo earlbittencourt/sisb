@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,11 +8,11 @@ import { Save, ChevronLeft } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import InputField from '../../../components/ui/InputField';
 import SelectField from '../../../components/ui/SelectField';
-import FileUploadField from '../../../components/ui/FileUploadField';
 import { DatePicker } from '../../../components/ui/DatePicker';
 import { useProgramas } from '../../../hooks/useProgramas';
 import { useStatus } from '../../../hooks/useStatus';
 import { useEdital } from '../../../contexts/EditalContext';
+import { criarPeriodoPrograma } from '../../../api/periodosProgramas';
 
 // Zod Schema for validation
 const formSchema = z.object({
@@ -22,8 +22,7 @@ const formSchema = z.object({
     PEP_Codigo_PPS: z.number().int().positive("Selecione um status."),
     PEP_DtInicio: z.date().min(new Date('2000-01-01'), "Data inválida"),
     PEP_DtFim: z.date().min(new Date('2000-01-01'), "Data inválida"),
-    PEP_ArquivoEdital: z.string().optional(),
-    PEP_NomeArquivo: z.string().optional(),
+    PEP_Edital: z.string().min(1, "O nome do edital é obrigatório.")
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -33,10 +32,18 @@ const EditalDadosGerais: React.FC = () => {
     const { periodo, loading: editalLoading } = useEdital();
     const { programas, buscarProgramas, loading: programasLoading } = useProgramas();
     const { status: statusList, buscarStatus, loading: statusLoading } = useStatus();
-    const [fileName, setFileName] = useState<string | null>(null);
 
-    const { register, handleSubmit, control, formState: { errors }, reset, setValue } = useForm<FormData>({
+    const { register, handleSubmit, control, formState: { errors }, reset } = useForm<FormData>({
         resolver: zodResolver(formSchema),
+        defaultValues: {
+            PEP_Descricao: '',
+            PEP_Sigla: '',
+            PEP_Codigo_PRO: undefined,
+            PEP_Codigo_PPS: undefined,
+            PEP_DtInicio: undefined,
+            PEP_DtFim: undefined,
+            PEP_Edital: undefined
+        }
     });
 
     useEffect(() => {
@@ -54,27 +61,30 @@ const EditalDadosGerais: React.FC = () => {
                 PEP_Codigo_PPS: typeof periodo.PEP_Codigo_PPS === 'number' ? periodo.PEP_Codigo_PPS : undefined,
                 PEP_DtInicio: periodo.PEP_DtInicio ? new Date(periodo.PEP_DtInicio) : undefined,
                 PEP_DtFim: periodo.PEP_DtFim ? new Date(periodo.PEP_DtFim) : undefined,
-                PEP_NomeArquivo: periodo.PEP_NomeArquivo || '',
+                PEP_Edital: periodo.PEP_Edital || undefined
             });
-            setFileName(periodo.PEP_NomeArquivo || '');
         }
     }, [periodo, reset]);
 
     const onSubmit = async (data: FormData) => {
-        console.log(data);
-        // Lógica de salvamento virá aqui
-    };
-
-    const handleFileSelect = (file: File | null) => {
-        if (file) {
-            setFileName(file.name);
-            setValue("PEP_NomeArquivo", file.name);
+        try {
+            const payload = {
+                PEP_Codigo: 0, // Valor inicial para novo edital
+                PEP_Sigla: data.PEP_Sigla,
+                PEP_Descricao: data.PEP_Descricao,
+                PEP_DtInicio: data.PEP_DtInicio.toISOString(),
+                PEP_DtFim: data.PEP_DtFim.toISOString(),
+                PEP_Codigo_PRO: data.PEP_Codigo_PRO,
+                PEP_Codigo_PPS: data.PEP_Codigo_PPS,
+                PEP_Edital: data.PEP_Edital
+            };
+            await criarPeriodoPrograma(payload);
+            alert('Edital criado com sucesso!');
+            navigate('/editais');
+        } catch (err) {
+            alert('Erro ao criar edital.');
+            console.error(err);
         }
-    };
-
-    const handleFileNameChange = (fileName: string) => {
-        setFileName(fileName);
-        setValue("PEP_NomeArquivo", fileName);
     };
     
     const loading = editalLoading || programasLoading || statusLoading;
@@ -161,7 +171,7 @@ const EditalDadosGerais: React.FC = () => {
                                         label="Tipo de Programa"
                                         options={programaOptions}
                                         value={field.value}
-                                        onChange={field.onChange}
+                                        onChange={e => field.onChange(Number(e.target.value))}
                                         placeholder="Selecione um programa"
                                         error={errors.PEP_Codigo_PRO?.message}
                                         required
@@ -176,7 +186,7 @@ const EditalDadosGerais: React.FC = () => {
                                         label="Status"
                                         options={statusOptions}
                                         value={field.value}
-                                        onChange={field.onChange}
+                                        onChange={e => field.onChange(Number(e.target.value))}
                                         placeholder="Selecione um status"
                                         error={errors.PEP_Codigo_PPS?.message}
                                         required
@@ -232,20 +242,50 @@ const EditalDadosGerais: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Seção: Arquivo do Edital */}
+
+                    {/* Seção: Anexos */}
                     <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-200 mb-6">
-                            Arquivo do Edital (.PDF)
+                            Anexos
                         </h2>
-                        <FileUploadField
-                            label="Arquivo do Edital"
-                            fileName={fileName || ''}
-                            onFileNameChange={handleFileNameChange}
-                            onFileSelect={handleFileSelect}
-                            accept=".pdf"
-                            buttonLabel="Escolher Arquivo"
-                        />
+                        <div className="grid grid-cols-1 gap-y-6">
+                            <div>
+                                <Controller
+                                    name="PEP_Edital"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <InputField
+                                            label="Nome do Edital"
+                                            type="text"
+                                            placeholder="Ex: EDITAL PIBIC 2024"
+                                            value={field.value || ''}
+                                            onChange={field.onChange}
+                                            error={errors.PEP_Edital?.message}
+                                            required
+                                        />
+                                    )}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-neutral-600 dark:text-slate-300 mb-1">
+                                    Arquivo do Edital
+                                    <span className="text-gray-400 text-xs ml-2">(Em breve)</span>
+                                </label>
+                                <input
+                                    type="file"
+                                    disabled
+                                    className="block w-full text-sm text-gray-500 dark:text-gray-400
+                                        file:mr-4 file:py-2 file:px-4
+                                        file:rounded-md file:border-0
+                                        file:text-sm file:font-semibold
+                                        file:bg-gray-200 file:text-gray-500
+                                        file:cursor-not-allowed
+                                        cursor-not-allowed
+                                        opacity-60"
+                                />
+                                {/* TODO: Criar issue para implementar upload de arquivo do edital */}
+                            </div>
+                        </div>
                     </div>
                 </div>
 

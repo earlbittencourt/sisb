@@ -49,4 +49,14 @@ const EditalConfigLayout: React.FC = () => {
     );
 };
 
+// Layout específico para criação de novo edital
+// Não busca dados de um edital existente
+export const EditalNovoLayout: React.FC = () => {
+    return (
+        <EditalProvider>
+            <Outlet />
+        </EditalProvider>
+    );
+};
+
 export default EditalConfigLayout; 

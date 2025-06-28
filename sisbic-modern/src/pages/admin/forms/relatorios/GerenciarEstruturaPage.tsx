@@ -6,7 +6,7 @@ import Button from '../../../../components/ui/Button';
 import { ChevronLeft } from 'lucide-react';
 
 const GerenciarEstruturaPage: React.FC = () => {
-    const { id: editalId, relatorioId } = useParams<{ id: string; relatorioId: string }>();
+    const { editalId, relatorioId } = useParams<{ editalId: string; relatorioId: string }>();
 
     const {
         relatorio,
@@ -51,28 +51,97 @@ const GerenciarEstruturaPage: React.FC = () => {
     return (
         <div className="p-6 bg-background-light dark:bg-background-dark min-h-screen">
             <div className="max-w-7xl mx-auto">
-                <div className="bg-white dark:bg-gray-800 shadow-xl rounded-2xl">
-                    <div className="p-6">
-                        {relatorio && (
-                            <GerenciarEstruturaRelatorio
-                                titulo="Gerenciar Estrutura do Relatório"
-                                descricao={`Organize as seções e os itens que compõem o relatório "${relatorio.descricao}".`}
-                                categoriasMaster={categoriasMaster}
-                                itensMaster={itensEstruturaMaster}
-                                criteriosMaster={criteriosMaster}
-                                estruturaInicial={estruturaRelatorio}
-                                onSave={salvarEstruturaRelatorio}
-                                loading={loading}
-                            />
-                        )}
-                    </div>
-                    <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-start">
-                        <Link to={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
-                            <Button variant="ghost" icon={ChevronLeft}>
-                                Voltar para o Hub
-                            </Button>
-                        </Link>
-                    </div>
+                <div className="py-6">
+                    {relatorio && (
+                        <GerenciarEstruturaRelatorio
+                            titulo="Gerenciar Estrutura do Relatório"
+                            descricao={`Organize as seções e os itens que compõem o relatório "${relatorio.descricao}".`}
+                            categorias={estruturaRelatorio}
+                            categoriasMaster={categoriasMaster}
+                            itensMaster={itensEstruturaMaster}
+                            criteriosMaster={criteriosMaster}
+                            onAddCategoria={async (categoria) => {
+                                const novaEstrutura = [...estruturaRelatorio, categoria];
+                                await salvarEstruturaRelatorio(novaEstrutura);
+                            }}
+                            onUpdateCategoria={async (categoriaId, dados) => {
+                                console.log('Atualizar categoria:', categoriaId, dados);
+                            }}
+                            onDeleteCategoria={async (categoriaId) => {
+                                const novaEstrutura = estruturaRelatorio.filter(c => c.id !== categoriaId);
+                                await salvarEstruturaRelatorio(novaEstrutura);
+                            }}
+                            onAddItem={async (categoriaId, item) => {
+                                const novaEstrutura = estruturaRelatorio.map(cat => 
+                                    cat.id === categoriaId 
+                                        ? { ...cat, itens: [...cat.itens, item] }
+                                        : cat
+                                );
+                                await salvarEstruturaRelatorio(novaEstrutura);
+                            }}
+                            onUpdateItem={async (categoriaId, itemId, dados) => {
+                                const novaEstrutura = estruturaRelatorio.map(cat => 
+                                    cat.id === categoriaId 
+                                        ? { 
+                                            ...cat, 
+                                            itens: cat.itens.map(item => 
+                                                item.id === itemId ? { ...item, ...dados } : item
+                                            )
+                                        }
+                                        : cat
+                                );
+                                await salvarEstruturaRelatorio(novaEstrutura);
+                            }}
+                            onDeleteItem={async (categoriaId, itemId) => {
+                                const novaEstrutura = estruturaRelatorio.map(cat => 
+                                    cat.id === categoriaId 
+                                        ? { ...cat, itens: cat.itens.filter(item => item.id !== itemId) }
+                                        : cat
+                                );
+                                await salvarEstruturaRelatorio(novaEstrutura);
+                            }}
+                            onAddCriterio={async (categoriaId, itemId, criterioId) => {
+                                const criterio = criteriosMaster.find(c => c.id === criterioId);
+                                if (criterio) {
+                                    const novaEstrutura = estruturaRelatorio.map(cat => 
+                                        cat.id === categoriaId 
+                                            ? { 
+                                                ...cat, 
+                                                itens: cat.itens.map(item => 
+                                                    item.id === itemId 
+                                                        ? { ...item, criterios: [...item.criterios, criterio] }
+                                                        : item
+                                                )
+                                            }
+                                            : cat
+                                    );
+                                    await salvarEstruturaRelatorio(novaEstrutura);
+                                }
+                            }}
+                            onRemoveCriterio={async (categoriaId, itemId, criterioId) => {
+                                const novaEstrutura = estruturaRelatorio.map(cat => 
+                                    cat.id === categoriaId 
+                                        ? { 
+                                            ...cat, 
+                                            itens: cat.itens.map(item => 
+                                                item.id === itemId 
+                                                    ? { ...item, criterios: item.criterios.filter(c => c.id !== criterioId) }
+                                                    : item
+                                            )
+                                        }
+                                        : cat
+                                );
+                                await salvarEstruturaRelatorio(novaEstrutura);
+                            }}
+                        />
+                    )}
+                </div>
+                <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-start">
+                    <Link to={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
+                        <Button variant="ghost" icon={ChevronLeft}>
+                            Voltar para o Hub
+                        </Button>
+                    </Link>
                 </div>
             </div>
         </div>

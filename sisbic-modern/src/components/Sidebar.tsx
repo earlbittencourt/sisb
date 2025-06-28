@@ -1,106 +1,120 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Settings, FileText, Users, BookOpen, User } from 'lucide-react';
+import { Home, Settings, FileText, Users, BookOpen, Plus, Bell, Moon, Sun, LogOut } from 'lucide-react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import Logo from './ui/Logo';
 import NavItem from './ui/NavItem';
+import Button from './ui/Button';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Sidebar = () => {
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
+  const [notifications] = useState(3);
 
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: FileText, label: 'Editais', path: '/editais' },
     { icon: BookOpen, label: 'Programas', path: '/programas' },
-    { icon: Settings, label: 'Configurações', path: '/configuracoes' },
     { icon: Users, label: 'Usuários', path: '/usuarios' },
+    { icon: Settings, label: 'Configurações', path: '/configuracoes' },
   ];
 
+  // Determinar ação primária baseada na rota atual
+  const getPrimaryAction = () => {
+    if (location.pathname === '/') {
+      return { label: 'Widget', path: '/widgets/novo' };
+    }
+    return null;
+  };
+
+  const primaryAction = getPrimaryAction();
+
   return (
-    <aside className="w-64 bg-primary-darker dark:bg-slate-900 border-r border-neutral-800 flex flex-col">
-      <div className="p-6">
-        <div className="mb-8 flex items-center justify-center">
-          <Logo size="xl" showText={false} />
+    <aside className="w-64 bg-institutional-dark dark:bg-slate-900 border-r border-neutral-800 flex flex-col p-6">
+      <div className="flex h-full flex-col">
+        {/* ===== SEÇÃO SUPERIOR - IDENTIDADE ===== */}
+        <div className="flex-shrink-0 pb-3 border-b border-neutral-700/50">
+          {/* Logo UFBA e Nome do Sistema em duas colunas */}
+          <div className="flex items-center gap-4">
+            {/* Logo UFBA */}
+            <Link to="/" className="flex items-center">
+              <img
+                src="/logo-branco-ufba.png"
+                alt="Logo UFBA"
+                className="h-32 w-auto"
+                style={{ objectFit: 'contain' }}
+              />
+            </Link>
+            {/* Título da Aplicação */}
+            <div className="flex flex-col">
+              <h1 className="text-xl font-bold text-white leading-tight">SISBIC</h1>
+              <p className="text-sm text-slate-300 leading-tight">Sistema de Bolsas de Iniciação Científica</p>
+            </div>
+          </div>
         </div>
 
-        <nav className="space-y-1">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            
-            return (
-              <Link key={item.path} to={item.path}>
-                <NavItem
-                  icon={item.icon}
-                  label={item.label}
-                  isActive={isActive}
-                />
+        {/* ===== SEÇÃO INTERMEDIÁRIA - NAVEGAÇÃO PRINCIPAL ===== */}
+        <div className="flex flex-1 flex-col py-6">
+          <nav className="flex flex-1 flex-col">
+            <ul className="flex flex-1 flex-col gap-y-7 mb-8">
+              <li>
+                <ul className="-mx-2 space-y-1">
+                  {menuItems.map((item) => {
+                    const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+                    return (
+                      <li key={item.path}>
+                        <Link to={item.path}>
+                          <NavItem
+                            icon={item.icon}
+                            label={item.label}
+                            isActive={isActive}
+                          />
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </li>
+            </ul>
+          </nav>
+
+          {/* ===== SEÇÃO DE AÇÃO PRIMÁRIA ===== */}
+          {primaryAction && (
+            <div>
+              <Link to={primaryAction.path}>
+                <button className="flex items-center justify-center gap-2 rounded-xl bg-white/10 text-white hover:bg-white/20 w-full py-3 font-semibold transition-all duration-150">
+                  <Plus className="w-5 h-5" />
+                  {primaryAction.label}
+                </button>
               </Link>
-            );
-          })}
-        </nav>
-      </div>
-      
-      <div className="mt-auto p-6">
-        <Menu as="div" className="relative">
-          <Menu.Button className="flex items-center justify-center w-8 h-8 bg-neutral-800 rounded-full hover:bg-neutral-700 transition-all duration-150 group border border-neutral-700">
-            <User className="w-4 h-4 text-neutral-300" />
-          </Menu.Button>
-          <Transition
-            as={Fragment}
-            enter="transition duration-100 ease-out"
-            enterFrom="transform scale-95 opacity-0"
-            enterTo="transform scale-100 opacity-100"
-            leave="transition duration-75 ease-out"
-            leaveFrom="transform scale-100 opacity-100"
-            leaveTo="transform scale-95 opacity-0"
-          >
-            <Menu.Items className="absolute bottom-full right-0 mb-2 w-56 bg-white dark:bg-neutral-800 shadow-subtle-lg rounded-lg overflow-hidden z-50 border border-neutral-200 dark:border-neutral-700">
-              <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
-                <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">João Bittencourt</p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">Administrador</p>
+            </div>
+          )}
+        </div>
+
+        {/* ===== RODAPÉ COESO ===== */}
+        <div className="mt-auto pt-6 border-t border-neutral-700/50">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              {/* Perfil do Usuário à Esquerda */}
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white font-bold">JS</span>
+                <div>
+                  <p className="font-semibold text-white">João Silva</p>
+                  <p className="text-xs text-slate-300">Administrador</p>
+                </div>
               </div>
-              <div className="p-2">
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`${
-                        active ? 'bg-neutral-100 dark:bg-neutral-700' : ''
-                      } group flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors duration-150`}
-                    >
-                      <User className="w-4 h-4 mr-3 text-neutral-500" />
-                      Perfil
-                    </button>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`${
-                        active ? 'bg-neutral-100 dark:bg-neutral-700' : ''
-                      } group flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors duration-150`}
-                    >
-                      <Settings className="w-4 h-4 mr-3 text-neutral-500" />
-                      Configurações
-                    </button>
-                  )}
-                </Menu.Item>
-                <div className="border-t border-neutral-200 dark:border-neutral-700 my-2" />
-                <Menu.Item>
-                  {({ active }) => (
-                    <button
-                      className={`${
-                        active ? 'bg-red-50 dark:bg-red-500/10' : ''
-                      } group flex w-full items-center rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400 transition-colors duration-150`}
-                    >
-                      Sair
-                    </button>
-                  )}
-                </Menu.Item>
+              {/* Ícones de Ação à Direita */}
+              <div className="flex items-center gap-1">
+                <button className="p-2 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors"><Bell className="w-5 h-5" /></button>
+                <button className="p-2 rounded-md hover:bg-white/10 text-slate-300 hover:text-white transition-colors" onClick={toggleTheme} title={isDarkMode ? "Modo claro" : "Modo escuro"}>
+                  {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
               </div>
-            </Menu.Items>
-          </Transition>
-        </Menu>
+            </div>
+          </div>
+        </div>
       </div>
     </aside>
   );

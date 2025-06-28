@@ -4,9 +4,10 @@ import { Settings, FileText, Users, Award, ChevronRight, CheckCircle, Clock, Ale
 import Card from '../../../components/ui/Card';
 import { useRelatorioConfig } from '../../../hooks/useRelatorioConfig';
 import Button from "../../../components/ui/Button";
+import StatusBadge from '../../../components/ui/StatusBadge';
 
 const ConfigurarRelatorio: React.FC = () => {
-    const { id: editalId, relatorioId } = useParams<{ id: string; relatorioId: string }>();
+    const { editalId, relatorioId } = useParams<{ editalId: string; relatorioId: string }>();
     const navigate = useNavigate();
     const { 
         relatorio, 
@@ -21,235 +22,176 @@ const ConfigurarRelatorio: React.FC = () => {
     // Estrutura das seções de configuração
     const sections = [
         {
+            key: "estrutura",
+            title: "Estrutura do Relatório",
+            description: "Configure as seções e campos que compõem o relatório.",
+            path: `estrutura`,
+            icon: FileText,
+        },
+        {
             key: "conceitos",
             title: "Gerenciar Conceitos",
             description: "Configure os conceitos de avaliação do relatório.",
-            icon: (
-                <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="drop-shadow-lg text-blue-700 dark:text-blue-300"
-                >
-                    <path d="M9 12l2 2 4-4" />
-                    <path d="M21 12c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z" className="group-hover:animate-orbit-br" />
-                    <path d="M3 12c1 0 2-1 2-2s-1-2-2-2-2 1-2 2 1 2 2 2z" className="group-hover:animate-orbit-tl" />
-                    <path d="M12 3c0 1-1 2-2 2s-2-1-2-2 1-2 2-2 2 1 2 2z" className="group-hover:animate-orbit-tr" />
-                    <path d="M12 21c0-1 1-2 2-2s2 1 2 2-1 2-2 2-2-1-2-2z" className="group-hover:animate-orbit-bl" />
-                </svg>
-            ),
-            path: "conceitos",
-            color: "from-blue-500/20 to-indigo-500/10",
-            iconBg: "from-blue-400/30 to-transparent",
-            iconColor: "text-blue-700 dark:text-blue-300",
-            shadow: "shadow-blue-500/10",
-            glow: "shadow-blue-500/30",
-        },
-        {
-            key: "itens-avaliacao-bolsista",
-            title: "Itens de Avaliação - Bolsista",
-            description: "Configure os critérios de avaliação do bolsista.",
-            icon: (
-                <GraduationCap className="drop-shadow-lg w-6 h-6 group-hover:animate-sway text-emerald-700 dark:text-emerald-300" />
-            ),
-            path: "itens-avaliacao?tipo=bolsista",
-            color: "from-emerald-500/20 to-green-500/10",
-            iconBg: "from-emerald-400/30 to-transparent",
-            iconColor: "text-emerald-700 dark:text-emerald-300",
-            shadow: "shadow-emerald-500/10",
-            glow: "shadow-emerald-500/30",
+            path: `conceitos`,
+            icon: Award,
         },
         {
             key: "itens-avaliacao-orientador",
-            title: "Itens de Avaliação - Orientador",
-            description: "Configure os critérios de avaliação do orientador.",
-            icon: (
-                <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="drop-shadow-lg text-purple-700 dark:text-purple-300"
-                >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                    <path
-                        d="m16 11 2 2 4-4"
-                        strokeDasharray="10"
-                        strokeDashoffset="0"
-                        className="group-hover:animate-redraw"
-                    />
-                </svg>
-            ),
-            path: "itens-avaliacao?tipo=orientador",
-            color: "from-purple-500/20 to-violet-500/10",
-            iconBg: "from-purple-400/30 to-transparent",
-            iconColor: "text-purple-700 dark:text-purple-300",
-            shadow: "shadow-purple-500/10",
-            glow: "shadow-purple-500/30",
+            title: "Avaliação do Orientador",
+            description: "Configure os itens de avaliação para o orientador.",
+            path: `itens-avaliacao?tipo=orientador`,
+            icon: GraduationCap,
         },
         {
-            key: "estrutura",
-            title: "Estrutura do Relatório",
-            description: "Defina a estrutura e organização do relatório.",
-            icon: (
-                <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="drop-shadow-lg text-amber-700 dark:text-amber-300"
-                >
-                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <path
-                        className="[stroke-dasharray:8] [stroke-dashoffset:0] group-hover:[stroke-dashoffset:8] group-hover:animate-draw-line-2"
-                        d="M8 13h8"
-                    />
-                    <path
-                        className="[stroke-dasharray:8] [stroke-dashoffset:0] group-hover:[stroke-dashoffset:8] group-hover:animate-draw-line-3"
-                        d="M8 17h8"
-                    />
-                    <path
-                        className="[stroke-dasharray:2] [stroke-dashoffset:0] group-hover:[stroke-dashoffset:2] group-hover:animate-draw-line-1"
-                        d="M8 9h2"
-                    />
-                </svg>
-            ),
-            path: "estrutura",
-            color: "from-amber-500/20 to-orange-500/10",
-            iconBg: "from-amber-400/30 to-transparent",
-            iconColor: "text-amber-700 dark:text-amber-300",
-            shadow: "shadow-amber-500/10",
-            glow: "shadow-amber-500/30",
-        },
-    ];
-
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'Concluído':
-                return <CheckCircle className="text-green-400" />;
-            case 'Pendente':
-                return <AlertCircle className="text-yellow-400" />;
-            default:
-                return <Clock className="text-gray-500" />;
+            key: "itens-avaliacao-bolsista",
+            title: "Avaliação do Bolsista",
+            description: "Configure os itens de avaliação para o bolsista.",
+            path: `itens-avaliacao?tipo=bolsista`,
+            icon: Users,
         }
-    };
+    ];
 
     // Determinar status de cada seção
     const sectionsWithStatus = sections.map(section => {
         let status = 'Pendente';
+        let progress = 0;
         
         if (section.key === 'conceitos') {
             status = conceitos.length > 0 ? 'Concluído' : 'Pendente';
+            progress = conceitos.length > 0 ? 100 : 0;
         } else if (section.key === 'itens-avaliacao-bolsista') {
             status = itensBolsistaRelatorio.length > 0 ? 'Concluído' : 'Pendente';
+            progress = itensBolsistaRelatorio.length > 0 ? 100 : 0;
         } else if (section.key === 'itens-avaliacao-orientador') {
             status = itensOrientadorRelatorio.length > 0 ? 'Concluído' : 'Pendente';
+            progress = itensOrientadorRelatorio.length > 0 ? 100 : 0;
         } else if (section.key === 'estrutura') {
             status = estruturaRelatorio.length > 0 ? 'Concluído' : 'Pendente';
+            progress = estruturaRelatorio.length > 0 ? 100 : 0;
         }
         
-        return { ...section, status };
+        return { ...section, status, progress };
     });
+
+    // Encontrar o primeiro card pendente para destacar
+    const firstPendingSection = sectionsWithStatus.find(section => section.status === 'Pendente');
 
     if (loading) {
         return (
-            <div className="p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-                <p className="text-lg text-text-secondary">Carregando configuração do relatório...</p>
+            <div className="p-4 md:p-8 space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                        Configuração do {relatorio?.descricao}
+                    </h1>
+                    <p className="text-md text-gray-500 dark:text-gray-400 mt-1">
+                        Configure os critérios e estrutura do relatório.
+                    </p>
+                </div>
+
+                <div className="text-center py-10">
+                    <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500 mx-auto"></div>
+                    <p className="mt-4 text-gray-500 dark:text-gray-400">Carregando configuração do relatório...</p>
+                </div>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold text-red-500 mb-4">Erro ao carregar relatório</h1>
-                    <p className="text-text-secondary mb-4">{error}</p>
-                    <Link to={`/editais/${editalId}/configurar/relatorios`}>
-                        <button className="px-4 py-2 bg-ufba-blue text-white rounded-lg hover:bg-ufba-blue-dark transition-colors">
-                            Voltar aos Relatórios
-                        </button>
-                    </Link>
+            <div className="p-4 md:p-8 space-y-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                        Configuração do {relatorio?.descricao}
+                    </h1>
+                    <p className="text-md text-gray-500 dark:text-gray-400 mt-1">
+                        Configure os critérios e estrutura do relatório.
+                    </p>
+                </div>
+
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+                    <AlertCircle className="text-red-500 mr-2" size={20} />
+                    <span className="text-red-700">{error}</span>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-6 lg:p-8 bg-gradient-to-br from-ufba-gray-50 to-ufba-gray-100 dark:from-ufba-gray-950 dark:to-ufba-gray-800 min-h-screen flex flex-col">
-            <div className="flex-grow">
-                <header className="mb-10">
-                    <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-400 py-2">
-                        Configuração do {relatorio?.descricao}
-                    </h1>
-                    <p className="text-lg text-text-secondary mt-2">
-                        Configure os critérios e estrutura do relatório.
-                    </p>
-                </header>
-
-                <main className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {sectionsWithStatus.map((section, index) => (
-                        <Link to={section.path} key={index} className="group block relative">
-                            <Card className={`h-full flex flex-col justify-between transition-all duration-500 ease-in-out group-hover:scale-105 group-hover:shadow-2xl dark:group-hover:shadow-cyan-500/20 overflow-hidden relative bg-gradient-to-br ${section.color} border border-white/20 backdrop-blur-lg`}>
-                                <div className={`absolute -inset-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br ${section.color} blur-xl`}></div>
-                                <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-transparent to-black/10"></div>
-                                
-                                <Card.Content className="relative z-10 flex flex-col h-full">
-                                    <div className="flex items-start justify-between">
-                                        <div className="relative">
-                                            <div className={`relative p-4 bg-gradient-to-br ${section.iconBg} backdrop-blur-sm rounded-2xl mb-4 shadow-lg`}>
-                                                <div className="relative z-10">
-                                                    {section.icon}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <span className="flex items-center text-xs font-semibold text-ufba-gray-700 dark:text-white/90 backdrop-blur-xl bg-black/5 dark:bg-black/10 px-2 py-1 rounded-full border border-black/10 dark:border-white/10">
-                                            {getStatusIcon(section.status)}
-                                            <span className="ml-1.5">{section.status}</span>
-                                        </span>
-                                    </div>
-                                    <div className="flex-grow">
-                                        <h3 className="text-xl font-bold text-ufba-gray-900 dark:text-white drop-shadow-md">
-                                            {section.title}
-                                        </h3>
-                                        <p className="text-ufba-gray-700 dark:text-white/80 mt-2 text-sm">
-                                            {section.description}
-                                        </p>
-                                    </div>
-                                    
-                                    <div className="mt-6 flex items-center justify-end text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:underline transition-colors duration-300">
-                                        {section.status === 'Concluído' ? 'Alterar' : 'Configurar'}
-                                        <ChevronRight size={18} className="ml-1 transition-transform duration-300 group-hover:translate-x-1" />
-                                    </div>
-                                </Card.Content>
-                            </Card>
-                        </Link>
-                    ))}
-                </main>
+        <div className="p-4 md:p-8 space-y-6">
+            {/* Cabeçalho */}
+            <div>
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                    Configuração do {relatorio?.descricao}
+                </h1>
+                <p className="text-md text-gray-500 dark:text-gray-400 mt-1">
+                    Configure os critérios e estrutura do relatório.
+                </p>
             </div>
-            
-            <footer className="mt-12 flex items-center">
-                <Button onClick={() => navigate(`/editais/${editalId}/configurar/relatorios`)} variant="secondary">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Voltar
-                </Button>
-            </footer>
+
+            {/* Grid de Configurações */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sectionsWithStatus.map((section, index) => (
+                    <Link 
+                        to={`/editais/${editalId}/relatorios/${relatorioId}/${section.path}`}
+                        key={section.key}
+                        className="block"
+                    >
+                        <Card 
+                            className={`h-full transition-all duration-300 hover:scale-[1.02] ${
+                                firstPendingSection?.key === section.key 
+                                ? 'border-2 border-primary dark:border-primary-light' 
+                                : ''
+                            }`}
+                        >
+                            <Card.Header>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-3">
+                                        <section.icon className="h-5 w-5 text-primary dark:text-primary-light" />
+                                        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                                            {section.title}
+                                        </h2>
+                                    </div>
+                                    <StatusBadge status={section.status} />
+                                </div>
+                            </Card.Header>
+                            <Card.Content>
+                                {/* Barra de progresso linear */}
+                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mb-4">
+                                    <div
+                                        className="bg-primary dark:bg-primary-light h-1.5 rounded-full transition-all duration-500"
+                                        style={{ width: `${section.progress}%` }}
+                                    ></div>
+                                </div>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {section.description}
+                                </p>
+                            </Card.Content>
+                            <Card.Footer>
+                                <Button
+                                    variant="link"
+                                    className="w-full justify-between"
+                                >
+                                    Gerenciar
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
+                            </Card.Footer>
+                        </Card>
+                    </Link>
+                ))}
+            </div>
+
+            {/* Botão Voltar */}
+            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <Link to={`/editais/${editalId}/configurar/relatorios`}>
+                    <Button 
+                        variant="secondary"
+                        icon={ArrowLeft}
+                        iconPosition="left"
+                    >
+                        Voltar para Relatórios
+                    </Button>
+                </Link>
+            </div>
         </div>
     );
 };

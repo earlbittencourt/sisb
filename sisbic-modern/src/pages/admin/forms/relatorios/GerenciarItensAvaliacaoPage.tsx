@@ -7,7 +7,7 @@ import Button from '../../../../components/ui/Button';
 import { ChevronLeft } from 'lucide-react';
 
 const GerenciarItensAvaliacaoPage: React.FC = () => {
-    const { id: editalId, relatorioId } = useParams<{ id: string; relatorioId: string }>();
+    const { editalId, relatorioId } = useParams<{ editalId: string; relatorioId: string }>();
     const [searchParams] = useSearchParams();
     const tipo = searchParams.get('tipo') || 'orientador'; // 'orientador' ou 'bolsista'
 
@@ -101,10 +101,19 @@ const GerenciarItensAvaliacaoPage: React.FC = () => {
     };
 
     return (
-        <ConfigLayout
-            linkVoltar={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}
-        >
+        <ConfigLayout>
             {renderContent()}
+            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <Link to={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
+                    <Button 
+                        variant="secondary"
+                        icon={ChevronLeft}
+                        iconPosition="left"
+                    >
+                        Voltar para o Hub
+                    </Button>
+                </Link>
+            </div>
         </ConfigLayout>
     );
 };

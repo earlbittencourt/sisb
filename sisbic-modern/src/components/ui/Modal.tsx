@@ -24,13 +24,6 @@ const sizeClasses = {
   full: 'max-w-full mx-4'
 };
 
-const variantClasses = {
-  default: 'bg-white dark:bg-gray-800',
-  glass: 'bg-white/25 dark:bg-gray-800/15 backdrop-blur-xl backdrop-saturate-150',
-  warning: 'bg-yellow-50 dark:bg-yellow-900/90',
-  danger: 'bg-red-50 dark:bg-red-900/90'
-};
-
 const textColorClasses = {
   default: 'text-gray-900 dark:text-white',
   glass: 'text-gray-900 dark:text-white',

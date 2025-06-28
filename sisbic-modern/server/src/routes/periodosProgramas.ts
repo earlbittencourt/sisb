@@ -10,6 +10,7 @@ import {
   deleteAgenciaEdital,
   getProjetoConfiguracao,
   upsertProjetoConfiguracao,
+  criarPeriodoPrograma,
 } from '../controllers/periodosProgramasController';
 import relatoriosRoutes from './relatorios';
 
@@ -32,5 +33,7 @@ router.post('/:id/configuracao-submissao', upsertProjetoConfiguracao);
 
 // Rotas para relatórios de um edital
 router.use('/:id/relatorios', relatoriosRoutes);
+
+router.post('/', criarPeriodoPrograma);
 
 export default router; 

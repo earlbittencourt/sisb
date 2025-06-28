@@ -9,15 +9,20 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // 👇 A NOVA PALETA MONOCROMÁTICA COMPLETA
+        // 👇 NOVA COR PRIMÁRIA DE AÇÃO - MAIS VIBRANTE E ENERGÉTICA
         primary: {
-          lightest: '#f0f3f9', // Um fundo de card/página quase branco, com um toque de azul
-          lighter: '#dbeafe',  // Um fundo de hover sutil para listas
-          light: '#60a5fa',   // Um azul mais claro para texto de links secundários ou ícones
-          DEFAULT: '#2a4377',  // A COR BASE OFICIAL DA UFBA
-          dark: '#22365f',    // Um tom mais escuro para hovers e estados ativos sutis
-          darker: '#172545',   // O tom mais escuro para fundos de alto contraste, como a sidebar
+          light: '#60a5fa',   // blue-400
+          DEFAULT: '#3b82f6', // blue-500 - COR DE AÇÃO PRINCIPAL
+          dark: '#2563eb',    // blue-600
         },
+        
+        // 👇 COR INSTITUCIONAL PARA FUNDOS E ESTRUTURA
+        institutional: {
+          light: '#3b5a9a',
+          DEFAULT: '#2a4377', // AZUL INSTITUCIONAL UFBA
+          dark: '#1e315a',
+        },
+        
         // Neutros para fundos, textos, bordas, etc.
         neutral: {
           50: '#fafafa',

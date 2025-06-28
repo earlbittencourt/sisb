@@ -1,11 +1,13 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useRelatorioConfig } from '../../../../hooks/useRelatorioConfig';
 import GerenciarConceitos from '../components/GerenciarConceitos';
 import ConfigLayout from '../../../../layouts/ConfigLayout';
+import Button from '../../../../components/ui/Button';
+import { ChevronLeft } from 'lucide-react';
 
 const GerenciarConceitosPage: React.FC = () => {
-    const { id: editalId, relatorioId } = useParams<{ id: string; relatorioId: string }>();
+    const { editalId, relatorioId } = useParams<{ editalId: string; relatorioId: string }>();
 
     const {
         relatorio,
@@ -46,18 +48,25 @@ const GerenciarConceitosPage: React.FC = () => {
     }
 
     return (
-        <ConfigLayout
-            linkVoltar={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}
-        >
+        <ConfigLayout linkVoltar={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
             {relatorio && (
-                <GerenciarConceitos
-                    titulo="Gerenciar Conceitos"
-                    descricao={`Configure os conceitos de avaliação para o relatório "${relatorio.descricao}".`}
-                    conceitos={conceitos}
-                    onAdd={addConceito}
-                    onUpdate={updateConceito}
-                    onDelete={deleteConceito}
-                />
+                <>
+                    <GerenciarConceitos
+                        titulo="Gerenciar Conceitos"
+                        descricao={`Configure os conceitos de avaliação para o relatório "${relatorio.descricao}".`}
+                        conceitos={conceitos}
+                        onAdd={addConceito}
+                        onUpdate={updateConceito}
+                        onDelete={deleteConceito}
+                    />
+                    <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <Link to={`/editais/${editalId}/relatorios/${relatorioId}/configurar`}>
+                            <Button variant="ghost" icon={ChevronLeft} iconPosition="left">
+                                Voltar para o Hub
+                            </Button>
+                        </Link>
+                    </div>
+                </>
             )}
         </ConfigLayout>
     );

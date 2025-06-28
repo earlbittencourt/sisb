@@ -220,16 +220,21 @@ export const useRelatorioConfig = (editalId?: string, relatorioId?: string) => {
     };
 
     const salvarEstruturaRelatorio = async (estrutura: EstruturaRelatorioCategoria[]) => {
+        console.log('salvarEstruturaRelatorio chamada com:', estrutura);
         if (!relatorioId) {
+            console.error('ID do relatório não encontrado');
             setError("ID do relatório não encontrado.");
             return;
         }
         try {
+            console.log('Fazendo requisição para:', `${API_URL}/estrutura-relatorio/${relatorioId}`);
             await axios.post(`${API_URL}/estrutura-relatorio/${relatorioId}`, estrutura);
+            console.log('Requisição bem-sucedida, buscando dados atualizados');
             await fetchAllData();
+            console.log('Dados atualizados com sucesso');
         } catch (err) {
+            console.error('Erro ao salvar estrutura do relatório:', err);
             setError('Falha ao salvar estrutura do relatório.');
-            console.error(err);
             throw err;
         }
     };

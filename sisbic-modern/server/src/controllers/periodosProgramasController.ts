@@ -17,6 +17,7 @@ export const getPeriodosProgramas = async (req: Request, res: Response) => {
                 p.PEP_DtFim,
                 p.PEP_Codigo_PRO,
                 p.PEP_Codigo_PPS,
+                p.PEP_Edital,
                 pr.PRO_Descricao,
                 ps.PPS_Descricao
             FROM 
@@ -66,13 +67,7 @@ export const getPeriodoProgramaById = async (req: Request, res: Response) => {
                     PEP_DtFim,
                     PEP_Codigo_PRO,
                     PEP_Codigo_PPS,
-                    PEP_edital,
-                    PEP_editalArquivo,
-                    PEP_nmProjetos,
-                    PEP_nmPlanos,
-                    PEP_nmAvaliadores,
-                    PEP_avaliarProjeto,
-                    PEP_cpf_usuario
+                    PEP_Edital
                 FROM PEP_PeriodoPrograma 
                 WHERE PEP_Codigo = @id
             `);
@@ -97,7 +92,7 @@ export const updatePeriodoPrograma = async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'Nenhum campo para atualizar foi fornecido.' });
     }
 
-    const validFields = ['PEP_Codigo_PRO', 'PEP_Sigla', 'PEP_Descricao', 'PEP_DtInicio', 'PEP_DtFim', 'PEP_Codigo_PPS'];
+    const validFields = ['PEP_Codigo_PRO', 'PEP_Sigla', 'PEP_Descricao', 'PEP_DtInicio', 'PEP_DtFim', 'PEP_Codigo_PPS', 'PEP_Edital'];
     
     try {
         const pool = await connectToDatabase();
@@ -337,5 +332,62 @@ export const upsertProjetoConfiguracao = async (req: Request, res: Response) => 
     } catch (error) {
         console.error('Erro ao salvar configuração de submissão:', error);
         res.status(500).send('Erro ao salvar configuração de submissão.');
+    }
+};
+
+export const criarPeriodoPrograma = async (req: Request, res: Response) => {
+    try {
+        const {
+            PEP_Sigla,
+            PEP_Descricao,
+            PEP_DtInicio,
+            PEP_DtFim,
+            PEP_Codigo_PRO,
+            PEP_Codigo_PPS,
+            PEP_Edital
+        } = req.body;
+
+        const pool = await connectToDatabase();
+        const result = await pool.request()
+            .input('PEP_Sigla', sql.NVarChar, PEP_Sigla)
+            .input('PEP_Descricao', sql.NVarChar, PEP_Descricao)
+            .input('PEP_DtInicio', sql.Date, PEP_DtInicio)
+            .input('PEP_DtFim', sql.Date, PEP_DtFim)
+            .input('PEP_Codigo_PRO', sql.Int, PEP_Codigo_PRO)
+            .input('PEP_Codigo_PPS', sql.Int, PEP_Codigo_PPS)
+            .input('PEP_Edital', sql.NVarChar, PEP_Edital)
+            .query(`
+                DECLARE @InsertedRows TABLE (
+                    PEP_Codigo INT,
+                    PEP_Sigla NVARCHAR(100),
+                    PEP_Descricao NVARCHAR(200),
+                    PEP_DtInicio DATE,
+                    PEP_DtFim DATE,
+                    PEP_Codigo_PRO INT,
+                    PEP_Codigo_PPS INT,
+                    PEP_Edital NVARCHAR(255)
+                );
+
+                INSERT INTO PEP_PeriodoPrograma
+                (PEP_Sigla, PEP_Descricao, PEP_DtInicio, PEP_DtFim, PEP_Codigo_PRO, PEP_Codigo_PPS, PEP_Edital)
+                OUTPUT 
+                    INSERTED.PEP_Codigo,
+                    INSERTED.PEP_Sigla,
+                    INSERTED.PEP_Descricao,
+                    INSERTED.PEP_DtInicio,
+                    INSERTED.PEP_DtFim,
+                    INSERTED.PEP_Codigo_PRO,
+                    INSERTED.PEP_Codigo_PPS,
+                    INSERTED.PEP_Edital
+                INTO @InsertedRows
+                VALUES (@PEP_Sigla, @PEP_Descricao, @PEP_DtInicio, @PEP_DtFim, @PEP_Codigo_PRO, @PEP_Codigo_PPS, @PEP_Edital);
+
+                SELECT * FROM @InsertedRows;
+            `);
+
+        res.status(201).json(result.recordset[0]);
+    } catch (error) {
+        console.error('Erro ao criar período do programa:', error);
+        res.status(500).json({ message: 'Erro ao criar período do programa.' });
     }
 }; 

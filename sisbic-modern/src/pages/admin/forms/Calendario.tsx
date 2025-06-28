@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Calendar as CalendarIcon, Clock, AlertCircle, CheckCircle, Settings, Play, ChevronLeft, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, AlertCircle, CheckCircle, ChevronLeft } from 'lucide-react';
 import Card from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import Select, { SelectOption } from '../../../components/ui/Select';
 import { DatePicker } from '../../../components/ui/DatePicker';
 import Modal from '../../../components/ui/Modal';
 import { useCalendario, CalendarioAgrupado, EventoCalendario, Evento } from '../../../hooks/useCalendario';
+import StatusBadge from '../../../components/ui/StatusBadge';
 
 // Componente para o Modal de Edição/Adição
 const EventoModal: React.FC<{
@@ -146,7 +147,7 @@ const EventoModal: React.FC<{
                         Cancelar
                     </Button>
                 <Button
-                    variant="warning"
+                    variant="primary"
                     onClick={handleSaveClick}
                     disabled={!eventoSelecionado || !dataInicio || !dataFim}
                 >
@@ -154,58 +155,6 @@ const EventoModal: React.FC<{
                     </Button>
             </div>
         </Modal>
-    );
-};
-
-// Componente de Progresso Circular
-const ProgressCircle: React.FC<{ progress: number; size?: number; strokeWidth?: number }> = ({ 
-    progress, 
-    size = 60, 
-    strokeWidth = 4 
-}) => {
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const strokeDasharray = circumference;
-    const strokeDashoffset = circumference - (progress / 100) * circumference;
-
-    const getProgressColor = (progress: number) => {
-        if (progress === 100) return '#10B981'; // green-500
-        if (progress >= 70) return '#3B82F6'; // blue-500
-        if (progress >= 40) return '#F59E0B'; // amber-500
-        return '#EF4444'; // red-500
-    };
-
-    return (
-        <div className="relative inline-flex items-center justify-center">
-            <svg width={size} height={size} className="transform -rotate-90">
-                <circle
-                    cx={size / 2}
-                    cy={size / 2}
-                    r={radius}
-                    stroke="#E5E7EB"
-                    strokeWidth={strokeWidth}
-                    fill="transparent"
-                    className="dark:stroke-gray-600"
-                />
-                <circle
-                    cx={size / 2}
-                    cy={size / 2}
-                    r={radius}
-                    stroke={getProgressColor(progress)}
-                    strokeWidth={strokeWidth}
-                    fill="transparent"
-                    strokeDasharray={strokeDasharray}
-                    strokeDashoffset={strokeDashoffset}
-                    strokeLinecap="round"
-                    className="transition-all duration-300 ease-in-out"
-                />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                    {progress}%
-                </span>
-            </div>
-        </div>
     );
 };
 
@@ -382,35 +331,6 @@ const Calendario: React.FC = () => {
         }
     };
 
-    const handleDeleteEvento = async (evento: EventoCalendario, atividade: CalendarioAgrupado) => {
-        // Verifica se o evento é obrigatório
-        if (isEventoObrigatorio(atividade.atividadeDescricao, evento.eventoDescricao || '')) {
-            alert('Não é possível excluir um evento obrigatório.');
-            return;
-        }
-
-        if (window.confirm(`Tem certeza que deseja excluir o evento "${evento.eventoDescricao}"?`)) {
-            try {
-                await excluirEventoCalendario(evento.id);
-                await carregarCalendario(); // Recarrega os dados
-            } catch (error) {
-                console.error('Erro ao excluir evento:', error);
-                alert('Erro ao excluir evento. Tente novamente.');
-            }
-        }
-    };
-
-    const getStatus = (evento: EventoCalendario): { texto: string; cor: string; Icon: React.ElementType } => {
-        const agora = new Date();
-        const dataFim = new Date(evento.dataFim);
-        
-        if (agora > dataFim) return { texto: 'Finalizado', cor: 'text-green-500', Icon: CheckCircle };
-        if (agora >= new Date(evento.dataInicio) && agora <= dataFim) return { texto: 'Em Andamento', cor: 'text-blue-500', Icon: Clock };
-        if (agora < new Date(evento.dataInicio)) return { texto: 'Agendado', cor: 'text-amber-500', Icon: CalendarIcon };
-        
-        return { texto: 'Status Desconhecido', cor: 'text-gray-400', Icon: AlertCircle };
-    };
-
     return (
         <div className="p-4 md:p-8 space-y-6">
             {/* Cabeçalho e Notificações */}
@@ -449,132 +369,36 @@ const Calendario: React.FC = () => {
                             <Card key={atividade.atividadeId} className="group transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-2xl dark:hover:shadow-cyan-500/20">
                                 <Card.Header>
                                     <div className="flex items-center justify-between">
-                                        <h2 className="text-xl font-semibold text-gray-800 dark:text-white">
+                                        <h2 className="text-xl font-semibold text-primary dark:text-primary-light">
                                             {atividade.atividadeDescricao}
                                         </h2>
-                                        <div className="flex items-center space-x-2">
-                                            {completo ? (
-                                                <div className="flex items-center text-green-600 dark:text-green-400">
-                                                    <CheckCircle size={20} className="mr-1" />
-                                                    <span className="text-sm font-medium">Completo</span>
-                                                </div>
-                                            ) : (
-                                                <ProgressCircle progress={progresso} />
-                                            )}
-                                        </div>
+                                        {/* Pill de status dinâmico */}
+                                        <StatusBadge
+                                            status={completo ? 'Completo' : `${eventosObrigatorios.length - atividade.eventos.filter(e => eventosObrigatorios.includes(e.eventoDescricao || '')).length} Eventos Pendentes`}
+                                            size="md"
+                                        />
                                     </div>
                                 </Card.Header>
-                                
                                 <Card.Content>
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                                            Configure o calendário para {atividade.atividadeDescricao.toLowerCase()}
-                                        </p>
-                                        
-                                        {/* Lista de eventos */}
-                                        <div className="space-y-2 mt-3">
-                                            {atividade.eventos.length > 0 ? (
-                                                atividade.eventos.map((evento) => {
-                                                    const isObrigatorio = isEventoObrigatorio(atividade.atividadeDescricao, evento.eventoDescricao || '');
-                                                    return (
-                                                        <div key={evento.id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                                            <div className="flex-1">
-                                                                <div className="flex items-center gap-2">
-                                                                    <Clock size={14} className="text-gray-500 dark:text-gray-400" />
-                                                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                                        {evento.eventoDescricao}
-                                                                    </span>
-                                                                </div>
-                                                                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                                    {new Date(evento.dataInicio).toLocaleDateString('pt-BR')} - {new Date(evento.dataFim).toLocaleDateString('pt-BR')}
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex items-center gap-1">
-                                                                {(() => {
-                                                                    const status = getStatus(evento);
-                                                                    if (status.texto === 'Finalizado') {
-                                                                        return null;
-                                                                    }
-                                                                    return status.Icon ? (
-                                                                        <status.Icon 
-                                                                            size={14} 
-                                                                            className={status.cor} 
-                                                                        />
-                                                                    ) : null;
-                                                                })()}
-                                                                {!isObrigatorio && (
-                                                                    <button
-                                                                        onClick={() => handleDeleteEvento(evento, atividade)}
-                                                                        className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                                                                        title="Excluir evento"
-                                                                    >
-                                                                        <Trash2 size={14} />
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })
-                                            ) : (
-                                                <div className="text-center py-4 text-gray-500">
-                                                    <CalendarIcon size={24} className="mx-auto mb-2 opacity-50" />
-                                                    <p className="text-sm">Nenhum evento configurado</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                        
-                                        {!completo && eventosObrigatorios.length > 0 && (
-                                            <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded">
-                                                <h4 className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-2">
-                                                    Eventos obrigatórios pendentes:
-                                                </h4>
-                                                <div className="space-y-1">
-                                                    {eventosObrigatorios
-                                                        .filter(evento => !atividade.eventos.some(e => e.eventoDescricao === evento))
-                                                        .slice(0, 3)
-                                                        .map(evento => (
-                                                            <div key={evento} className="flex items-center text-xs text-amber-700 dark:text-amber-300">
-                                                                <AlertCircle size={12} className="mr-1" />
-                                                                {evento}
-                                                            </div>
-                                                        ))}
-                                                    {eventosObrigatorios.filter(evento => 
-                                                        !atividade.eventos.some(e => e.eventoDescricao === evento)
-                                                    ).length > 3 && (
-                                                        <p className="text-xs text-amber-600 dark:text-amber-400">
-                                                            +{eventosObrigatorios.filter(evento => 
-                                                                !atividade.eventos.some(e => e.eventoDescricao === evento)
-                                                            ).length - 3} eventos pendentes
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        )}
+                                    {/* Barra de progresso linear */}
+                                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-4">
+                                        <div
+                                            className="bg-primary h-2 rounded-full transition-all duration-500"
+                                            style={{ width: `${progresso}%` }}
+                                        ></div>
                                     </div>
+                                    <p className="text-sm text-neutral-500 dark:text-slate-400">
+                                        Gerencie os eventos do calendário desta atividade.
+                                    </p>
                                 </Card.Content>
-                                
                                 <Card.Footer>
-                                    <div className="flex space-x-2">
-                                        {completo ? (
-                                            <Button 
-                                                variant="primary" 
-                                                className="flex-1" 
-                                                onClick={() => handleOpenModalAdicionar(atividade)}
-                                            >
-                                                <Settings className="mr-2" size={16} />
-                                                Editar
-                                            </Button>
-                                        ) : (
-                                            <Button 
-                                                variant="primary" 
-                                                className="flex-1" 
-                                                onClick={() => handleOpenModalAdicionar(atividade)}
-                                            >
-                                                <Play className="mr-2" size={16} />
-                                                Configurar
-                                            </Button>
-                                        )}
-                                    </div>
+                                    <Button
+                                        variant="primary"
+                                        className="flex-1"
+                                        onClick={() => handleOpenModalAdicionar(atividade)}
+                                    >
+                                        Gerenciar &gt;
+                                    </Button>
                                 </Card.Footer>
                             </Card>
                         );

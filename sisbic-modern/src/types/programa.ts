@@ -24,12 +24,9 @@ export interface PeriodoPrograma {
   PEP_Descricao: string;
   PEP_DtInicio: string;
   PEP_DtFim: string;
-  PRO_Codigo: number;
-  PRO_Descricao: string;
   PEP_Codigo_PRO: number;
   PEP_Codigo_PPS: number;
-  PPS_Descricao?: string;
-  PEP_NomeArquivo?: string;
+  PEP_Edital?: string;
 }
 
 export interface ProgramaCategoria {

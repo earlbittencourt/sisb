@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
-import { FileText, Clock, CheckCircle, Search, Plus, MoreHorizontal, Filter, ChevronUp, ChevronDown } from 'lucide-react';
-import DashboardCard from '../../components/ui/DashboardCard';
-import StatusBadge from '../../components/ui/StatusBadge';
+import React, { useState, useEffect, Fragment } from 'react';
+import { FileText, Clock, CheckCircle, Plus, MoreHorizontal, Filter, ChevronUp, ChevronDown, Eye, Edit3, Trash2 } from 'lucide-react';
+import { Menu, Transition } from '@headlessui/react';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '../../lib/utils';
 import { usePeriodosProgramas } from '../../hooks/usePeriodosProgramas';
-import FiltersPanel from '../../components/ui/FiltersPanel';
 import { useProgramas } from '../../hooks/useProgramas';
 import { useStatus } from '../../hooks/useStatus';
-import { Menu, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { useNavigate } from 'react-router-dom';
+import SearchInput from '../../components/ui/SearchInput';
+import StatusBadge from '../../components/ui/StatusBadge';
+import FiltersPanel from '../../components/ui/FiltersPanel';
+import DashboardCard from '../../components/ui/DashboardCard';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -19,6 +20,7 @@ const Editais = () => {
   const [filtros, setFiltros] = useState<{ tipos: string[]; status: string[] }>({ tipos: [], status: [] });
   const [sortBy, setSortBy] = useState<string>('PEP_Descricao');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const { periodos, loading: loadingPeriodos } = usePeriodosProgramas();
   const { programas } = useProgramas();
@@ -51,34 +53,35 @@ const Editais = () => {
 
   // Calcular métricas
   const totalEditais = periodos?.length || 0;
-  const emAndamento = periodos?.filter(e => isStatusEmAndamento(e.PPS_Descricao)).length || 0;
-  const concluidos = periodos?.filter(e => isStatusConcluido(e.PPS_Descricao)).length || 0;
-  const inscricoesAbertas = periodos?.filter(e => isStatusInscricoesAbertas(e.PPS_Descricao)).length || 0;
+  const emAndamento = periodos?.filter(e => {
+    const status = statusList.find(s => s.PPS_Codigo === e.PEP_Codigo_PPS)?.PPS_Descricao?.toLowerCase() || '';
+    return ['em andamento', 'andamento', 'ativo', 'vigente', 'aberto'].some(s => status.includes(s));
+  }).length || 0;
+  const concluidos = periodos?.filter(e => {
+    const status = statusList.find(s => s.PPS_Codigo === e.PEP_Codigo_PPS)?.PPS_Descricao?.toLowerCase() || '';
+    return ['concluído', 'concluido', 'finalizado', 'encerrado', 'terminado', 'completo'].some(s => status.includes(s));
+  }).length || 0;
+  const inscricoesAbertas = periodos?.filter(e => {
+    const status = statusList.find(s => s.PPS_Codigo === e.PEP_Codigo_PPS)?.PPS_Descricao?.toLowerCase() || '';
+    return ['inscrições', 'inscricoes', 'abertas', 'aberto', 'recebendo'].some(s => status.includes(s));
+  }).length || 0;
 
   // Lógica de filtros
   const handleFiltroChange = (campo: 'tipos' | 'status', valor: string, checked: boolean) => {
-    setFiltros((prev) => {
-      const arr = prev[campo];
-      return {
-        ...prev,
-        [campo]: checked ? [...arr, valor] : arr.filter((v) => v !== valor),
-      };
+    setFiltros(prev => {
+      const novosFiltros = { ...prev };
+      if (checked) {
+        novosFiltros[campo] = [...prev[campo], valor];
+      } else {
+        novosFiltros[campo] = prev[campo].filter(v => v !== valor);
+      }
+      return novosFiltros;
     });
   };
-  const handleLimparFiltros = () => setFiltros({ tipos: [], status: [] });
 
-  // Filtros ativos para exibir no painel
-  const activeFilters = [
-    ...filtros.tipos.map((id) => {
-      const p = programas.find((p) => p.PRO_Codigo?.toString() === id);
-      return p ? `Programa: ${p.PRO_Sigla}` : null;
-    }).filter(Boolean),
-    ...filtros.status.map((id) => {
-      const s = statusList.find((s) => s.PPS_Codigo?.toString() === id);
-      return s ? `Status: ${s.PPS_Descricao}` : null;
-    }).filter(Boolean),
-  ];
+  // Função para remover um filtro
   const handleRemoveFiltro = (filtro: string) => {
+    setActiveFilters(prev => prev.filter(f => f !== filtro));
     if (filtro.startsWith('Programa: ')) {
       const sigla = filtro.replace('Programa: ', '');
       const p = programas.find((p) => p.PRO_Sigla === sigla);
@@ -90,44 +93,68 @@ const Editais = () => {
     }
   };
 
-  // Filtrar editais
-  const filteredEditais = periodos?.filter(edital => {
-    const matchesSearch = edital.PEP_Descricao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      edital.PEP_Sigla?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTipo =
-      filtros.tipos.length === 0 ||
-      filtros.tipos.includes(edital.PEP_Codigo_PRO?.toString()) ||
-      filtros.tipos.includes(edital.PRO_Codigo?.toString());
-    const matchesStatus =
-      filtros.status.length === 0 ||
-      filtros.status.includes(edital.PEP_Codigo_PPS?.toString());
-    return matchesSearch && matchesTipo && matchesStatus;
-  }) || [];
+  // Função para limpar todos os filtros
+  const handleLimparFiltros = () => {
+    setFiltros({ tipos: [], status: [] });
+    setActiveFilters([]);
+  };
 
-  // Ordenação
+  // Atualizar activeFilters quando os filtros mudam
+  useEffect(() => {
+    const newActiveFilters = [
+        ...filtros.tipos.map(id => {
+            const programa = programas.find(p => p.PRO_Codigo.toString() === id);
+            return programa ? `Programa: ${programa.PRO_Sigla}` : null;
+        }).filter((f): f is string => f !== null),
+        ...filtros.status.map(id => {
+            const status = statusList.find(s => s.PPS_Codigo.toString() === id);
+            return status ? `Status: ${status.PPS_Descricao}` : null;
+        }).filter((f): f is string => f !== null)
+    ];
+
+    setActiveFilters(newActiveFilters);
+  }, [filtros, programas, statusList]);
+
+  // Lógica de ordenação
   const handleSort = (col: string) => {
     if (sortBy === col) {
-      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
     } else {
       setSortBy(col);
       setSortDirection('asc');
     }
   };
-  const sortedEditais = [...filteredEditais].sort((a, b) => {
+
+  // Filtrar editais
+  const editaisFiltrados = periodos?.filter(edital => {
+    const matchesTipo =
+      filtros.tipos.length === 0 ||
+      filtros.tipos.includes(edital.PEP_Codigo_PRO?.toString());
+    const matchesStatus =
+      filtros.status.length === 0 ||
+      filtros.status.includes(edital.PEP_Codigo_PPS?.toString());
+
+    const matchesSearch = searchTerm
+      ? edital.PEP_Descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        edital.PEP_Sigla.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+
+    return matchesTipo && matchesStatus && matchesSearch;
+  });
+
+  // Ordenar editais
+  const editaisOrdenados = [...(editaisFiltrados || [])].sort((a, b) => {
     let aValue: any;
     let bValue: any;
+
     switch (sortBy) {
       case 'PEP_Descricao':
         aValue = a.PEP_Descricao;
         bValue = b.PEP_Descricao;
         break;
-      case 'PRO_Descricao':
-        aValue = a.PRO_Descricao;
-        bValue = b.PRO_Descricao;
-        break;
-      case 'PPS_Descricao':
-        aValue = a.PPS_Descricao || '';
-        bValue = b.PPS_Descricao || '';
+      case 'PEP_Sigla':
+        aValue = a.PEP_Sigla;
+        bValue = b.PEP_Sigla;
         break;
       case 'PEP_DtInicio':
         aValue = a.PEP_DtInicio;
@@ -141,23 +168,17 @@ const Editais = () => {
         aValue = a.PEP_Descricao;
         bValue = b.PEP_Descricao;
     }
-    if (!aValue) return 1;
-    if (!bValue) return -1;
-    // Datas
-    if (sortBy === 'PEP_DtInicio' || sortBy === 'PEP_DtFim') {
-      return sortDirection === 'asc'
-        ? new Date(aValue).getTime() - new Date(bValue).getTime()
-        : new Date(bValue).getTime() - new Date(aValue).getTime();
+
+    if (sortDirection === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
     }
-    // Strings
-    return sortDirection === 'asc'
-      ? String(aValue).localeCompare(String(bValue))
-      : String(bValue).localeCompare(String(aValue));
   });
 
   // Paginação
-  const totalPages = Math.ceil(sortedEditais.length / ITEMS_PER_PAGE);
-  const paginatedEditais = sortedEditais.slice(
+  const totalPages = Math.ceil(editaisOrdenados.length / ITEMS_PER_PAGE);
+  const paginatedEditais = editaisOrdenados.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
@@ -175,20 +196,16 @@ const Editais = () => {
 
   if (loadingPeriodos) {
     return (
-      <div className="layout-container">
-        <div className="main-content">
-          <div className="content-area">
-            <div className="animate-pulse">
-              <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4 mb-4"></div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="card">
-                    <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2 mb-4"></div>
-                    <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
-                  </div>
-                ))}
+      <div className="content-area">
+        <div className="animate-pulse">
+          <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="card">
+                <div className="h-4 bg-neutral-200 dark:bg-neutral-700 rounded w-1/2 mb-4"></div>
+                <div className="h-8 bg-neutral-200 dark:bg-neutral-700 rounded w-1/3"></div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -199,79 +216,75 @@ const Editais = () => {
     <div className="layout-container bg-primary-lightest dark:bg-slate-900">
       <div className="main-content">
         <div className="content-area">
-      {/* Header Section */}
-      <div className="mb-8">
-            <div className="flex items-center justify-between mb-8">
+          {/* Header Section */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-3xl font-bold text-neutral-darker dark:text-slate-100 mb-2">
-          Editais
-        </h1>
+                  Editais
+                </h1>
                 <p className="text-neutral-600 dark:text-slate-400">
                   Gerencie os editais de bolsas da UFBA
-        </p>
+                </p>
               </div>
-      </div>
-
-      {/* Metrics Cards */}
+            </div>
+            {/* Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <DashboardCard
-          title="Total de Editais"
-                value={totalEditais.toString()}
-          icon={FileText}
-                trend={{ value: "+5.2%", direction: 'up' }}
-                className="bg-white dark:bg-slate-800"
-        />
-        <DashboardCard
-          title="Em Andamento"
-                value={emAndamento.toString()}
-          icon={Clock}
-                trend={{ value: "+12.5%", direction: 'up' }}
-                className="bg-white dark:bg-slate-800"
-              />
               <DashboardCard
                 title="Inscrições Abertas"
                 value={inscricoesAbertas.toString()}
-                icon={Search}
-                trend={{ value: "+8.1%", direction: 'up' }}
+                icon={FileText}
+                trend={{ value: '+8.1%', direction: 'up' }}
                 className="bg-white dark:bg-slate-800"
-        />
-        <DashboardCard
-          title="Concluídos"
+              />
+              <DashboardCard
+                title="Em Andamento"
+                value={emAndamento.toString()}
+                icon={Clock}
+                trend={{ value: '+12.5%', direction: 'up' }}
+                className="bg-white dark:bg-slate-800"
+              />
+              <DashboardCard
+                title="Total de Editais"
+                value={totalEditais.toString()}
+                icon={FileText}
+                trend={{ value: '+5.2%', direction: 'up' }}
+                className="bg-white dark:bg-slate-800"
+              />
+              <DashboardCard
+                title="Concluídos"
                 value={concluidos.toString()}
-          icon={CheckCircle}
-                trend={{ value: "+3.7%", direction: 'up' }}
+                icon={CheckCircle}
+                trend={{ value: '+3.7%', direction: 'up' }}
                 className="bg-white dark:bg-slate-800"
-        />
-      </div>
-
-      {/* Search and Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-              <div className="flex-1 max-w-md">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Buscar editais..."
-              value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-800 border border-neutral-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 hover:border-neutral-300 dark:hover:border-slate-600 placeholder:text-neutral-400 dark:placeholder:text-slate-500 text-neutral-700 dark:text-slate-100"
-            />
-          </div>
+              />
+            </div>
+            {/* Search and Actions */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
+              <div className="w-full sm:w-96">
+                <SearchInput
+                  placeholder="Buscar editais..."
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                />
               </div>
-          <div className="flex items-center gap-3">
-              <button
-                  className="btn-filter inline-flex items-center gap-2 px-4 py-2.5 hover:scale-105 transition-transform duration-200"
+              <div className="flex items-center gap-4">
+                <button
                   onClick={() => setIsFiltersOpen(true)}
-              >
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-700 dark:text-slate-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
+                >
                   <Filter className="w-4 h-4" />
                   Filtros
-              </button>
-                <button className="btn-primary inline-flex items-center gap-2 px-4 py-2.5 hover:scale-105 transition-transform duration-200 bg-primary dark:bg-primary-light text-white dark:text-primary-darker">
-              <Plus className="w-4 h-4" />
-              Novo Edital
-            </button>
-          </div>
-        </div>
+                </button>
+                <button
+                  onClick={() => navigate('/editais/novo')}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary transition-colors rounded-lg"
+                >
+                  <Plus className="w-4 h-4" />
+                  Novo Edital
+                </button>
+              </div>
+            </div>
             <FiltersPanel
               isOpen={isFiltersOpen}
               onClose={() => setIsFiltersOpen(false)}
@@ -279,32 +292,30 @@ const Editais = () => {
               statusList={statusList}
               filtros={filtros}
               onFiltroChange={handleFiltroChange}
-              activeFilters={activeFilters as string[]}
+              activeFilters={activeFilters}
               onRemoveFiltro={handleRemoveFiltro}
-              className="z-[60]"
               onClearFilters={handleLimparFiltros}
+              className="z-[60]"
             />
-
-            {/* Results Count */}
+            {/* Info de resultados */}
             <div className="mb-4">
               <p className="text-sm text-neutral-600 dark:text-slate-400">
-                {filteredEditais.length} editais encontrados
+                {editaisFiltrados.length} editais encontrados
               </p>
-                </div>
-              </div>
-
+            </div>
+          </div>
           {/* Table */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-elite overflow-hidden">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-elite overflow-hidden mb-12">
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="border-b border-neutral-200 dark:border-slate-700">
+              <table className="min-w-full divide-y divide-neutral-200 dark:divide-slate-700">
+                <thead className="bg-neutral-50 dark:bg-slate-800">
                   <tr>
                     <th
                       className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_Descricao')}
                     >
                       <div className="flex items-center justify-between">
-                        <span>Edital</span>
+                        <span>Título</span>
                         <div className="flex items-center gap-1">
                           {sortBy === 'PEP_Descricao' ? (
                             sortDirection === 'asc' ? (
@@ -315,40 +326,19 @@ const Editais = () => {
                           ) : (
                             <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               <ChevronUp className="w-4 h-4 text-neutral-400" />
-                </div>
+                            </div>
                           )}
-              </div>
-            </div>
-                    </th>
-                    <th
-                      className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
-                      onClick={() => handleSort('PRO_Descricao')}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>Programa</span>
-                        <div className="flex items-center gap-1">
-                          {sortBy === 'PRO_Descricao' ? (
-                            sortDirection === 'asc' ? (
-                              <ChevronUp className="w-4 h-4 text-primary dark:text-primary-light" />
-                            ) : (
-                              <ChevronDown className="w-4 h-4 text-primary dark:text-primary-light" />
-                            )
-                          ) : (
-                            <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                              <ChevronUp className="w-4 h-4 text-neutral-400" />
-              </div>
-            )}
                         </div>
                       </div>
                     </th>
                     <th
                       className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
-                      onClick={() => handleSort('PPS_Descricao')}
+                      onClick={() => handleSort('PEP_Sigla')}
                     >
                       <div className="flex items-center justify-between">
-                        <span>Status</span>
+                        <span>Programa</span>
                         <div className="flex items-center gap-1">
-                          {sortBy === 'PPS_Descricao' ? (
+                          {sortBy === 'PEP_Sigla' ? (
                             sortDirection === 'asc' ? (
                               <ChevronUp className="w-4 h-4 text-primary dark:text-primary-light" />
                             ) : (
@@ -357,17 +347,20 @@ const Editais = () => {
                           ) : (
                             <div className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                               <ChevronUp className="w-4 h-4 text-neutral-400" />
-          </div>
-        )}
-      </div>
-      </div>
-                </th>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider">
+                      Status
+                    </th>
                     <th
                       className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_DtInicio')}
                     >
                       <div className="flex items-center justify-between">
-                        <span>Início</span>
+                        <span>Data de Início</span>
                         <div className="flex items-center gap-1">
                           {sortBy === 'PEP_DtInicio' ? (
                             sortDirection === 'asc' ? (
@@ -382,13 +375,13 @@ const Editais = () => {
                           )}
                         </div>
                       </div>
-                </th>
+                    </th>
                     <th
                       className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer select-none group hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-200"
                       onClick={() => handleSort('PEP_DtFim')}
                     >
                       <div className="flex items-center justify-between">
-                        <span>Fim</span>
+                        <span>Data de Fim</span>
                         <div className="flex items-center gap-1">
                           {sortBy === 'PEP_DtFim' ? (
                             sortDirection === 'asc' ? (
@@ -403,136 +396,157 @@ const Editais = () => {
                           )}
                         </div>
                       </div>
-                </th>
+                    </th>
                     <th className="px-6 py-4 text-right text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider">
-                  Ações
-                </th>
-              </tr>
-            </thead>
-                <tbody className="divide-y divide-neutral-200 dark:divide-slate-700">
-                  {paginatedEditais.map((edital, index) => (
-                <tr 
-                  key={edital.PEP_Codigo} 
-                      className="hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-150"
-                >
-                      <td className="px-6 py-4 align-top">
-                    <div>
-                          <p className="font-medium text-neutral-800 dark:text-slate-100 hover:text-primary dark:hover:text-primary-light transition-colors cursor-pointer">
-                        {edital.PEP_Descricao}
-                      </p>
-                          <p className="text-sm text-neutral-500 dark:text-slate-400 mt-1">
-                        {edital.PEP_Sigla}
-                      </p>
-                    </div>
-                  </td>
-                      <td className="px-6 py-4 align-top">
-                        <div>
-                          <p className="font-medium text-neutral-800 dark:text-slate-100">
-                      {edital.PRO_Descricao}
-                          </p>
-                        </div>
-                  </td>
-                      <td className="px-6 py-4 align-top">
-                        <StatusBadge status={edital.PPS_Descricao || 'Indisponível'} size="sm" />
-                  </td>
-                      <td className="px-6 py-4 align-top">
-                        <span className="text-sm text-neutral-900 dark:text-slate-100">
-                      {edital.PEP_DtInicio ? new Date(edital.PEP_DtInicio).toLocaleDateString() : 'N/A'}
-                    </span>
-                  </td>
-                      <td className="px-6 py-4 align-top">
-                        <span className="text-sm text-neutral-900 dark:text-slate-100">
-                      {edital.PEP_DtFim ? new Date(edital.PEP_DtFim).toLocaleDateString() : 'N/A'}
-                    </span>
-                  </td>
-                      <td className="px-6 py-4 text-right align-top">
-                        <Menu as="div" className="relative inline-block text-left">
-                          <Menu.Button className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors duration-150" aria-label="Ações do edital" title="Mais opções">
-                            <MoreHorizontal className="w-4 h-4 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-slate-300 transition-colors" />
-                          </Menu.Button>
-                          <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-100"
-                            enterFrom="transform opacity-0 scale-95"
-                            enterTo="transform opacity-100 scale-100"
-                            leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95"
-                          >
-                            <Menu.Items className="absolute right-0 z-50 mt-2 w-40 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black/5 focus:outline-none border border-neutral-100 dark:border-slate-700">
-                              <div className="py-1">
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`$${active ? 'bg-neutral-100 dark:bg-slate-700' : ''} group flex w-full items-center rounded-lg px-4 py-2 text-sm text-neutral-800 dark:text-slate-100 transition-colors`}
-                                      onClick={() => {/* TODO: Implementar ação Visualizar */}}
-                                    >
-                                      Visualizar
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`$${active ? 'bg-neutral-100 dark:bg-slate-700' : ''} group flex w-full items-center rounded-lg px-4 py-2 text-sm text-neutral-800 dark:text-slate-100 transition-colors`}
-                                      onClick={() => navigate(`/editais/${edital.PEP_Codigo}/configurar`)}
-                                    >
-                                      Editar
-                                    </button>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <button
-                                      className={`$${active ? 'bg-neutral-100 dark:bg-slate-700' : ''} group flex w-full items-center rounded-lg px-4 py-2 text-sm text-red-500 transition-colors`}
-                                      onClick={() => {/* TODO: Implementar ação Excluir */}}
-                                    >
-                                      Excluir
-                    </button>
-                                  )}
-                                </Menu.Item>
-                              </div>
-                            </Menu.Items>
-                          </Transition>
-                        </Menu>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-            {/* Paginação */}
-            {totalPages > 1 && (
-              <div className="flex justify-end items-center gap-2 px-6 py-4">
-                <button
-                  className="px-3 py-1 rounded-lg text-sm font-medium text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Anterior
-                </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                  <button
-                    key={page}
-                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-150 ${
-                      page === currentPage
-                        ? 'bg-primary text-white shadow-subtle'
-                        : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700'
-                    }`}
-                    onClick={() => handlePageChange(page)}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  className="px-3 py-1 rounded-lg text-sm font-medium text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                >
-                  Próxima
-                </button>
-              </div>
-            )}
+                      Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-slate-800 divide-y divide-neutral-200 dark:divide-slate-700">
+                  {paginatedEditais.map((edital) => {
+                    const programa = programas.find(p => p.PRO_Codigo === edital.PEP_Codigo_PRO);
+                    const status = statusList.find(s => s.PPS_Codigo === edital.PEP_Codigo_PPS);
+                    
+                    return (
+                      <tr key={edital.PEP_Codigo} className="hover:bg-neutral-50 dark:hover:bg-slate-700/30 transition-colors duration-150">
+                        <td className="px-6 py-4 align-top">
+                          <div className="flex flex-col">
+                            <button
+                              onClick={() => navigate(`/editais/${edital.PEP_Codigo}/configurar`)}
+                              className="font-semibold text-primary dark:text-primary-light hover:underline cursor-pointer text-left"
+                            >
+                              {edital.PEP_Descricao}
+                            </button>
+                            <span className="text-sm text-neutral-500 dark:text-slate-400">
+                              {edital.PEP_Sigla}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 align-top">
+                          <span className="font-medium text-neutral-800 dark:text-slate-100">
+                            {programa?.PRO_Sigla || '-'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 align-top">
+                          <StatusBadge status={status?.PPS_Descricao || 'Indisponível'} size="sm" />
+                        </td>
+                        <td className="px-6 py-4 align-top">
+                          <span className="text-sm text-neutral-900 dark:text-slate-100">
+                            {new Date(edital.PEP_DtInicio).toLocaleDateString('pt-BR')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 align-top">
+                          <span className="text-sm text-neutral-900 dark:text-slate-100">
+                            {new Date(edital.PEP_DtFim).toLocaleDateString('pt-BR')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right align-top">
+                          <Menu as="div" className="relative inline-block text-left">
+                            <Menu.Button className="p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-slate-700 transition-colors">
+                              <MoreHorizontal className="w-5 h-5 text-neutral-500 dark:text-slate-400" />
+                            </Menu.Button>
+                            <Transition
+                              as={Fragment}
+                              enter="transition ease-out duration-100"
+                              enterFrom="transform opacity-0 scale-95"
+                              enterTo="transform opacity-100 scale-100"
+                              leave="transition ease-in duration-75"
+                              leaveFrom="transform opacity-100 scale-100"
+                              leaveTo="transform opacity-0 scale-95"
+                            >
+                              <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right divide-y divide-neutral-100 dark:divide-slate-700 rounded-lg bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <div className="p-1">
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <button
+                                        onClick={() => navigate(`/editais/${edital.PEP_Codigo}/configurar`)}
+                                        className={cn(
+                                          'flex items-center px-4 py-2 text-sm rounded-lg w-full text-left',
+                                          active
+                                            ? 'bg-neutral-100 dark:bg-slate-700 text-neutral-900 dark:text-white'
+                                            : 'text-neutral-700 dark:text-slate-300'
+                                        )}
+                                      >
+                                        <Eye className="mr-3 h-5 w-5" />
+                                        Visualizar
+                                      </button>
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <button
+                                        onClick={() => navigate(`/editais/${edital.PEP_Codigo}/editar`)}
+                                        className={cn(
+                                          'flex items-center px-4 py-2 text-sm rounded-lg w-full text-left',
+                                          active
+                                            ? 'bg-neutral-100 dark:bg-slate-700 text-neutral-900 dark:text-white'
+                                            : 'text-neutral-700 dark:text-slate-300'
+                                        )}
+                                      >
+                                        <Edit3 className="mr-3 h-5 w-5" />
+                                        Editar
+                                      </button>
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <button
+                                        onClick={() => {
+                                          // Adicionar lógica para excluir
+                                        }}
+                                        className={cn(
+                                          'flex items-center px-4 py-2 text-sm rounded-lg w-full text-left',
+                                          active
+                                            ? 'bg-neutral-100 dark:bg-slate-700 text-red-600 dark:text-red-400'
+                                            : 'text-red-500 dark:text-red-400'
+                                        )}
+                                      >
+                                        <Trash2 className="mr-3 h-5 w-5" />
+                                        Excluir
+                                      </button>
+                                    )}
+                                  </Menu.Item>
+                                </div>
+                              </Menu.Items>
+                            </Transition>
+                          </Menu>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {/* Paginação */}
+          <div className="flex justify-end items-center gap-2 px-6 py-4">
+            <button
+              className="px-3 py-1 rounded-lg text-sm font-medium text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Anterior
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-150 ${
+                  page === currentPage
+                    ? 'bg-primary text-white shadow-subtle'
+                    : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700'
+                }`}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              className="px-3 py-1 rounded-lg text-sm font-medium text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Próxima
+            </button>
           </div>
         </div>
       </div>

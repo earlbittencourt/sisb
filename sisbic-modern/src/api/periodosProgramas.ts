@@ -2,27 +2,27 @@ import { api } from './config';
 import { PeriodoPrograma } from '../types/programa';
 
 export async function listarPeriodosProgramas() {
-  const response = await api.get<PeriodoPrograma[]>('/api/editais');
+  const response = await api.get<PeriodoPrograma[]>('/periodos-programas');
   return response.data;
 }
 
 export async function buscarPeriodoPrograma(id: number) {
-  const response = await api.get<PeriodoPrograma>(`/api/editais/${id}`);
+  const response = await api.get<PeriodoPrograma>(`/periodos-programas/${id}`);
   return response.data;
 }
 
 export async function criarPeriodoPrograma(periodo: Omit<PeriodoPrograma, 'id'>) {
-  const response = await api.post<PeriodoPrograma>('/api/editais', periodo);
+  const response = await api.post<PeriodoPrograma>('/periodos-programas', periodo);
   return response.data;
 }
 
 export async function atualizarPeriodoPrograma(id: number, periodo: Partial<PeriodoPrograma>) {
-  const response = await api.patch<PeriodoPrograma>(`/api/editais/${id}`, periodo);
+  const response = await api.patch<PeriodoPrograma>(`/periodos-programas/${id}`, periodo);
   return response.data;
 }
 
 export async function deletarPeriodoPrograma(id: number) {
-  await api.delete(`/api/editais/${id}`);
+  await api.delete(`/periodos-programas/${id}`);
 }
 
 export async function getPeriodosProgramas(filtros?: { tipo?: string, status?: string }): Promise<PeriodoPrograma[]> {
@@ -33,30 +33,30 @@ export async function getPeriodosProgramas(filtros?: { tipo?: string, status?: s
     if (filtros?.status && filtros.status !== 'all') {
         params.append('status', filtros.status);
     }
-    const response = await api.get('/api/periodos-programas', { params });
+    const response = await api.get('/periodos-programas', { params });
     return response.data;
 }
 
 export async function deletePeriodoPrograma(id: number): Promise<void> {
-    await api.delete(`/api/periodos-programas/${id}`);
+    await api.delete(`/periodos-programas/${id}`);
 }
 
 export async function getProgramas() {
-    const response = await api.get('/api/programas');
+    const response = await api.get('/programas');
     return response.data;
 }
 
 export async function getStatus() {
-    const response = await api.get('/api/status');
+    const response = await api.get('/status');
     return response.data;
 }
 
 export const getPeriodoProgramaById = async (id: number): Promise<PeriodoPrograma> => {
-    const { data } = await api.get(`/api/periodos-programas/${id}`);
+    const { data } = await api.get(`/periodos-programas/${id}`);
     return data;
 };
 
 export const updatePeriodoPrograma = async (id: number, periodo: Partial<PeriodoPrograma>): Promise<PeriodoPrograma> => {
-    const { data } = await api.put(`/api/periodos-programas/${id}`, periodo);
+    const { data } = await api.put(`/periodos-programas/${id}`, periodo);
     return data;
 }; 

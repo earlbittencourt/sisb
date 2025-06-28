@@ -36,21 +36,18 @@ const SearchInput: React.FC<SearchInputProps> = ({
     <div className={cn('relative', className)}>
       <div
         className={cn(
-          'relative flex items-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl',
+          'relative flex items-center bg-white dark:bg-gray-800 rounded-xl',
           'transition-all duration-200 ease-in-out',
-          'hover:border-gray-300 dark:hover:border-gray-600',
-          isFocused && 'ring-2 ring-blue-500/20 border-blue-500 dark:border-blue-400 shadow-sm',
+          isFocused && '',
           disabled && 'opacity-50 cursor-not-allowed'
         )}
+        style={{ border: 'none', boxShadow: 'none' }}
       >
         {/* Search Icon */}
-        <div className="absolute left-4 flex items-center justify-center">
+        <div className="absolute left-3 flex items-center justify-center">
           <Search 
             className={cn(
-              'w-4 h-4 transition-colors duration-200',
-              isFocused 
-                ? 'text-blue-500 dark:text-blue-400' 
-                : 'text-gray-400 dark:text-gray-500'
+              'w-4 h-4 text-gray-400'
             )} 
           />
         </div>
@@ -66,10 +63,11 @@ const SearchInput: React.FC<SearchInputProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            'w-full pl-12 pr-12 py-3 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400',
-            'focus:outline-none text-sm font-medium',
+            'w-full pl-9 pr-12 py-2 bg-transparent text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-400',
+            'focus:outline-none text-sm',
             'transition-all duration-200'
           )}
+          style={{ border: 'none', boxShadow: 'none' }}
         />
 
         {/* Clear Button */}
