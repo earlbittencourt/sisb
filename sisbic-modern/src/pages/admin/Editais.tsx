@@ -213,7 +213,7 @@ const Editais = () => {
   }
 
   return (
-    <div className="layout-container bg-primary-lightest dark:bg-slate-900">
+    <div className="layout-container bg-gray-50 dark:bg-gray-900">
       <div className="main-content">
         <div className="content-area">
           {/* Header Section */}
@@ -305,7 +305,7 @@ const Editais = () => {
             </div>
           </div>
           {/* Table */}
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-elite overflow-hidden mb-12">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-card overflow-hidden mb-12">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-neutral-200 dark:divide-slate-700">
                 <thead className="bg-neutral-50 dark:bg-slate-800">

@@ -38,7 +38,7 @@ const EditalCard: React.FC<EditalCardProps> = ({
   return (
     <div
       className={cn(
-        'group bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-200 dark:border-gray-700',
+        'group bg-white dark:bg-gray-800 rounded-lg shadow-card border border-gray-200 dark:border-gray-700 p-6',
         'transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg',
         'cursor-pointer',
         className

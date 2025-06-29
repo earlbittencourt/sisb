@@ -29,7 +29,7 @@ type CardComponent = React.FC<CardProps> & {
 };
 
 const Card: CardComponent = ({ children, className = '', onClick, style }) => {
-  const classes = `liquid-card bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col ${className}`;
+  const classes = `bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-card flex flex-col ${className}`;
   
   return (
     <div className={classes} onClick={onClick} style={style}>

@@ -25,12 +25,12 @@ const ConfigurationStepCard: React.FC<ConfigurationStepCardProps> = ({
   return (
     <Link to={fullPath} className="group block">
       <div className={`
-        relative bg-white dark:bg-slate-800 shadow-elite rounded-lg p-6 h-full
+        relative bg-white dark:bg-gray-800 shadow-card rounded-lg p-6 h-full
         border transition-all duration-300 ease-in-out
-        hover:shadow-xl hover:scale-[1.02]
+        hover:shadow-lg hover:scale-[1.02]
         ${isHighlighted 
-          ? 'border-primary dark:border-primary-light shadow-primary/20' 
-          : 'border-transparent'
+          ? 'border-primary dark:border-primary-light' 
+          : 'border-gray-200 dark:border-gray-700'
         }
       `}>
         {/* Status Pill */}
