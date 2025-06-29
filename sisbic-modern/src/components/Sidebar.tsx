@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Settings, FileText, Users, BookOpen, Plus, Bell, Moon, Sun, LogOut } from 'lucide-react';
+import { Home, Settings, FileText, Users, BookOpen, Plus, Bell, Moon, Sun, LogOut, User } from 'lucide-react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import NavItem from './ui/NavItem';
@@ -32,18 +32,24 @@ const Sidebar = () => {
   const primaryAction = getPrimaryAction();
 
   return (
-    <aside className="w-64 bg-institutional dark:bg-gray-900 border-r border-gray-800 flex flex-col h-screen">
+    <aside className="w-64 bg-primary-50 dark:bg-gray-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen">
       <div className="flex flex-col h-full p-6">
         {/* ===== SEÇÃO SUPERIOR - IDENTIDADE ===== */}
-        <div className="flex-shrink-0 pb-3 border-b border-gray-700/50">
+        <div className="flex-shrink-0 pb-3 border-b border-slate-200 dark:border-slate-800">
           {/* Logo UFBA e Nome do Sistema em duas colunas */}
           <div className="flex items-center gap-4">
             {/* Logo UFBA */}
             <Link to="/" className="flex items-center">
               <img
+                src="/logo.png"
+                alt="Logo UFBA"
+                className="h-16 w-auto hidden dark:block"
+                style={{ objectFit: 'contain' }}
+              />
+              <img
                 src="/logo-branco-ufba.png"
                 alt="Logo UFBA"
-                className="h-16 w-auto"
+                className="h-16 w-auto block dark:hidden"
                 style={{ objectFit: 'contain' }}
               />
             </Link>
@@ -88,11 +94,13 @@ const Sidebar = () => {
         </nav>
 
         {/* ===== RODAPÉ COESO ===== */}
-        <div className="flex-shrink-0 pt-6 border-t border-gray-700/50">
+        <div className="flex-shrink-0 pt-6 border-t border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between">
             {/* Perfil do Usuário à Esquerda */}
             <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white font-bold">JS</span>
+              <div className="w-10 h-10 rounded-full bg-primary-200 dark:bg-primary-900 flex items-center justify-center">
+                <User className="w-5 h-5 text-primary-600 dark:text-primary-200" />
+              </div>
               <div>
                 <p className="font-semibold text-white">João Silva</p>
                 <p className="text-sm text-gray-300">Administrador</p>
