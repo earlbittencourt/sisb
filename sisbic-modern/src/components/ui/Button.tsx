@@ -33,7 +33,7 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const variantStyles = {
-    primary: 'bg-primary text-white font-semibold hover:bg-primary-dark transition-colors',
+    primary: 'bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-colors',
     secondary: 'bg-gray-100 text-gray-800 font-semibold hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 transition-colors',
     link: 'text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light font-semibold transition-colors',
     ghost: 'text-gray-600 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800',

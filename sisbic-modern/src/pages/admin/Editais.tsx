@@ -6,10 +6,11 @@ import { cn } from '../../lib/utils';
 import { usePeriodosProgramas } from '../../hooks/usePeriodosProgramas';
 import { useProgramas } from '../../hooks/useProgramas';
 import { useStatus } from '../../hooks/useStatus';
-import SearchInput from '../../components/ui/SearchInput';
+import { QueryBuilder } from '../../components/ui/QueryBuilder';
 import StatusBadge from '../../components/ui/StatusBadge';
 import FiltersPanel from '../../components/ui/FiltersPanel';
 import DashboardCard from '../../components/ui/DashboardCard';
+import Button from '../../components/ui/Button';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -18,8 +19,9 @@ const Editais = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [filtros, setFiltros] = useState<{ tipos: string[]; status: string[] }>({ tipos: [], status: [] });
-  const [sortBy, setSortBy] = useState<string>('PEP_Descricao');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [queryFilters, setQueryFilters] = useState<Array<{ id: string; label: string; condition: string; value: string }>>([]);
+  const [sortBy, setSortBy] = useState<string>('PEP_DtInicio');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
   const { periodos, loading: loadingPeriodos } = usePeriodosProgramas();
@@ -139,7 +141,79 @@ const Editais = () => {
         edital.PEP_Sigla.toLowerCase().includes(searchTerm.toLowerCase())
       : true;
 
-    return matchesTipo && matchesStatus && matchesSearch;
+    // Aplicar filtros do QueryBuilder
+    const matchesQueryFilters = queryFilters.every(filter => {
+      const programa = programas.find(p => p.PRO_Codigo === edital.PEP_Codigo_PRO);
+      const status = statusList.find(s => s.PPS_Codigo === edital.PEP_Codigo_PPS);
+      
+      switch (filter.label) {
+        case 'Status':
+          if (!status) return false;
+          const statusValue = status.PPS_Descricao.toLowerCase();
+          const filterValues = filter.value.split(',').map(v => v.trim().toLowerCase());
+          switch (filter.condition) {
+            case 'é':
+              return filterValues.includes(statusValue);
+            case 'não é':
+              return !filterValues.includes(statusValue);
+            case 'contém':
+              return filterValues.some(val => statusValue.includes(val));
+            case 'não contém':
+              return filterValues.every(val => !statusValue.includes(val));
+            default:
+              return true;
+          }
+        case 'Programa':
+          if (!programa) return false;
+          const programaValue = programa.PRO_Sigla.toLowerCase();
+          const programaFilterValue = filter.value.toLowerCase();
+          switch (filter.condition) {
+            case 'é': return programaValue === programaFilterValue;
+            case 'não é': return programaValue !== programaFilterValue;
+            case 'contém': return programaValue.includes(programaFilterValue);
+            case 'não contém': return !programaValue.includes(programaFilterValue);
+            default: return true;
+          }
+        case 'Título':
+          const tituloValue = edital.PEP_Descricao.toLowerCase();
+          const tituloFilterValue = filter.value.toLowerCase();
+          switch (filter.condition) {
+            case 'é': return tituloValue === tituloFilterValue;
+            case 'não é': return tituloValue !== tituloFilterValue;
+            case 'contém': return tituloValue.includes(tituloFilterValue);
+            case 'não contém': return !tituloValue.includes(tituloFilterValue);
+            default: return true;
+          }
+        case 'Data de Início':
+        case 'Data de Fim': {
+          const field = filter.label === 'Data de Início' ? edital.PEP_DtInicio : edital.PEP_DtFim;
+          const filterValues = filter.value.split(',').map(v => v.trim());
+          const editalDate = new Date(field).setHours(0,0,0,0);
+          if (filter.condition === 'é igual') {
+            const filterDate = new Date(filterValues[0]).setHours(0,0,0,0);
+            return editalDate === filterDate;
+          }
+          if (filter.condition === 'maior que') {
+            const filterDate = new Date(filterValues[0]).setHours(0,0,0,0);
+            return editalDate > filterDate;
+          }
+          if (filter.condition === 'menor que') {
+            const filterDate = new Date(filterValues[0]).setHours(0,0,0,0);
+            return editalDate < filterDate;
+          }
+          if (filter.condition === 'entre') {
+            const start = new Date(filterValues[0]).setHours(0,0,0,0);
+            const end = new Date(filterValues[1]).setHours(0,0,0,0);
+            return editalDate >= start && editalDate <= end;
+          }
+          return true;
+        }
+        default:
+          return true;
+      }
+    });
+
+    return matchesTipo && matchesStatus && matchesSearch && matchesQueryFilters;
   });
 
   // Ordenar editais
@@ -218,7 +292,7 @@ const Editais = () => {
         <div className="content-area">
           {/* Header Section */}
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-16">
               <div>
                 <h1 className="text-3xl font-bold text-neutral-darker dark:text-slate-100 mb-2">
                   Editais
@@ -229,7 +303,7 @@ const Editais = () => {
               </div>
             </div>
             {/* Metrics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
               <DashboardCard
                 title="Inscrições Abertas"
                 value={inscricoesAbertas.toString()}
@@ -260,29 +334,26 @@ const Editais = () => {
               />
             </div>
             {/* Search and Actions */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-8">
-              <div className="w-full sm:w-96">
-                <SearchInput
-                  placeholder="Buscar editais..."
-                  value={searchTerm}
-                  onChange={setSearchTerm}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div className="w-full">
+                <QueryBuilder 
+                  searchText={searchTerm}
+                  onSearchChange={setSearchTerm}
+                  filters={queryFilters}
+                  onFiltersChange={setQueryFilters}
+                  statusOptions={statusList.map(s => s.PPS_Descricao)}
                 />
               </div>
               <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setIsFiltersOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-700 dark:text-slate-300 hover:text-neutral-900 dark:hover:text-white transition-colors"
-                >
-                  <Filter className="w-4 h-4" />
-                  Filtros
-                </button>
-                <button
+                <Button
                   onClick={() => navigate('/editais/novo')}
-                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary transition-colors rounded-lg"
+                  variant="primary"
+                  size="md"
+                  className="flex items-center gap-2 h-12 rounded-lg"
+                  icon={Plus}
                 >
-                  <Plus className="w-4 h-4" />
                   Novo Edital
-                </button>
+                </Button>
               </div>
             </div>
             <FiltersPanel
@@ -297,15 +368,9 @@ const Editais = () => {
               onClearFilters={handleLimparFiltros}
               className="z-[60]"
             />
-            {/* Info de resultados */}
-            <div className="mb-4">
-              <p className="text-sm text-neutral-600 dark:text-slate-400">
-                {editaisFiltrados.length} editais encontrados
-              </p>
-            </div>
           </div>
           {/* Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-card overflow-hidden mb-12">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-card overflow-hidden border border-gray-200 dark:border-slate-700">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-neutral-200 dark:divide-slate-700">
                 <thead className="bg-neutral-50 dark:bg-slate-800">
@@ -352,7 +417,7 @@ const Editais = () => {
                         </div>
                       </div>
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-neutral-500 dark:text-slate-400 uppercase tracking-wider min-w-[120px]">
                       Status
                     </th>
                     <th
@@ -423,11 +488,11 @@ const Editais = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 align-top">
-                          <span className="font-medium text-neutral-800 dark:text-slate-100">
+                          <span className="text-neutral-800 dark:text-slate-100">
                             {programa?.PRO_Sigla || '-'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 align-top">
+                        <td className="px-6 py-4 align-top min-w-[140px]">
                           <StatusBadge status={status?.PPS_Descricao || 'Indisponível'} size="sm" />
                         </td>
                         <td className="px-6 py-4 align-top">
@@ -532,7 +597,7 @@ const Editais = () => {
                 key={page}
                 className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors duration-150 ${
                   page === currentPage
-                    ? 'bg-primary text-white shadow-subtle'
+                    ? 'bg-primary text-primary-700 shadow-subtle'
                     : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-700'
                 }`}
                 onClick={() => handlePageChange(page)}

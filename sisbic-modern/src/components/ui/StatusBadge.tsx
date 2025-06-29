@@ -17,7 +17,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' }) => {
     
     if (lowerStatus.includes('concluído') || lowerStatus.includes('concluido') || lowerStatus.includes('finalizado')) {
       return {
-        base: 'bg-success-100 text-success-800 dark:bg-success-500/10 dark:text-success-400'
+        base: 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-400'
       };
     }
     
@@ -50,6 +50,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' }) => {
   return (
     <span className={`
       inline-flex items-center justify-center font-medium rounded-full
+      whitespace-nowrap min-w-[120px]
       ${config.base} ${sizeClasses[size]}
       transition-colors duration-150
     `}>

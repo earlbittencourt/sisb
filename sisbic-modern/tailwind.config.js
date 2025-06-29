@@ -16,21 +16,21 @@ module.exports = {
         current: 'currentColor',
         white: '#ffffff',
         black: '#000000',
-        // Novo Roxo/Índigo como Cor Primária de Acento
+        // Azul vibrante como Cor Primária de Acento
         primary: {
-          50: '#eef2ff',  // Cor de fundo da sidebar
-          100: '#e0e7ff', // Fundo de item ativo na sidebar
-          200: '#c7d2fe',
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1', // A cor de destaque principal
-          600: '#4f46e5',
-          700: '#4338ca',
-          800: '#3730a3',
-          900: '#312e81',
+          50: '#f0f7ff', // Azul quase branco para fundo
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6', // Azul vibrante principal
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
         },
         // Paleta Neutra para tudo mais
-        slate: colors.slate,
+        gray: colors.gray,
         // Cores Semânticas
         green: colors.green,
         amber: colors.amber,
@@ -41,6 +41,22 @@ module.exports = {
         'subtle': '0 4px 16px rgba(0, 0, 0, 0.05)',
         'card': '0 4px 16px rgba(0, 0, 0, 0.05)',
         'modal': '0 10px 25px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+      },
+      fontSize: {
+        '2xs': '0.7rem', // 11.2px
+        'xs': '0.75rem', // 12px
+        'sm': '0.875rem', // 14px
+        'base': '1rem', // 16px
+        'lg': '1.125rem', // 18px
+        'xl': '1.25rem', // 20px
+        '2xl': '1.5rem', // 24px
+        '3xl': '1.875rem', // 30px
+        '4xl': '2.25rem', // 36px
+        '5xl': '3rem', // 48px
+        '6xl': '3.75rem', // 60px
+        '7xl': '4.5rem', // 72px
+        '8xl': '6rem', // 96px
+        '9xl': '8rem', // 128px
       },
     },
   },

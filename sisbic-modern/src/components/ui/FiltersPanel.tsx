@@ -68,7 +68,12 @@ const FiltersPanel: React.FC<FiltersPanelProps> = ({
                   {activeFilters.map((filter, idx) => (
                     <FilterPill
                       key={filter + idx}
-                      label={filter}
+                      filter={{
+                        id: filter + idx,
+                        label: filter,
+                        condition: 'igual a',
+                        value: filter
+                      }}
                       onRemove={() => onRemoveFiltro(filter)}
                     />
                   ))}

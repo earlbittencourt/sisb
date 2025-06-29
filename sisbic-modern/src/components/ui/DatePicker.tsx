@@ -24,39 +24,6 @@ interface DatePickerProps {
   placeholder?: string;
 }
 
-const CustomChevron = (props: { className?: string; size?: number; disabled?: boolean; orientation?: 'left' | 'right' | 'up' | 'down' }) => {
-  const { orientation = 'right', ...rest } = props;
-  if (orientation === 'left') return <ChevronLeft size={24} color="#0051A2" strokeWidth={2.5} {...rest} />;
-  if (orientation === 'right') return <ChevronRight size={24} color="#0051A2" strokeWidth={2.5} {...rest} />;
-  return <span />;
-};
-
-const CustomNav = (props: any) => {
-  const { nextMonth, previousMonth, goToMonth, className, nextLabel, previousLabel } = props;
-  return (
-    <div className={className} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <button
-        type="button"
-        onClick={() => previousMonth && goToMonth(previousMonth)}
-        disabled={!previousMonth}
-        aria-label={previousLabel}
-        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-      >
-        <ChevronLeft size={24} color="#0051A2" strokeWidth={2.5} />
-      </button>
-      <button
-        type="button"
-        onClick={() => nextMonth && goToMonth(nextMonth)}
-        disabled={!nextMonth}
-        aria-label={nextLabel}
-        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
-      >
-        <ChevronRight size={24} color="#0051A2" strokeWidth={2.5} />
-      </button>
-    </div>
-  );
-};
-
 export const DatePicker: React.FC<DatePickerProps> = ({
   label,
   value,
@@ -142,10 +109,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                     disabled={disabled}
                     showOutsideDays={false}
                     initialFocus
-                    components={{
-                      Chevron: CustomChevron,
-                      Nav: CustomNav
-                    }}
                     classNames={{
                       selected: 'ufba-datepicker-selected'
                     }}

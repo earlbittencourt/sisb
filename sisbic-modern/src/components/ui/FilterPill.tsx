@@ -1,30 +1,30 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { cn } from '../../lib/utils';
 
-interface FilterPillProps {
+export interface Filter {
+  id: string;
   label: string;
-  onRemove: () => void;
-  className?: string;
+  condition: string;
+  value: string;
 }
 
-export function FilterPill({ label, onRemove, className }: FilterPillProps) {
+interface FilterPillProps {
+  filter: Filter;
+  onRemove: (id: string) => void;
+}
+
+export function FilterPill({ filter, onRemove }: FilterPillProps) {
   return (
-    <div className={cn(
-      'inline-flex items-center bg-blue-100 text-blue-800 dark:bg-primary-light/20 dark:text-primary-light',
-      'px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200',
-      'border border-primary/20 hover:border-primary/30',
-      'group hover:bg-primary/15',
-      className
-    )}>
-      <span className="mr-1">{label}</span>
+    <div className="flex items-center gap-1.5 bg-primary-50 dark:bg-slate-700 text-primary-dark dark:text-slate-100 text-sm font-medium pl-3 pr-1.5 py-1 rounded-full">
+      <span>{filter.label}</span>
+      <span className="text-slate-500">{filter.condition}</span>
+      <span className="font-semibold">{filter.value}</span>
       <button 
-        onClick={onRemove} 
-        className="ml-1 p-0.5 hover:bg-primary/20 rounded-full transition-all duration-200 ease-out
-                   hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary/20"
-        aria-label={`Remover filtro ${label}`}
+        onClick={() => onRemove(filter.id)} 
+        className="p-0.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-full"
+        aria-label={`Remover filtro ${filter.label}`}
       >
-        <X className="w-3.5 h-3.5" />
+        <X className="w-4 h-4" />
       </button>
     </div>
   );
