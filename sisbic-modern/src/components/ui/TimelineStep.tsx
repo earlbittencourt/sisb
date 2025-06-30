@@ -1,10 +1,15 @@
+import React from 'react';
 import { FiCheckCircle, FiCircle, FiPlayCircle } from 'react-icons/fi';
 
-const ICONS = { completed: FiCheckCircle, active: FiPlayCircle, upcoming: FiCircle };
+const ICONS: Record<'completed' | 'active' | 'upcoming', React.ComponentType<{ className?: string }>> = {
+  completed: FiCheckCircle,
+  active: FiPlayCircle,
+  upcoming: FiCircle,
+};
 const COLORS = {
   completed: 'text-brand-success',
   active: 'text-brand-primary dark:text-brand-primary-dark',
-  upcoming: 'text-content-secondary'
+  upcoming: 'text-content-secondary',
 };
 
 export function TimelineStep({ label, dateRange, status }: { label: string; dateRange: string; status: 'completed' | 'active' | 'upcoming' }) {
