@@ -1,7 +1,7 @@
 import React from 'react';
 import { FiCheckCircle, FiCircle, FiPlayCircle } from 'react-icons/fi';
 
-const ICONS: Record<'completed' | 'active' | 'upcoming', React.ComponentType<{ className?: string }>> = {
+const ICONS: Record<'completed' | 'active' | 'upcoming', React.ElementType> = {
   completed: FiCheckCircle,
   active: FiPlayCircle,
   upcoming: FiCircle,
