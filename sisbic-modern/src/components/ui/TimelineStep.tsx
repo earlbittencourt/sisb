@@ -1,7 +1,8 @@
 import React from 'react';
 import { FiCheckCircle, FiCircle, FiPlayCircle } from 'react-icons/fi';
+import { IconType } from 'react-icons';
 
-const ICONS: Record<'completed' | 'active' | 'upcoming', React.ElementType> = {
+const ICONS: Record<'completed' | 'active' | 'upcoming', IconType> = {
   completed: FiCheckCircle,
   active: FiPlayCircle,
   upcoming: FiCircle,
