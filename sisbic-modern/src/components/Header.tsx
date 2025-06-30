@@ -19,11 +19,11 @@ const Header: React.FC = () => {
 
   return (
     <header className="glass-header">
-      <div className="mx-6 mt-6 p-4 rounded-3xl bg-white/60 dark:bg-ufba-gray-800/60 backdrop-blur-glass border border-white/50 dark:border-white/10 shadow-depth-2 border-b border-transparent dark:border-slate-700">
+      <div className="mx-6 mt-6 p-4 rounded-3xl bg-surface-1/60 dark:bg-surface-dark-1/60 backdrop-blur-glass border border-border-color/50 dark:border-border-dark/10 shadow-depth-2">
         <div className="flex items-center justify-between">
           {/* Left: Title */}
           <div className="flex items-center space-x-4">
-            <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-ufba-blue to-ufba-blue-bright">
+            <h1 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent">
               SISBIC Modern
             </h1>
           </div>
@@ -31,7 +31,7 @@ const Header: React.FC = () => {
           {/* Center: Search */}
           <div className="flex-1 max-w-xl">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-content-secondary dark:text-content-secondary-dark" />
               <input
                 type="text"
                 placeholder="Busca global (Pressione '/' para focar)"
@@ -46,7 +46,7 @@ const Header: React.FC = () => {
             <Menu as="div" className="relative">
               <Menu.Button className="glass-button p-2 relative">
                 <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-brand-danger text-xs text-surface-1 flex items-center justify-center">
                   3
                 </span>
               </Menu.Button>
@@ -59,14 +59,14 @@ const Header: React.FC = () => {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 mt-2 w-80 glass-effect divide-y divide-gray-200 dark:divide-gray-700">
+                <Menu.Items className="absolute right-0 mt-2 w-80 glass-effect divide-y divide-border-color dark:divide-border-dark">
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold mb-2">Notificações</h3>
+                    <h3 className="text-lg font-semibold mb-2 text-content-main dark:text-content-main-dark">Notificações</h3>
                     <div className="space-y-3">
                       <Menu.Item>
-                        <div className="p-2 hover:bg-white/10 dark:hover:bg-gray-800/30 rounded-lg">
-                          <p className="text-sm font-medium">Novo edital publicado</p>
-                          <p className="text-xs text-gray-500">Há 5 minutos</p>
+                        <div className="p-2 hover:bg-surface-2/10 dark:hover:bg-surface-dark-2/30 rounded-lg">
+                          <p className="text-sm font-medium text-content-main dark:text-content-main-dark">Novo edital publicado</p>
+                          <p className="text-xs text-content-secondary dark:text-content-secondary-dark">Há 5 minutos</p>
                         </div>
                       </Menu.Item>
                       {/* Mais notificações aqui */}
@@ -92,11 +92,11 @@ const Header: React.FC = () => {
                 <img
                   src="https://github.com/joaobittencourt.png"
                   alt="Avatar"
-                  className="w-8 h-8 rounded-full ring-2 ring-white/20"
+                  className="w-8 h-8 rounded-full ring-2 ring-border-color/20"
                 />
                 <div className="text-left">
-                  <p className="text-sm font-medium">João Bittencourt</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Administrador</p>
+                  <p className="text-sm font-medium text-content-main dark:text-content-main-dark">João Bittencourt</p>
+                  <p className="text-xs text-content-secondary dark:text-content-secondary-dark">Administrador</p>
                 </div>
                 <ChevronDown className="h-4 w-4 opacity-50" />
               </Menu.Button>
@@ -115,8 +115,8 @@ const Header: React.FC = () => {
                       {({ active }) => (
                         <button
                           className={`${
-                            active ? 'bg-white/10 dark:bg-gray-800/30' : ''
-                          } group flex w-full items-center rounded-lg px-3 py-2 text-sm`}
+                            active ? 'bg-surface-2/10 dark:bg-surface-dark-2/30' : ''
+                          } group flex w-full items-center rounded-lg px-3 py-2 text-sm text-content-main dark:text-content-main-dark`}
                         >
                           <User className="mr-2 h-5 w-5" />
                           Meu Perfil
@@ -127,8 +127,8 @@ const Header: React.FC = () => {
                       {({ active }) => (
                         <button
                           className={`${
-                            active ? 'bg-white/10 dark:bg-gray-800/30' : ''
-                          } group flex w-full items-center rounded-lg px-3 py-2 text-sm`}
+                            active ? 'bg-surface-2/10 dark:bg-surface-dark-2/30' : ''
+                          } group flex w-full items-center rounded-lg px-3 py-2 text-sm text-content-main dark:text-content-main-dark`}
                         >
                           <Settings className="mr-2 h-5 w-5" />
                           Configurações
@@ -139,8 +139,8 @@ const Header: React.FC = () => {
                       {({ active }) => (
                         <button
                           className={`${
-                            active ? 'bg-white/10 dark:bg-gray-800/30' : ''
-                          } group flex w-full items-center rounded-lg px-3 py-2 text-sm text-red-500`}
+                            active ? 'bg-surface-2/10 dark:bg-surface-dark-2/30' : ''
+                          } group flex w-full items-center rounded-lg px-3 py-2 text-sm text-brand-danger dark:text-brand-danger-dark`}
                         >
                           <LogOut className="mr-2 h-5 w-5" />
                           Sair

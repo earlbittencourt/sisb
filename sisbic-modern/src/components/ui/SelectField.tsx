@@ -41,7 +41,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         className="block text-sm font-medium text-neutral-600 dark:text-slate-300 mb-1"
       >
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-danger ml-1">*</span>}
       </label>
       <select
         id={selectId}
@@ -58,7 +58,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
           focus:outline-none focus:ring-2 focus:ring-primary-light focus:border-primary-light
           disabled:bg-slate-100 disabled:cursor-not-allowed disabled:text-neutral-500
           dark:disabled:bg-slate-700/50 dark:disabled:text-slate-400
-          ${error ? 'border-red-500 focus:ring-red-200 focus:border-red-500' : ''}
+          ${error ? 'border-danger focus:ring-danger-light focus:border-danger' : ''}
         `}
       >
         {placeholder && (
@@ -73,7 +73,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
         ))}
       </select>
       {error && (
-        <p className="text-red-500 text-xs mt-1">{error}</p>
+        <p className="text-danger text-xs mt-1">{error}</p>
       )}
     </div>
   );

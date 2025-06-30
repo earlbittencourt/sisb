@@ -36,7 +36,7 @@ const Sidebar = () => {
     <span className="relative w-5 h-5 flex items-center justify-center">
       {/* Simulação bicolor: outline + preenchido */}
       <Icon
-        className={`w-5 h-5 ${active ? 'text-primary' : 'text-gray-400'} transition-colors duration-200`}
+        className={`w-5 h-5 ${active ? 'text-brand-primary dark:text-brand-primary-dark' : 'text-content-secondary dark:text-content-secondary-dark'} transition-colors duration-200`}
         strokeWidth={active ? 2.5 : 1.5}
         fill={active ? 'currentColor' : 'none'}
       />
@@ -46,13 +46,13 @@ const Sidebar = () => {
   // Ícone customizado para Editais (preenchido quando ativo)
   const EditaisIcon = ({ active }: { active: boolean }) => (
     active ? (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6" xmlns="http://www.w3.org/2000/svg">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-brand-primary dark:text-brand-primary-dark" xmlns="http://www.w3.org/2000/svg">
         <rect x="4" y="4" width="16" height="16" rx="2" />
-        <rect x="7" y="8" width="10" height="2" rx="1" fill="#fff" />
-        <rect x="7" y="12" width="7" height="2" rx="1" fill="#fff" />
+        <rect x="7" y="8" width="10" height="2" rx="1" fill="currentColor" className="text-surface-1 dark:text-surface-dark-1" />
+        <rect x="7" y="12" width="7" height="2" rx="1" fill="currentColor" className="text-surface-1 dark:text-surface-dark-1" />
       </svg>
     ) : (
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-content-secondary dark:text-content-secondary-dark" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <rect x="4" y="4" width="16" height="16" rx="2" />
         <rect x="7" y="8" width="10" height="2" rx="1" />
         <rect x="7" y="12" width="7" height="2" rx="1" />
@@ -61,10 +61,10 @@ const Sidebar = () => {
   );
 
   return (
-    <aside className="w-64 bg-primary-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen">
+    <aside className="w-64 bg-surface-0 dark:bg-surface-dark-0 border-r border-border-color dark:border-border-dark flex flex-col h-screen">
       <div className="flex flex-col h-full py-6 pr-6">
         {/* ===== SEÇÃO SUPERIOR - IDENTIDADE ===== */}
-        <div className="flex-shrink-0 pb-3 border-b border-gray-200 dark:border-gray-800 pl-6 flex items-center h-[120px]">
+        <div className="flex-shrink-0 pb-3 border-b border-border-color dark:border-border-dark pl-6 flex items-center h-[120px]">
           {/* Logo UFBA e Nome do Sistema em duas colunas */}
           <div className="flex items-center gap-4 mx-auto">
             {/* Logo UFBA */}
@@ -84,8 +84,8 @@ const Sidebar = () => {
             </Link>
             {/* Título da Aplicação */}
             <div className="flex flex-col">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight">SISBIC</h1>
-              <p className="text-sm text-gray-700 dark:text-gray-100 leading-tight">Sistema de Bolsas de Iniciação Científica</p>
+              <h1 className="text-xl text-content-main dark:text-content-main-dark leading-tight">SISBIC</h1>
+              <p className="text-sm text-content-secondary dark:text-content-secondary-dark leading-tight">Sistema de Bolsas de Iniciação Científica</p>
             </div>
           </div>
         </div>
@@ -99,30 +99,23 @@ const Sidebar = () => {
                 <li key={item.path} className="relative">
                   <Link
                     to={item.path}
-                    className={`group block transition-colors duration-150 ${active ? 'font-bold bg-transparent' : 'font-normal'}`}
+                    className={`group block transition-colors duration-150 ${active ? 'font-semibold' : 'font-normal'}`}
                     style={{ position: 'relative' }}
                   >
-                    <div className="relative flex items-center gap-3 py-2 pr-4 rounded-lg text-sm transition-colors duration-150">
-                      {/* Fundo do hover, agora em todos os itens */}
-                      <span className="pointer-events-none absolute inset-y-0 left-0 ml-6 right-0 rounded-lg bg-primary-100 dark:bg-primary-800 opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-0" />
-                      {/* Faixa vertical do item ativo */}
-                      {active && (
-                        <span
-                          className="absolute left-0 top-0 h-full w-[3px] rounded-r-full"
-                          style={{ background: 'var(--tw-color-primary, #3b82f6)', zIndex: 1 }}
-                        />
-                      )}
+                    <div className={`relative flex items-center gap-3 py-2 pr-4 rounded-lg text-sm transition-colors duration-150
+                      ${active ? 'text-brand-primary dark:text-brand-primary-dark' : 'text-content-secondary hover:text-brand-primary dark:text-content-secondary-dark dark:hover:text-brand-primary-dark'}`}>
+                      {/* Fundo sutil para hover e estado ativo */}
+                      <span className={`pointer-events-none absolute inset-y-0 left-0 ml-6 right-0 rounded-lg 
+                        ${active ? 'bg-surface-1 dark:bg-surface-dark-1' : 'bg-surface-1 dark:bg-surface-dark-1 opacity-0 group-hover:opacity-100'} 
+                        transition-opacity duration-150 z-0`} />
+                      
+                      {/* Indicador lateral de item ativo */}
+                      {active && <div className="absolute inset-y-0 left-0 w-0.5 bg-brand-primary dark:bg-brand-primary-dark rounded-r-full"></div>}
+                      
+                      {/* Conteúdo do item */}
                       <div className="flex items-center gap-3 ml-8 relative z-10">
-                        <item.icon 
-                          className={`w-5 h-5 transition-colors duration-200 ${active ? 'text-primary' : 'text-gray-400'} group-hover:text-primary`}
-                          {...(active ? { color: '#3b82f6', strokeWidth: 2.5 } : { strokeWidth: 1.5 })}
-                        />
-                        <span 
-                          className={`z-10 transition-colors duration-200 font-bold text-sm group-hover:text-primary`}
-                          style={active ? { color: 'var(--tw-color-primary, #3b82f6)' } : { color: '' }}
-                        >
-                          {item.label}
-                        </span>
+                        <item.icon className="w-5 h-5" strokeWidth={active ? 2 : 1.5} />
+                        <span>{item.label}</span>
                       </div>
                     </div>
                   </Link>
@@ -135,7 +128,7 @@ const Sidebar = () => {
           {primaryAction && (
             <div className="mt-6">
               <Link to={primaryAction.path}>
-                <button className="flex items-center justify-center gap-2 rounded-xl bg-white/10 text-white hover:bg-white/20 w-full py-3 font-semibold transition-all duration-150">
+                <button className="flex items-center justify-center gap-2 rounded-xl bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20 dark:bg-brand-primary-dark/10 dark:text-brand-primary-dark dark:hover:bg-brand-primary-dark/20 w-full py-3 font-semibold transition-all duration-150">
                   <Plus className="w-5 h-5" />
                   {primaryAction.label}
                 </button>
@@ -145,22 +138,28 @@ const Sidebar = () => {
         </nav>
 
         {/* ===== RODAPÉ COESO ===== */}
-        <div className="flex-shrink-0 pt-6 border-t border-gray-200 dark:border-gray-800 ml-6">
+        <div className="flex-shrink-0 pt-6 border-t border-border-color dark:border-border-dark ml-6">
           <div className="flex items-center justify-between">
             {/* Perfil do Usuário à Esquerda */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-                <User className="w-5 h-5 text-primary-500 dark:text-primary-200" />
+              <div className="w-10 h-10 rounded-full bg-surface-1 dark:bg-surface-dark-1 flex items-center justify-center">
+                <User className="w-5 h-5 text-brand-primary dark:text-brand-primary-dark" />
               </div>
               <div>
-                <p className="font-semibold text-gray-900 dark:text-gray-100">João Silva</p>
-                <p className="text-sm text-gray-700 dark:text-gray-100">Administrador</p>
+                <p className="font-semibold text-content-main dark:text-content-main-dark">João Silva</p>
+                <p className="text-sm text-content-secondary dark:text-content-secondary-dark">Administrador</p>
               </div>
             </div>
             {/* Ícones de Ação à Direita */}
             <div className="flex items-center gap-1">
-              <button className="p-2 rounded-md hover:bg-white/10 text-gray-400 hover:text-primary transition-colors"><Bell className="w-5 h-5" /></button>
-              <button className="p-2 rounded-md hover:bg-white/10 text-gray-400 hover:text-primary transition-colors" onClick={toggleTheme} title={isDarkMode ? "Modo claro" : "Modo escuro"}>
+              <button className="p-2 rounded-md text-content-secondary hover:bg-surface-1 hover:text-brand-primary dark:text-content-secondary-dark dark:hover:bg-surface-dark-1 dark:hover:text-brand-primary-dark transition-colors">
+                <Bell className="w-5 h-5" />
+              </button>
+              <button 
+                className="p-2 rounded-md text-content-secondary hover:bg-surface-1 hover:text-brand-primary dark:text-content-secondary-dark dark:hover:bg-surface-dark-1 dark:hover:text-brand-primary-dark transition-colors" 
+                onClick={toggleTheme} 
+                title={isDarkMode ? "Modo claro" : "Modo escuro"}
+              >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
             </div>

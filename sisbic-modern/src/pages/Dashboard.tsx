@@ -14,13 +14,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="content-area">
+    <div className="p-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
+        <h1 className="text-3xl font-semibold text-content-main dark:text-content-main-dark mb-2">
           Dashboard
         </h1>
-        <p className="text-neutral-600 dark:text-neutral-400">
+        <p className="text-content-secondary dark:text-content-secondary-dark">
           Visão geral do sistema de bolsas da UFBA
         </p>
       </div>
@@ -66,60 +66,61 @@ const Dashboard = () => {
       </div>
 
       {/* Content Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Recent Activity */}
-        <div className="bg-white dark:bg-neutral-800 shadow-elite rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-            Atividade Recente
-          </h3>
-          <div className="space-y-4">
-            {[
-              { title: 'Novo edital publicado', time: '2 horas atrás', type: 'info' },
-              { title: 'Inscrições encerradas', time: '1 dia atrás', type: 'warning' },
-              { title: 'Bolsista aprovado', time: '2 dias atrás', type: 'success' },
-              { title: 'Relatório gerado', time: '3 dias atrás', type: 'info' }
-            ].map((activity, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
-                <div className={`w-2 h-2 rounded-full ${
-                  activity.type === 'success' ? 'bg-success' :
-                  activity.type === 'warning' ? 'bg-warning' :
-                  'bg-primary'
-                }`} />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                    {activity.title}
-                  </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    {activity.time}
-                  </p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Coluna de Atividades Recentes */}
+        <div className="lg:col-span-2">
+          <div className="bg-surface-1 dark:bg-surface-dark-1 shadow-elite rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-content-main dark:text-content-main-dark mb-4">
+              Atividade Recente
+            </h3>
+            <div className="space-y-2">
+              {[
+                { icon: FileText, text: 'Novo edital "PIBIC 2024" foi publicado.', time: '2h atrás' },
+                { icon: CheckCircle, text: 'Avaliação do projeto "IA na Saúde" foi concluída.', time: '5h atrás' },
+                { icon: Clock, text: 'Relatório parcial do edital "PIBITI 2023" está pendente.', time: '1 dia atrás' },
+              ].map((item, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-surface-0 dark:hover:bg-surface-dark-0/50 transition-colors">
+                  <div className="bg-surface-0 dark:bg-surface-dark-0 p-2 rounded-full">
+                    <item.icon className="w-5 h-5 text-content-secondary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-content-main dark:text-content-main-dark">
+                      {item.text}
+                    </p>
+                    <p className="text-xs text-content-secondary dark:text-content-secondary-dark">
+                      {item.time}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-white dark:bg-neutral-800 shadow-elite rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
-            Ações Rápidas
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
-            <button className="btn-primary p-4 text-center">
-              <FileText className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">Novo Edital</span>
-            </button>
-            <button className="btn-secondary p-4 text-center">
-              <Users className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">Gerenciar Bolsistas</span>
-            </button>
-            <button className="btn-secondary p-4 text-center">
-              <Activity className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">Relatórios</span>
-            </button>
-            <button className="btn-secondary p-4 text-center">
-              <Clock className="w-6 h-6 mx-auto mb-2" />
-              <span className="text-sm font-medium">Calendário</span>
-            </button>
+        {/* Coluna de Atalhos */}
+        <div>
+          <div className="bg-surface-1 dark:bg-surface-dark-1 shadow-elite rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-content-main dark:text-content-main-dark mb-4">
+              Acesso Rápido
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
+              <button className="btn-primary p-4 text-center">
+                <FileText className="w-6 h-6 mx-auto mb-2" />
+                <span className="text-sm font-medium">Novo Edital</span>
+              </button>
+              <button className="btn-secondary p-4 text-center">
+                <Users className="w-6 h-6 mx-auto mb-2" />
+                <span className="text-sm font-medium">Gerenciar Bolsistas</span>
+              </button>
+              <button className="btn-secondary p-4 text-center">
+                <Activity className="w-6 h-6 mx-auto mb-2" />
+                <span className="text-sm font-medium">Relatórios</span>
+              </button>
+              <button className="btn-secondary p-4 text-center">
+                <Clock className="w-6 h-6 mx-auto mb-2" />
+                <span className="text-sm font-medium">Calendário</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -36,7 +36,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
     <div className={cn('relative', className)}>
       <div
         className={cn(
-          'relative flex items-center bg-white dark:bg-gray-800 rounded-xl',
+          'relative flex items-center bg-white dark:bg-stone-800 rounded-xl',
           'transition-all duration-200 ease-in-out',
           isFocused && '',
           disabled && 'opacity-50 cursor-not-allowed'
@@ -47,7 +47,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         <div className="absolute left-3 flex items-center justify-center">
           <Search 
             className={cn(
-              'w-4 h-4 text-gray-400'
+              'w-4 h-4 text-stone-400'
             )} 
           />
         </div>
@@ -63,7 +63,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
           placeholder={placeholder}
           disabled={disabled}
           className={cn(
-            'w-full pl-9 pr-12 py-2 bg-transparent text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-400',
+            'w-full pl-9 pr-12 py-2 bg-transparent text-stone-800 dark:text-white placeholder-stone-400 dark:placeholder-stone-400',
             'focus:outline-none text-sm',
             'transition-all duration-200'
           )}
@@ -76,8 +76,8 @@ const SearchInput: React.FC<SearchInputProps> = ({
             onClick={handleClear}
             className={cn(
               'absolute right-4 p-1 rounded-lg transition-all duration-200',
-              'hover:bg-gray-100 dark:hover:bg-gray-700',
-              'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'
+              'hover:bg-stone-100 dark:hover:bg-stone-700',
+              'text-stone-400 hover:text-stone-600 dark:hover:text-stone-300'
             )}
           >
             <X className="w-4 h-4" />
@@ -90,9 +90,9 @@ const SearchInput: React.FC<SearchInputProps> = ({
             onClick={onFilterClick}
             className={cn(
               'absolute right-4 p-1.5 rounded-lg transition-all duration-200',
-              'hover:bg-blue-50 dark:hover:bg-blue-500/10',
-              'text-gray-400 hover:text-blue-600 dark:hover:text-blue-400',
-              'border border-gray-200 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-500/30'
+              'hover:bg-info-light dark:hover:bg-info/10',
+              'text-stone-400 hover:text-info dark:hover:text-info-light',
+              'border border-stone-200 dark:border-stone-700 hover:border-info-light dark:hover:border-info/30'
             )}
           >
             <Filter className="w-4 h-4" />

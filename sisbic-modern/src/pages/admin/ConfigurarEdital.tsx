@@ -14,6 +14,7 @@ import { useEdital } from '../../contexts/EditalContext';
 import { useAvaliacao } from '../../hooks/useAvaliacao';
 import ConfigurationStepCard from '../../components/ui/ConfigurationStepCard';
 import Button from '../../components/ui/Button';
+import { EditalProvider } from '../../contexts/EditalContext';
 
 const initialSections = [
   {
@@ -120,8 +121,8 @@ const ConfigurarEdital: React.FC<{ isNovo?: boolean }> = ({ isNovo = false }) =>
 
     if (loading) {
          return (
-            <div className="p-6 lg:p-8 bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
-                <p className="text-lg text-text-secondary">Carregando configuração do edital...</p>
+            <div className="min-h-screen flex items-center justify-center p-6 lg:p-8">
+                <p className="text-lg text-content-secondary dark:text-content-secondary-dark">Carregando configuração do edital...</p>
             </div>
         );
     }
@@ -131,62 +132,64 @@ const ConfigurarEdital: React.FC<{ isNovo?: boolean }> = ({ isNovo = false }) =>
     const progressPercentage = (completedSections / totalSections) * 100;
 
     return (
-        <div className="p-6 bg-gradient-to-br from-ufba-gray-50 to-ufba-gray-100 dark:from-ufba-gray-950 dark:to-ufba-gray-800 min-h-screen">
-            {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-                    {isNovo ? 'Novo Edital' : `Configuração do Edital: ${periodo?.PEP_Sigla}`}
-                </h1>
-                <p className="text-neutral-600 dark:text-neutral-400">
-                    Siga os passos abaixo para configurar completamente o seu edital.
-                </p>
-            </div>
+        <EditalProvider>
+            <div className="min-h-screen">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h1 className="text-3xl font-semibold text-content-main dark:text-content-main-dark mb-2">
+                                {isNovo ? 'Novo Edital' : `Configuração do Edital: ${periodo?.PEP_Sigla}`}
+                            </h1>
+                            <p className="text-content-secondary dark:text-content-secondary-dark">
+                                Siga os passos abaixo para configurar completamente o seu edital.
+                            </p>
+                        </div>
+                    </div>
 
-            {/* Barra de Progresso */}
-            <div className="mb-8">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-text-primary dark:text-white">
-                        Progresso Geral
-                    </span>
-                    <span className="text-sm font-medium text-neutral-600 dark:text-slate-300">
-                        {completedSections} de {totalSections} seções concluídas
-                    </span>
-                </div>
-                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                    <div 
-                        className="bg-primary dark:bg-primary-light h-3 rounded-full transition-all duration-500 ease-out"
-                        style={{ width: `${progressPercentage}%` }}
-                    ></div>
-                </div>
-                <div className="flex justify-between text-xs text-text-secondary dark:text-gray-400 mt-1">
-                    <span>0%</span>
-                    <span>100%</span>
-                </div>
-            </div>
+                    <div className="bg-surface-1 dark:bg-surface-dark-1 rounded-xl p-6 mb-8 border border-border-color dark:border-border-dark">
+                        <h2 className="text-lg font-bold text-content-main dark:text-content-main-dark mb-2">Progresso da Configuração</h2>
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm font-medium text-content-secondary dark:text-content-secondary-dark">
+                                {completedSections} de {totalSections} seções concluídas
+                            </span>
+                            <div className="w-full bg-surface-0 dark:bg-surface-dark-0 rounded-full h-3">
+                                <div 
+                                    className="bg-brand-primary dark:bg-brand-primary-dark h-3 rounded-full transition-all duration-500 ease-out" 
+                                    style={{ width: `${progressPercentage}%` }}
+                                />
+                            </div>
+                        </div>
+                        <div className="flex justify-between text-xs text-content-secondary dark:text-content-secondary-dark mt-1">
+                            <span>0%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {sections.map((section, index) => (
+                            <ConfigurationStepCard
+                                key={section.key}
+                                title={section.title}
+                                description={section.description}
+                                status={section.status}
+                                path={section.path}
+                                icon={section.icon}
+                                isHighlighted={index === firstPendingIndex}
+                            />
+                        ))}
+                    </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {sections.map((section, index) => (
-                    <ConfigurationStepCard
-                        key={section.key}
-                        title={section.title}
-                        description={section.description}
-                        status={section.status}
-                        path={section.path}
-                        icon={section.icon}
-                        isHighlighted={index === firstPendingIndex}
-                    />
-                ))}
+                    {/* Botão de Voltar */}
+                    <div className="mt-12 flex justify-start">
+                        <Link to="/editais">
+                            <Button variant="secondary" icon={ChevronLeft} iconPosition="left">
+                                Voltar para Editais
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
             </div>
-
-            {/* Botão de Voltar */}
-            <div className="mt-12 flex justify-start">
-                <Link to="/editais">
-                    <Button variant="secondary" icon={ChevronLeft} iconPosition="left">
-                        Voltar para Editais
-                    </Button>
-                </Link>
-            </div>
-        </div>
+        </EditalProvider>
     );
 };
 

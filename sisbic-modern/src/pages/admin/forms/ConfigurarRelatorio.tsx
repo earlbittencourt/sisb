@@ -80,8 +80,8 @@ const ConfigurarRelatorio: React.FC = () => {
         return (
             <div className="p-4 md:p-8 space-y-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-                        Configuração do {relatorio?.descricao}
+                    <h1 className="text-3xl font-semibold text-stone-800 dark:text-white">
+                        Configurar Relatório
                     </h1>
                     <p className="text-md text-gray-500 dark:text-gray-400 mt-1">
                         Configure os critérios e estrutura do relatório.
@@ -100,8 +100,8 @@ const ConfigurarRelatorio: React.FC = () => {
         return (
             <div className="p-4 md:p-8 space-y-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-                        Configuração do {relatorio?.descricao}
+                    <h1 className="text-3xl font-semibold text-stone-800 dark:text-white">
+                        Configurar Relatório
                     </h1>
                     <p className="text-md text-gray-500 dark:text-gray-400 mt-1">
                         Configure os critérios e estrutura do relatório.
@@ -120,8 +120,8 @@ const ConfigurarRelatorio: React.FC = () => {
         <div className="p-4 md:p-8 space-y-6">
             {/* Cabeçalho */}
             <div>
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-                    Configuração do {relatorio?.descricao}
+                <h1 className="text-3xl font-semibold text-stone-800 dark:text-white">
+                    Configurar Relatório
                 </h1>
                 <p className="text-md text-gray-500 dark:text-gray-400 mt-1">
                     Configure os critérios e estrutura do relatório.
@@ -147,7 +147,7 @@ const ConfigurarRelatorio: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
                                         <section.icon className="h-5 w-5 text-primary dark:text-primary-light" />
-                                        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                                        <h2 className="text-lg font-semibold text-stone-800 dark:text-white">
                                             {section.title}
                                         </h2>
                                     </div>

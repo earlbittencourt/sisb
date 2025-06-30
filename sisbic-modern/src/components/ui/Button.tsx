@@ -33,14 +33,14 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const variantStyles = {
-    primary: 'bg-primary-600 text-white font-semibold hover:bg-primary-700 transition-colors',
-    secondary: 'bg-gray-100 text-gray-800 font-semibold hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 transition-colors',
-    link: 'text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light font-semibold transition-colors',
-    ghost: 'text-gray-600 hover:bg-gray-100 active:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-800',
-    success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800',
-    warning: 'bg-yellow-500 text-white hover:bg-yellow-600 active:bg-yellow-700',
-    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800',
-    glass: 'glass-effect hover:bg-white/10 dark:hover:bg-gray-800/30 active:scale-95',
+    primary: 'bg-brand-primary text-white hover:bg-brand-primary-hover dark:bg-brand-primary-dark dark:text-surface-0 dark:hover:bg-brand-primary-dark-hover',
+    secondary: 'bg-surface-1 text-content-main border border-border-color hover:bg-border-color/60 dark:bg-surface-dark-1 dark:text-content-main-dark dark:border-border-dark dark:hover:bg-border-dark/60',
+    link: 'text-content-secondary hover:text-brand-primary dark:text-content-secondary-dark dark:hover:text-brand-primary-dark',
+    ghost: 'text-content-secondary hover:bg-surface-1 active:bg-border-color dark:text-content-secondary-dark dark:hover:bg-surface-dark-1 dark:active:bg-border-dark',
+    success: 'bg-brand-success text-white hover:bg-brand-success/90 dark:bg-brand-success-dark dark:text-surface-dark-0 dark:hover:bg-brand-success-dark/90',
+    warning: 'bg-brand-accent text-white hover:bg-brand-accent/90 dark:bg-brand-accent-dark dark:text-surface-dark-0 dark:hover:bg-brand-accent-dark/90',
+    danger: 'bg-brand-danger text-white hover:bg-brand-danger/90 dark:bg-brand-danger-dark dark:text-surface-dark-0 dark:hover:bg-brand-danger-dark/90',
+    glass: 'bg-white/10 backdrop-blur-sm border border-white/20 text-content-main hover:bg-white/20 dark:bg-surface-dark-1/30 dark:border-white/10 dark:text-content-main-dark dark:hover:bg-surface-dark-1/40 active:scale-95',
   };
 
   return (

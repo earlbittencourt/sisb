@@ -4,19 +4,37 @@ interface DataTableProps {
   columns: { key: string; label: string; className?: string }[];
   data: Record<string, any>[];
   actions?: (row: Record<string, any>) => React.ReactNode;
+  isLoading?: boolean;
+  onRowClick?: (row: Record<string, any>) => void;
 }
 
-const DataTable: React.FC<DataTableProps> = ({ columns, data, actions }) => {
+const DataTable: React.FC<DataTableProps> = ({ columns, data, actions, isLoading, onRowClick }) => {
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-brand-primary"></div>
+      </div>
+    );
+  }
+  
+  if (data.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <p className="text-content-secondary dark:text-content-secondary-dark">Nenhum dado encontrado.</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="overflow-x-auto rounded-lg shadow-md bg-white dark:bg-slate-800">
-      <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-        <thead>
+    <div className="overflow-x-auto">
+      <table className="min-w-full divide-y divide-border-color dark:divide-border-dark">
+        <thead className="bg-surface-1 dark:bg-surface-dark-1">
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
                 className={
-                  'text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold py-3 px-6 text-left ' +
+                  'text-xs text-content-secondary dark:text-content-secondary-dark uppercase tracking-wider font-semibold py-3 px-6 text-left ' +
                   (col.className || '')
                 }
               >
@@ -24,17 +42,21 @@ const DataTable: React.FC<DataTableProps> = ({ columns, data, actions }) => {
               </th>
             ))}
             {actions && (
-              <th className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold py-3 px-6 text-left">Ações</th>
+              <th className="text-xs text-content-secondary dark:text-content-secondary-dark uppercase tracking-wider font-semibold py-3 px-6 text-left">Ações</th>
             )}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-border-color dark:divide-border-dark">
           {data.map((row, idx) => (
-            <tr key={idx} className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/30">
+            <tr 
+              key={idx} 
+              className={`border-b border-border-color dark:border-border-dark ${onRowClick ? 'hover:bg-surface-2/50 dark:hover:bg-surface-dark-2/50 cursor-pointer' : ''}`}
+              onClick={() => onRowClick?.(row)}
+            >
               {columns.map((col) => (
                 <td
                   key={col.key}
-                  className="py-4 px-6 text-sm text-slate-700 dark:text-slate-200"
+                  className="py-4 px-6 text-sm text-content-main dark:text-content-main-dark align-top"
                 >
                   {row[col.key]}
                 </td>

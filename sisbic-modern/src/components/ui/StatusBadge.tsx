@@ -9,33 +9,33 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status, size = 'sm' }) => {
   const getStatusConfig = (status: string) => {
     const lowerStatus = status.toLowerCase();
     
-    if (lowerStatus.includes('andamento') || lowerStatus.includes('ativo')) {
+    if (lowerStatus.includes('andamento') || lowerStatus.includes('ativo') || lowerStatus.includes('pendente') || lowerStatus.includes('análise')) {
       return {
-        base: 'bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400'
+        base: 'bg-brand-accent/10 text-brand-accent dark:bg-brand-accent-dark/20 dark:text-brand-accent-dark'
       };
     }
     
     if (lowerStatus.includes('concluído') || lowerStatus.includes('concluido') || lowerStatus.includes('finalizado')) {
       return {
-        base: 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-400'
+        base: 'bg-brand-success/10 text-brand-success dark:bg-brand-success-dark/20 dark:text-brand-success-dark'
       };
     }
     
     if (lowerStatus.includes('inscrições') || lowerStatus.includes('inscricoes') || lowerStatus.includes('aberto')) {
       return {
-        base: 'bg-primary-100 text-primary-800 dark:bg-primary-500/10 dark:text-primary-400'
+        base: 'bg-brand-primary/10 text-brand-primary dark:bg-brand-primary-dark/20 dark:text-brand-primary-dark'
       };
     }
     
     if (lowerStatus.includes('indisponível') || lowerStatus.includes('indisponivel') || lowerStatus.includes('cancelado')) {
       return {
-        base: 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-400'
+        base: 'bg-brand-danger/10 text-brand-danger dark:bg-brand-danger-dark/20 dark:text-brand-danger-dark'
       };
     }
     
     // Default
     return {
-      base: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600'
+      base: 'bg-surface-0 text-content-secondary dark:bg-surface-dark-0 dark:text-content-secondary-dark border border-border-color dark:border-border-dark'
     };
   };
 

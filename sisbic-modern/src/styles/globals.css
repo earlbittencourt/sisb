@@ -1,219 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+/* ======================================================================== */
+/* ARQUIVO DE ESTILO GLOBAL - SISBIC (Versão Corrigida) */
+/* ======================================================================== */
+/* Este arquivo aplica os estilos base usando as classes definidas no     */
+/* tailwind.config.js. Nenhuma cor é definida aqui.                      */
+/* ======================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  body {
-    @apply bg-white dark:bg-gray-900 text-slate-600 dark:text-slate-300;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  /* Aplicação dos estilos base para os modos Light e Dark */
+body {
+    @apply bg-surface-0 text-content-main antialiased;
+    @apply dark:bg-surface-dark-0 dark:text-content-main-dark;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold text-slate-900 dark:text-slate-100;
+  /* Aplica a fonte serifada aos títulos principais para o toque "editorial" */
+  h1, h2, h3 {
+    @apply font-sans font-semibold text-content-main;
+    @apply dark:text-content-main-dark;
   }
 }
-
-@layer components {
-  .card {
-    @apply bg-white dark:bg-gray-800 border border-slate-200 dark:border-slate-800 rounded-lg p-6;
-  }
-
-  .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
-  }
-
-  .btn-secondary {
-    @apply bg-slate-100 text-slate-800 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
-  }
-
-  .input-field {
-    @apply w-full px-4 py-2 bg-white dark:bg-gray-800 border border-slate-200 dark:border-slate-700 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-slate-100;
-  }
-
-  .nav-item {
-    @apply flex items-center gap-2 px-3 py-2 rounded-md text-slate-600 dark:text-slate-300 hover:bg-primary-50 dark:hover:bg-primary-500/5 hover:text-primary-600 dark:hover:text-primary-200 transition-colors;
-  }
-
-  .nav-item-active {
-    @apply bg-primary-100 dark:bg-primary-500/10 text-primary-600 dark:text-primary-200;
-  }
-
-  /* Status Badges */
-  .status-badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-  
-  .status-success {
-    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border border-green-300 dark:border-green-600;
-  }
-  
-  .status-warning {
-    @apply bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-600;
-  }
-  
-  .status-danger {
-    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border border-red-300 dark:border-red-600;
-  }
-  
-  .status-info {
-    @apply bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 border border-primary-300 dark:border-primary-600;
-  }
-
-  /* Badge Variants */
-  .badge-success {
-    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border border-green-300 dark:border-green-600;
-  }
-  
-  .badge-warning {
-    @apply bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-600;
-  }
-  
-  .badge-danger {
-    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border border-red-300 dark:border-red-600;
-  }
-  
-  .badge-info {
-    @apply bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200 border border-primary-300 dark:border-primary-600;
-  }
-
-  /* Focus Rings */
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
-  }
-
-  .focus-ring-light {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:ring-offset-1;
-  }
-
-  /* Hover Effects */
-  .hover-lift {
-    @apply transition-transform duration-200 hover:-translate-y-1;
-  }
-
-  .hover-lift-sm {
-    @apply transition-transform duration-200 hover:-translate-y-0.5;
-  }
-
-  .hover-glow {
-    @apply hover:shadow-subtle transition-all duration-200;
-  }
-
-  /* Table Styles */
-  .table-row-hover {
-    @apply hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors;
-  }
-
-  .table-header {
-    @apply bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-medium;
-  }
-
-  .table-cell {
-    @apply px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-slate-100;
-  }
-
-  /* Animations */
-  .animate-fade-in-up {
-    animation: fadeInUp 0.5s ease-out;
-  }
-
-  .animate-slide-in-right {
-    animation: slideInRight 0.5s ease-out;
-  }
-
-  .animate-scale-in {
-    animation: scaleIn 0.3s ease-out;
-  }
-
-  .animate-shimmer {
-    animation: shimmer 2s infinite linear;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.2) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes shimmer {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
-
-/* Responsive Adjustments */
-@media (max-width: 640px) {
-  .table-cell {
-    @apply px-4 py-3;
-  }
-}
-
-/* Print Styles */
-@media print {
-  .nav-item,
-  .btn-primary,
-  .btn-secondary {
-    @apply hidden;
-  }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  .card {
-    @apply border-2;
-  }
-  
-  .btn-primary,
-  .btn-secondary {
-    @apply border-2;
-  }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-} 

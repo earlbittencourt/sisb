@@ -27,7 +27,7 @@ const Relatorios: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[...Array(3)].map((_, index) => (
                          <Card key={index} className="flex flex-col justify-between hover:shadow-xl transition-shadow duration-300 min-h-[260px] animate-pulse">
-                            <div className="h-full bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                            <div className="h-full bg-stone-200 dark:bg-stone-700 rounded-lg" />
                          </Card>
                     ))}
                 </div>
@@ -35,7 +35,7 @@ const Relatorios: React.FC = () => {
         }
 
         if (error) {
-            return <div className="text-center py-10 text-red-500">{error}</div>;
+            return <div className="text-center py-10 text-danger">{error}</div>;
         }
 
         return (
@@ -62,10 +62,10 @@ const Relatorios: React.FC = () => {
         <div className="p-4 md:p-8 space-y-6">
             {/* Cabeçalho */}
             <div>
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+                <h1 className="text-3xl font-semibold text-stone-800 dark:text-white">
                     Configurar Relatórios
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-stone-500 dark:text-stone-400 mt-1">
                     Crie e gerencie os modelos de relatório para este edital.
                 </p>
             </div>
@@ -90,7 +90,7 @@ const Relatorios: React.FC = () => {
             </div>
 
             {/* Botão Voltar */}
-            <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="mt-8 pt-6 border-t border-stone-200 dark:border-stone-700">
                 <Link to={`/editais/${editalId}/configurar`}>
                     <Button 
                         variant="secondary"
