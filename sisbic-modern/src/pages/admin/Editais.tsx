@@ -12,6 +12,9 @@ import { Filter } from '../../components/ui/FilterPill';
 import { PeriodoPrograma } from '../../types/programa';
 import DashboardCard from '../../components/ui/DashboardCard';
 import { FileText, Clock, CheckCircle } from 'lucide-react';
+import { HeroEditalCard } from '../../components/cards/HeroEditalCard';
+import { ActiveEditalListItem } from '../../components/cards/ActiveEditalListItem';
+import { SectionHeader } from '../../components/ui/SectionHeader';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -36,7 +39,7 @@ function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function Editais() {
+export default function EditaisPage() {
   const navigate = useNavigate();
   const { periodos, loading: isLoadingPeriodos } = usePeriodosProgramas();
   const { programas } = useProgramas();
@@ -191,63 +194,31 @@ export function Editais() {
     }
   };
 
-  return (
-    <div className="flex flex-col h-full p-6">
-      <header className="mb-8">
-        <div className="flex justify-between items-start mb-6">
-              <div>
-              <h1 className="text-3xl text-content-main dark:text-content-main-dark">Editais</h1>
-              <p className="text-content-secondary dark:text-content-secondary-dark mt-1">Gerencie os editais de todos os programas.</p>
-            </div>
-            <Button onClick={() => navigate('/admin/editais/novo')}>
-              Criar Novo Edital
-            </Button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <DashboardCard title="Inscrições Abertas" value={inscricoesAbertas.toString()} percent={percent(inscricoesAbertas)} icon={FileText} />
-          <DashboardCard title="Em Andamento" value={emAndamento.toString()} percent={percent(emAndamento)} icon={Clock} />
-          <DashboardCard title="Concluídos" value={concluidos.toString()} percent={percent(concluidos)} icon={CheckCircle} />
-          <DashboardCard title="Total de Editais" value={totalEditais.toString()} percent={100} icon={FileText} />
-        </div>
-      </header>
-      
-      <div className="flex-grow flex flex-col">
-        <div className="mb-4">
-          <QueryBuilder
-            searchText={searchTerm}
-            onSearchChange={setSearchTerm}
-            filters={queryFilters}
-            onFiltersChange={setQueryFilters}
-            statusOptions={statusList.map(s => s.PPS_Descricao)}
-              />
-            </div>
-        
-        <div className="flex-1 overflow-auto border border-border-color dark:border-border-dark rounded-lg">
-          <DataTable
-            columns={columns}
-            data={paginatedData}
-            isLoading={isLoadingPeriodos}
-            onRowClick={handleRowClick}
-                />
-              </div>
+  const editalEmInscricao = paginatedData.find(e => e.status === 'Inscrições Abertas');
+  const editaisEmAndamento = paginatedData.filter(e => e.status === 'Em Andamento');
 
-        <div className="flex justify-end items-center gap-2 mt-4">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            className="px-4 py-2 text-sm rounded-lg bg-surface-1 dark:bg-surface-dark-1 text-content-main dark:text-content-main-dark hover:bg-border-color dark:hover:bg-border-dark font-medium transition-colors disabled:opacity-50"
-            >
-              Anterior
-            </button>
-          <span className="text-sm text-content-secondary flex items-center">{`Página ${currentPage} de ${totalPages}`}</span>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages || totalPages === 0}
-            className="px-4 py-2 text-sm rounded-lg bg-surface-1 dark:bg-surface-dark-1 text-content-main dark:text-content-main-dark hover:bg-border-color dark:hover:bg-border-dark font-medium transition-colors disabled:opacity-50"
-            >
-              Próxima
-            </button>
+  return (
+    <div className="space-y-12">
+      {/* Zona 1: A Estrela do Show */}
+      {editalEmInscricao && <HeroEditalCard edital={editalEmInscricao} />}
+
+      {/* Zona 2: A Próxima Fila */}
+      {editaisEmAndamento.length > 0 && (
+        <div>
+          <SectionHeader title="Editais em Andamento" />
+          <div className="space-y-4">
+            {editaisEmAndamento.map(edital => (
+              <ActiveEditalListItem key={edital.PEP_Codigo} edital={edital} />
+            ))}
+          </div>
         </div>
+      )}
+
+      {/* Zona 3: O Arquivo */}
+      <div className="text-center">
+        <a href="/editais/arquivo" className="text-content-secondary dark:text-content-secondary-dark hover:text-brand-primary">
+          Ver todos os editais anteriores →
+        </a>
       </div>
     </div>
   );
