@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import AppLayout from './layouts/AppLayout';
 import Dashboard from './pages/Dashboard';
-import Editais from './pages/admin/Editais';
+import { Editais } from './pages/admin/Editais';
 import Programas from './pages/admin/Programas';
 import ConfigurarEdital from './pages/admin/ConfigurarEdital';
 import EditalConfigLayout, { EditalNovoLayout } from './layouts/EditalConfigLayout';

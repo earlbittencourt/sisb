@@ -13,7 +13,7 @@
 
 @layer base {
   /* Aplicação dos estilos base para os modos Light e Dark */
-body {
+  body {
     @apply bg-surface-0 text-content-main antialiased;
     @apply dark:bg-surface-dark-0 dark:text-content-main-dark;
   }
@@ -22,5 +22,47 @@ body {
   h1, h2, h3 {
     @apply font-sans font-semibold text-content-main;
     @apply dark:text-content-main-dark;
+  }
+
+  :root {
+    /* Cores de superfície */
+    --surface-0: #ffffff;
+    --surface-1: #f8f9fa;
+    --surface-2: #f1f3f5;
+    --surface-3: #e9ecef;
+    
+    /* Cores de superfície no tema escuro */
+    --surface-dark-0: #1a1b1e;
+    --surface-dark-1: #25262b;
+    --surface-dark-2: #2c2e33;
+    --surface-dark-3: #373a40;
+    
+    /* Cores de conteúdo */
+    --content-main: #1a1b1e;
+    --content-secondary: #868e96;
+    
+    /* Cores de conteúdo no tema escuro */
+    --content-main-dark: #ffffff;
+    --content-secondary-dark: #909296;
+    
+    /* Cores de borda */
+    --border-color: #dee2e6;
+    --border-dark: #373a40;
+    
+    /* Cores da marca */
+    --brand-primary: #228be6;
+    --brand-primary-dark: #4dabf7;
+    --brand-accent: #7950f2;
+    --brand-accent-dark: #845ef7;
+    --brand-success: #40c057;
+    --brand-success-dark: #51cf66;
+    --brand-danger: #fa5252;
+    --brand-danger-dark: #ff6b6b;
+  }
+}
+
+@layer components {
+  .shadow-subtle {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   }
 }

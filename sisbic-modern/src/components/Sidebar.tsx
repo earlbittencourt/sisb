@@ -61,7 +61,7 @@ const Sidebar = () => {
   );
 
   return (
-    <aside className="w-64 bg-surface-0 dark:bg-surface-dark-0 border-r border-border-color dark:border-border-dark flex flex-col h-screen">
+    <aside className="w-64 bg-surface-1 dark:bg-surface-dark-1 border-r border-border-color dark:border-border-dark flex flex-col h-screen">
       <div className="flex flex-col h-full py-6 pr-6">
         {/* ===== SEÇÃO SUPERIOR - IDENTIDADE ===== */}
         <div className="flex-shrink-0 pb-3 border-b border-border-color dark:border-border-dark pl-6 flex items-center h-[120px]">
